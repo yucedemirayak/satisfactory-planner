@@ -1,4 +1,4 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit'
+import { combineReducers, configureStore, type Action } from '@reduxjs/toolkit'
 
 import extractorsReducer from '@/features/extractors/extractorsSlice'
 import floorsReducer from '@/features/floors/floorsSlice'
@@ -10,9 +10,10 @@ import recipesReducer from '@/features/recipes/recipesSlice'
 import spacersReducer from '@/features/spacers/spacersSlice'
 import workbenchesReducer from '@/features/workbenches/workbenchesSlice'
 
+import { appStateImported } from './appActions'
 import { loadState, saveState } from './persistence'
 
-const rootReducer = combineReducers({
+const combinedReducer = combineReducers({
   floors: floorsReducer,
   workbenches: workbenchesReducer,
   extractors: extractorsReducer,
@@ -26,7 +27,15 @@ const rootReducer = combineReducers({
 
 // Derived from the reducer (not the store) so persistence can reference
 // RootState without a circular type dependency through preloadedState.
-export type RootState = ReturnType<typeof rootReducer>
+export type RootState = ReturnType<typeof combinedReducer>
+
+// Wrap the combined reducer so `appStateImported` can swap the whole tree at
+// once (project import). Slices don't know about this action, so on import they
+// each just receive—and return—their replacement slice.
+const rootReducer = (state: RootState | undefined, action: Action): RootState =>
+  appStateImported.match(action)
+    ? combinedReducer(action.payload, action)
+    : combinedReducer(state, action)
 
 export const store = configureStore({
   reducer: rootReducer,
@@ -47,4 +56,5 @@ store.subscribe(() => {
   }, SAVE_THROTTLE_MS)
 })
 
+export type AppStore = typeof store
 export type AppDispatch = typeof store.dispatch

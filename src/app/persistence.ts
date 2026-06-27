@@ -11,8 +11,14 @@ import type { RootState } from './store'
  */
 const STORAGE_KEY = 'satisfactory-planner:v1'
 
+/** Bumped when the on-disk export shape changes (independent of STORAGE_KEY). */
+export const EXPORT_VERSION = 1
+
+/** Marker so we can recognise our own files on import. */
+const PROJECT_FILE_APP = 'satisfactory-planner'
+
 /** Slices that should survive reloads (UI-only slices can be left out later). */
-type PersistedState = Pick<
+export type PersistedState = Pick<
   RootState,
   | 'floors'
   | 'workbenches'
@@ -24,6 +30,42 @@ type PersistedState = Pick<
   | 'placements'
   | 'production'
 >
+
+/** Keys of the persisted slices — single source of truth for validation. */
+const PERSISTED_KEYS: ReadonlyArray<keyof PersistedState> = [
+  'floors',
+  'workbenches',
+  'extractors',
+  'spacers',
+  'products',
+  'materials',
+  'recipes',
+  'placements',
+  'production',
+]
+
+/** A downloadable project file: persisted state wrapped with metadata. */
+export interface ProjectFile {
+  app: typeof PROJECT_FILE_APP
+  version: number
+  exportedAt: string
+  data: PersistedState
+}
+
+/** Narrow a full RootState down to just the persisted slices. */
+function pickPersisted(state: RootState): PersistedState {
+  return {
+    floors: state.floors,
+    workbenches: state.workbenches,
+    extractors: state.extractors,
+    spacers: state.spacers,
+    products: state.products,
+    materials: state.materials,
+    recipes: state.recipes,
+    placements: state.placements,
+    production: state.production,
+  }
+}
 
 /**
  * In-place upgrades for older persisted shapes so we don't wipe a user's data.
@@ -103,19 +145,55 @@ export function loadState(): PersistedState | undefined {
 export function saveState(state: RootState): void {
   if (typeof localStorage === 'undefined') return
   try {
-    const persisted: PersistedState = {
-      floors: state.floors,
-      workbenches: state.workbenches,
-      extractors: state.extractors,
-      spacers: state.spacers,
-      products: state.products,
-      materials: state.materials,
-      recipes: state.recipes,
-      placements: state.placements,
-      production: state.production,
-    }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(persisted))
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(pickPersisted(state)))
   } catch (error) {
     if (import.meta.env.DEV) console.warn('Failed to save state', error)
   }
+}
+
+/** Wrap the current persisted state in a versioned, dated export envelope. */
+export function serializeProject(state: RootState): ProjectFile {
+  return {
+    app: PROJECT_FILE_APP,
+    version: EXPORT_VERSION,
+    exportedAt: new Date().toISOString(),
+    data: pickPersisted(state),
+  }
+}
+
+/**
+ * Parse + validate + migrate an exported project file's text into a state ready
+ * to hydrate the store. Accepts both the metadata envelope and a bare state
+ * object (e.g. hand-edited). Throws a user-facing Error on anything unusable.
+ */
+export function parseProjectFile(text: string): PersistedState {
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(text)
+  } catch {
+    throw new Error("This file isn't valid JSON.")
+  }
+
+  if (!parsed || typeof parsed !== 'object') {
+    throw new Error('Unrecognised project file.')
+  }
+
+  // Unwrap the { app, version, data } envelope when present.
+  const record = parsed as Record<string, unknown>
+  const data = (
+    'data' in record && record.data && typeof record.data === 'object'
+      ? record.data
+      : record
+  ) as Record<string, unknown>
+
+  // Must look like our state: every persisted slice present as an object.
+  const missing = PERSISTED_KEYS.filter(
+    (key) => !data[key] || typeof data[key] !== 'object',
+  )
+  if (missing.length === PERSISTED_KEYS.length) {
+    throw new Error("This doesn't look like a Satisfactory Planner export.")
+  }
+
+  migrate(data)
+  return data as unknown as PersistedState
 }

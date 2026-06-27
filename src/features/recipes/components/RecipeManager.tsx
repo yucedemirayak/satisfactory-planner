@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
@@ -14,6 +15,17 @@ export function RecipeManager() {
   const recipes = useAppSelector(selectRecipes)
   const count = useAppSelector(selectRecipeCount)
   const hasProducts = useAppSelector(selectProducts).length > 0
+  const [query, setQuery] = useState('')
+
+  // Keep each recipe's original index so the positional name fallback is stable
+  // regardless of filtering.
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    const indexed = recipes.map((recipe, index) => ({ recipe, index }))
+    return q
+      ? indexed.filter(({ recipe }) => recipe.name.toLowerCase().includes(q))
+      : indexed
+  }, [recipes, query])
 
   return (
     <section className="flex h-full flex-col gap-4">
@@ -27,7 +39,11 @@ export function RecipeManager() {
         <div className="flex items-center gap-4">
           <dl className="text-right">
             <dt className="text-xs text-gray-500">Defined</dt>
-            <dd className="font-mono text-lg text-ficsit">{count}</dd>
+            <dd className="font-mono text-lg text-ficsit">
+              {filtered.length === count
+                ? count
+                : `${filtered.length} / ${count}`}
+            </dd>
           </dl>
           <button
             type="button"
@@ -49,15 +65,29 @@ export function RecipeManager() {
         </p>
       )}
 
+      {count > 0 && (
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search recipes…"
+          className="w-full rounded-md border border-edge bg-surface-0 px-3 py-2 text-sm text-gray-100 outline-none focus:border-ficsit"
+        />
+      )}
+
       <div className="min-h-0 flex-1 overflow-y-auto">
         {count === 0 ? (
           <div className="flex h-full items-center justify-center rounded-lg border border-dashed border-edge bg-surface-1/50 p-10 text-center text-gray-400">
             No recipes yet. Use “+ New Recipe”.
           </div>
+        ) : filtered.length === 0 ? (
+          <div className="flex h-full items-center justify-center rounded-lg border border-dashed border-edge bg-surface-1/50 p-10 text-center text-gray-400">
+            No recipes match “{query}”.
+          </div>
         ) : (
           <div className="flex flex-col gap-3">
-            {recipes.map((r, i) => (
-              <RecipeCard key={r.id} recipe={r} index={i} />
+            {filtered.map(({ recipe, index }) => (
+              <RecipeCard key={recipe.id} recipe={recipe} index={index} />
             ))}
           </div>
         )}

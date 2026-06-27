@@ -8,4 +8,5 @@ export const PATHS = {
   products: '/products',
   recipes: '/recipes',
   production: '/production',
+  project: '/project',
 } as const

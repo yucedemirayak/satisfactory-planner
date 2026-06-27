@@ -6,6 +6,7 @@ import ProductionPage from '@/pages/ProductionPage'
 import { ExtractorManager } from '@/features/extractors'
 import { MaterialManager } from '@/features/materials'
 import { ProductManager } from '@/features/products'
+import { ProjectManager } from '@/features/project'
 import { RecipeManager } from '@/features/recipes'
 import { SpacerManager } from '@/features/spacers'
 import { WorkbenchManager } from '@/features/workbenches'
@@ -50,6 +51,10 @@ function App() {
           <NavLink to={PATHS.production} className={navLinkClass}>
             Production
           </NavLink>
+          <span className="mx-1 h-5 w-px bg-edge" aria-hidden />
+          <NavLink to={PATHS.project} className={navLinkClass}>
+            Data
+          </NavLink>
         </nav>
       </header>
 
@@ -64,6 +69,7 @@ function App() {
           <Route path={PATHS.products} element={<ProductManager />} />
           <Route path={PATHS.recipes} element={<RecipeManager />} />
           <Route path={PATHS.production} element={<ProductionPage />} />
+          <Route path={PATHS.project} element={<ProjectManager />} />
         </Routes>
       </main>
     </div>
