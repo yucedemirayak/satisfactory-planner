@@ -13,8 +13,9 @@
         {
           "id": "wb__desc-smeltermk1-c",
           "name": "Smelter",
-          "width": 6,
-          "height": 9,
+          "width": 10,
+          "depth": 5,
+          "height": 8.5,
           "sloopSlots": 1,
           "color": "#fa9549"
         },
@@ -22,6 +23,7 @@
           "id": "wb__desc-foundrymk1-c",
           "name": "Foundry",
           "width": 10,
+          "depth": 9,
           "height": 9,
           "sloopSlots": 2,
           "color": "#e85d4e"
@@ -29,7 +31,8 @@
         {
           "id": "wb__desc-constructormk1-c",
           "name": "Constructor",
-          "width": 8,
+          "width": 9.9,
+          "depth": 7.9,
           "height": 8,
           "sloopSlots": 1,
           "color": "#4ea8de"
@@ -37,7 +40,8 @@
         {
           "id": "wb__desc-assemblermk1-c",
           "name": "Assembler",
-          "width": 10,
+          "width": 16,
+          "depth": 9,
           "height": 11,
           "sloopSlots": 2,
           "color": "#5e9cff"
@@ -45,7 +49,8 @@
         {
           "id": "wb__desc-manufacturermk1-c",
           "name": "Manufacturer",
-          "width": 18,
+          "width": 20,
+          "depth": 18,
           "height": 12,
           "sloopSlots": 4,
           "color": "#9b5de5"
@@ -53,8 +58,9 @@
         {
           "id": "wb__desc-oilrefinery-c",
           "name": "Refinery",
-          "width": 10,
-          "height": 11,
+          "width": 22,
+          "depth": 10,
+          "height": 30,
           "sloopSlots": 2,
           "color": "#f4a261"
         },
@@ -62,6 +68,7 @@
           "id": "wb__desc-packager-c",
           "name": "Packager",
           "width": 8,
+          "depth": 8,
           "height": 12,
           "sloopSlots": 2,
           "color": "#2a9d8f"
@@ -70,14 +77,16 @@
           "id": "wb__desc-blender-c",
           "name": "Blender",
           "width": 18,
-          "height": 18,
+          "depth": 16,
+          "height": 15,
           "sloopSlots": 4,
           "color": "#e76f51"
         },
         {
           "id": "wb__desc-hadroncollider-c",
           "name": "Particle Accelerator",
-          "width": 24,
+          "width": 38,
+          "depth": 24,
           "height": 32,
           "sloopSlots": 4,
           "color": "#c77dff"
@@ -86,6 +95,7 @@
           "id": "wb__desc-converter-c",
           "name": "Converter",
           "width": 16,
+          "depth": 16,
           "height": 18,
           "sloopSlots": 1,
           "color": "#80ed99"
@@ -93,8 +103,9 @@
         {
           "id": "wb__desc-quantumencoder-c",
           "name": "Quantum Encoder",
-          "width": 16,
-          "height": 16,
+          "width": 50,
+          "depth": 22,
+          "height": 18,
           "sloopSlots": 4,
           "color": "#ffd6a5"
         }
@@ -105,31 +116,72 @@
         {
           "id": "ext__miner",
           "name": "Miner",
-          "w": 8,
-          "h": 8,
+          "width": 14,
+          "depth": 6,
+          "height": 18,
           "baseRate": 60,
           "color": "#8ecae6"
         },
         {
           "id": "ext__water-extractor",
           "name": "Water Extractor",
-          "w": 14,
-          "h": 8,
+          "width": 20,
+          "depth": 19.5,
+          "height": 26,
           "baseRate": 120,
           "color": "#48cae4"
         },
         {
           "id": "ext__oil-extractor",
           "name": "Oil Extractor",
-          "w": 8,
-          "h": 11,
+          "width": 14,
+          "depth": 8,
+          "height": 20,
           "baseRate": 120,
           "color": "#adb5bd"
         }
       ]
     },
     "spacers": {
-      "items": []
+      "items": [
+        { "id": "spacer__1m", "name": "1m Gap", "width": 1 },
+        { "id": "spacer__2m", "name": "2m Gap", "width": 2 },
+        { "id": "spacer__4m", "name": "4m Gap", "width": 4 }
+      ]
+    },
+    "conveyors": {
+      "items": [
+        {
+          "id": "conv__mk1",
+          "name": "Conveyor Mk.1",
+          "maxRate": 60
+        },
+        {
+          "id": "conv__mk2",
+          "name": "Conveyor Mk.2",
+          "maxRate": 120
+        },
+        {
+          "id": "conv__mk3",
+          "name": "Conveyor Mk.3",
+          "maxRate": 270
+        },
+        {
+          "id": "conv__mk4",
+          "name": "Conveyor Mk.4",
+          "maxRate": 480
+        },
+        {
+          "id": "conv__mk5",
+          "name": "Conveyor Mk.5",
+          "maxRate": 780
+        },
+        {
+          "id": "conv__mk6",
+          "name": "Conveyor Mk.6",
+          "maxRate": 1200
+        }
+      ]
     },
     "products": {
       "items": [

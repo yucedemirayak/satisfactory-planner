@@ -33,6 +33,7 @@ import {
   PlacementInspector,
   placementAdded,
   placementMoved,
+  selectFactoryFootprint,
   selectPlacementsByFloor,
   type DragData,
   type DropData,
@@ -74,6 +75,7 @@ function FloorPlanPage() {
   const dispatch = useAppDispatch()
   const count = useAppSelector(selectFloorCount)
   const totalHeight = useAppSelector(selectTotalHeight)
+  const footprint = useAppSelector(selectFactoryFootprint)
   const byFloor = useAppSelector(selectPlacementsByFloor)
   const workbenches = useAppSelector(selectWorkbenches)
   const extractors = useAppSelector(selectExtractors)
@@ -214,6 +216,18 @@ function FloorPlanPage() {
               <div>
                 <dt className="text-xs text-gray-500">Floors</dt>
                 <dd className="font-mono text-lg text-ficsit">{count}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-gray-500">Total width</dt>
+                <dd className="font-mono text-lg text-ficsit">
+                  {Math.round(footprint.width * 10) / 10} m
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-gray-500">Total depth</dt>
+                <dd className="font-mono text-lg text-ficsit">
+                  {Math.round(footprint.depth * 10) / 10} m
+                </dd>
               </div>
               <div>
                 <dt className="text-xs text-gray-500">Total height</dt>

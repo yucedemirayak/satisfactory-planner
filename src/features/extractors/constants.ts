@@ -1,6 +1,7 @@
 /** Extractor domain constants. Dimensions in metres, rate in items/min. */
 
 export const DEFAULT_EXTRACTOR_WIDTH = 8
+export const DEFAULT_EXTRACTOR_DEPTH = 8
 export const DEFAULT_EXTRACTOR_HEIGHT = 8
 export const MIN_EXTRACTOR_DIM = 1
 export const MAX_EXTRACTOR_DIM = 200

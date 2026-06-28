@@ -4,6 +4,7 @@ export const PATHS = {
   workbenches: '/workbenches',
   extractors: '/extractors',
   spacers: '/spacers',
+  conveyors: '/conveyors',
   materials: '/materials',
   products: '/products',
   recipes: '/recipes',

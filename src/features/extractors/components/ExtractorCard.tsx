@@ -61,15 +61,28 @@ export function ExtractorCard({ extractor, index }: ExtractorCardProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         <label className="flex flex-col gap-1">
           <span className="text-xs font-medium text-gray-400">Width (m)</span>
           <input
             type="number"
             min={MIN_EXTRACTOR_DIM}
             max={MAX_EXTRACTOR_DIM}
+            step="any"
             value={extractor.width}
             onChange={(e) => update({ width: Number(e.target.value) })}
+            className={dimInput}
+          />
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="text-xs font-medium text-gray-400">Depth (m)</span>
+          <input
+            type="number"
+            min={MIN_EXTRACTOR_DIM}
+            max={MAX_EXTRACTOR_DIM}
+            step="any"
+            value={extractor.depth}
+            onChange={(e) => update({ depth: Number(e.target.value) })}
             className={dimInput}
           />
         </label>
@@ -79,6 +92,7 @@ export function ExtractorCard({ extractor, index }: ExtractorCardProps) {
             type="number"
             min={MIN_EXTRACTOR_DIM}
             max={MAX_EXTRACTOR_DIM}
+            step="any"
             value={extractor.height}
             onChange={(e) => update({ height: Number(e.target.value) })}
             className={dimInput}

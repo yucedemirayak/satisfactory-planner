@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
 
 import {
+  DEFAULT_WORKBENCH_DEPTH,
   DEFAULT_WORKBENCH_HEIGHT,
   DEFAULT_WORKBENCH_SLOOP_SLOTS,
   DEFAULT_WORKBENCH_WIDTH,
@@ -26,15 +27,17 @@ export function WorkbenchForm() {
 
   const [name, setName] = useState('')
   const [width, setWidth] = useState(DEFAULT_WORKBENCH_WIDTH)
+  const [depth, setDepth] = useState(DEFAULT_WORKBENCH_DEPTH)
   const [height, setHeight] = useState(DEFAULT_WORKBENCH_HEIGHT)
   const [sloopSlots, setSloopSlots] = useState(DEFAULT_WORKBENCH_SLOOP_SLOTS)
   const [color, setColor] = useState<string>(nextColor)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    dispatch(workbenchAdded({ name, width, height, sloopSlots, color }))
+    dispatch(workbenchAdded({ name, width, depth, height, sloopSlots, color }))
     setName('')
     setWidth(DEFAULT_WORKBENCH_WIDTH)
+    setDepth(DEFAULT_WORKBENCH_DEPTH)
     setHeight(DEFAULT_WORKBENCH_HEIGHT)
     setSloopSlots(DEFAULT_WORKBENCH_SLOOP_SLOTS)
     const next =
@@ -69,15 +72,28 @@ export function WorkbenchForm() {
         </label>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 gap-3">
         <label className="flex flex-col gap-1">
           <span className="text-xs font-medium text-gray-400">Width (m)</span>
           <input
             type="number"
             min={MIN_WORKBENCH_DIM}
             max={MAX_WORKBENCH_DIM}
+            step="any"
             value={width}
             onChange={(e) => setWidth(Number(e.target.value))}
+            className={`${inputClass} font-mono`}
+          />
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="text-xs font-medium text-gray-400">Depth (m)</span>
+          <input
+            type="number"
+            min={MIN_WORKBENCH_DIM}
+            max={MAX_WORKBENCH_DIM}
+            step="any"
+            value={depth}
+            onChange={(e) => setDepth(Number(e.target.value))}
             className={`${inputClass} font-mono`}
           />
         </label>
@@ -87,6 +103,7 @@ export function WorkbenchForm() {
             type="number"
             min={MIN_WORKBENCH_DIM}
             max={MAX_WORKBENCH_DIM}
+            step="any"
             value={height}
             onChange={(e) => setHeight(Number(e.target.value))}
             className={`${inputClass} font-mono`}

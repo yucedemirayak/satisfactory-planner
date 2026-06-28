@@ -26,6 +26,7 @@ export type PersistedState = Pick<
   | 'workbenches'
   | 'extractors'
   | 'spacers'
+  | 'conveyors'
   | 'products'
   | 'materials'
   | 'recipes'
@@ -39,6 +40,7 @@ const PERSISTED_KEYS: ReadonlyArray<keyof PersistedState> = [
   'workbenches',
   'extractors',
   'spacers',
+  'conveyors',
   'products',
   'materials',
   'recipes',
@@ -61,6 +63,7 @@ function pickPersisted(state: RootState): PersistedState {
     workbenches: state.workbenches,
     extractors: state.extractors,
     spacers: state.spacers,
+    conveyors: state.conveyors,
     products: state.products,
     materials: state.materials,
     recipes: state.recipes,
@@ -75,14 +78,40 @@ function pickPersisted(state: RootState): PersistedState {
  * - Placements gained `quantity` (default 1), `recipeId` (null), `configs` ([]).
  * - Workbenches gained `sloopSlots` (default 1).
  * - Spacers/recipes slices didn't exist (fall back to initial).
+ * - Conveyors slice added later — seed older saves with the default belts.
  */
 function migrate(raw: Record<string, unknown>): void {
+  if (!raw.conveyors) {
+    const seed = (defaultProject as { data?: { conveyors?: unknown } }).data
+      ?.conveyors
+    raw.conveyors = seed ? structuredClone(seed) : { items: [] }
+  }
+
   const workbenches = raw.workbenches as
     | { items?: Array<Record<string, unknown>> }
     | undefined
   if (workbenches?.items) {
     for (const wb of workbenches.items) {
       if (typeof wb.sloopSlots !== 'number') wb.sloopSlots = 1
+      if (typeof wb.depth !== 'number') wb.depth = 8
+    }
+  }
+
+  // Early seed exported extractors with { w, h } instead of { width, height }.
+  const extractors = raw.extractors as
+    | { items?: Array<Record<string, unknown>> }
+    | undefined
+  if (extractors?.items) {
+    for (const e of extractors.items) {
+      if (e.width === undefined && typeof e.w === 'number') {
+        e.width = e.w
+        delete e.w
+      }
+      if (e.height === undefined && typeof e.h === 'number') {
+        e.height = e.h
+        delete e.h
+      }
+      if (typeof e.depth !== 'number') e.depth = 8
     }
   }
 

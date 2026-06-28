@@ -16,8 +16,11 @@ const initialState: WorkbenchesState = {
   items: [],
 }
 
+// Dimensions allow decimals (real building footprints, e.g. 9.9 m).
 const clampDim = (value: number): number =>
-  Math.min(MAX_WORKBENCH_DIM, Math.max(MIN_WORKBENCH_DIM, Math.round(value)))
+  Number.isFinite(value)
+    ? Math.min(MAX_WORKBENCH_DIM, Math.max(MIN_WORKBENCH_DIM, value))
+    : MIN_WORKBENCH_DIM
 
 const clampSloopSlots = (value: number): number =>
   Math.min(
@@ -35,6 +38,7 @@ const workbenchesSlice = createSlice({
         state.items.push({
           ...wb,
           width: clampDim(wb.width),
+          depth: clampDim(wb.depth),
           height: clampDim(wb.height),
           sloopSlots: clampSloopSlots(wb.sloopSlots),
         })
@@ -53,6 +57,7 @@ const workbenchesSlice = createSlice({
       if (changes.name !== undefined) wb.name = changes.name
       if (changes.color !== undefined) wb.color = changes.color
       if (changes.width !== undefined) wb.width = clampDim(changes.width)
+      if (changes.depth !== undefined) wb.depth = clampDim(changes.depth)
       if (changes.height !== undefined) wb.height = clampDim(changes.height)
       if (changes.sloopSlots !== undefined)
         wb.sloopSlots = clampSloopSlots(changes.sloopSlots)

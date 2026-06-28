@@ -16,8 +16,11 @@ const initialState: ExtractorsState = {
   items: [],
 }
 
+// Dimensions allow decimals (real footprints, e.g. Water Extractor 19.5 m).
 const clampDim = (v: number): number =>
-  Math.min(MAX_EXTRACTOR_DIM, Math.max(MIN_EXTRACTOR_DIM, Math.round(v)))
+  Number.isFinite(v)
+    ? Math.min(MAX_EXTRACTOR_DIM, Math.max(MIN_EXTRACTOR_DIM, v))
+    : MIN_EXTRACTOR_DIM
 
 const clampRate = (v: number): number =>
   Number.isFinite(v)
@@ -34,6 +37,7 @@ const extractorsSlice = createSlice({
         state.items.push({
           ...e,
           width: clampDim(e.width),
+          depth: clampDim(e.depth),
           height: clampDim(e.height),
           baseRate: clampRate(e.baseRate),
         })
@@ -52,6 +56,7 @@ const extractorsSlice = createSlice({
       if (changes.name !== undefined) e.name = changes.name
       if (changes.color !== undefined) e.color = changes.color
       if (changes.width !== undefined) e.width = clampDim(changes.width)
+      if (changes.depth !== undefined) e.depth = clampDim(changes.depth)
       if (changes.height !== undefined) e.height = clampDim(changes.height)
       if (changes.baseRate !== undefined) e.baseRate = clampRate(changes.baseRate)
     },

@@ -3,6 +3,7 @@ import { NavLink, Navigate, Route, Routes } from 'react-router-dom'
 import { PATHS } from '@/app/paths'
 import FloorPlanPage from '@/pages/FloorPlanPage'
 import ProductionPage from '@/pages/ProductionPage'
+import { ConveyorManager } from '@/features/conveyors'
 import { ExtractorManager } from '@/features/extractors'
 import { MaterialManager } from '@/features/materials'
 import { ProductManager } from '@/features/products'
@@ -39,6 +40,9 @@ function App() {
           <NavLink to={PATHS.spacers} className={navLinkClass}>
             Spacers
           </NavLink>
+          <NavLink to={PATHS.conveyors} className={navLinkClass}>
+            Conveyors
+          </NavLink>
           <NavLink to={PATHS.materials} className={navLinkClass}>
             Materials
           </NavLink>
@@ -65,6 +69,7 @@ function App() {
           <Route path={PATHS.workbenches} element={<WorkbenchManager />} />
           <Route path={PATHS.extractors} element={<ExtractorManager />} />
           <Route path={PATHS.spacers} element={<SpacerManager />} />
+          <Route path={PATHS.conveyors} element={<ConveyorManager />} />
           <Route path={PATHS.materials} element={<MaterialManager />} />
           <Route path={PATHS.products} element={<ProductManager />} />
           <Route path={PATHS.recipes} element={<RecipeManager />} />

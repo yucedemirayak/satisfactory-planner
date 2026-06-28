@@ -5,6 +5,7 @@ import { WorkbenchPreview } from '@/features/workbenches'
 
 import {
   DEFAULT_EXTRACTOR_BASE_RATE,
+  DEFAULT_EXTRACTOR_DEPTH,
   DEFAULT_EXTRACTOR_HEIGHT,
   DEFAULT_EXTRACTOR_WIDTH,
   EXTRACTOR_PALETTE,
@@ -26,15 +27,17 @@ export function ExtractorForm() {
 
   const [name, setName] = useState('')
   const [width, setWidth] = useState(DEFAULT_EXTRACTOR_WIDTH)
+  const [depth, setDepth] = useState(DEFAULT_EXTRACTOR_DEPTH)
   const [height, setHeight] = useState(DEFAULT_EXTRACTOR_HEIGHT)
   const [baseRate, setBaseRate] = useState(DEFAULT_EXTRACTOR_BASE_RATE)
   const [color, setColor] = useState<string>(nextColor)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    dispatch(extractorAdded({ name, width, height, baseRate, color }))
+    dispatch(extractorAdded({ name, width, depth, height, baseRate, color }))
     setName('')
     setWidth(DEFAULT_EXTRACTOR_WIDTH)
+    setDepth(DEFAULT_EXTRACTOR_DEPTH)
     setHeight(DEFAULT_EXTRACTOR_HEIGHT)
     setBaseRate(DEFAULT_EXTRACTOR_BASE_RATE)
     const next =
@@ -69,15 +72,28 @@ export function ExtractorForm() {
         </label>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 gap-3">
         <label className="flex flex-col gap-1">
           <span className="text-xs font-medium text-gray-400">Width (m)</span>
           <input
             type="number"
             min={MIN_EXTRACTOR_DIM}
             max={MAX_EXTRACTOR_DIM}
+            step="any"
             value={width}
             onChange={(e) => setWidth(Number(e.target.value))}
+            className={`${inputClass} font-mono`}
+          />
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="text-xs font-medium text-gray-400">Depth (m)</span>
+          <input
+            type="number"
+            min={MIN_EXTRACTOR_DIM}
+            max={MAX_EXTRACTOR_DIM}
+            step="any"
+            value={depth}
+            onChange={(e) => setDepth(Number(e.target.value))}
             className={`${inputClass} font-mono`}
           />
         </label>
@@ -87,6 +103,7 @@ export function ExtractorForm() {
             type="number"
             min={MIN_EXTRACTOR_DIM}
             max={MAX_EXTRACTOR_DIM}
+            step="any"
             value={height}
             onChange={(e) => setHeight(Number(e.target.value))}
             className={`${inputClass} font-mono`}

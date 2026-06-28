@@ -6,8 +6,10 @@ export interface Workbench {
   /** Stable unique id. */
   id: string
   name: string
-  /** Width in metres. */
+  /** Width in metres (the longer horizontal footprint side — along the floor). */
   width: number
+  /** Depth in metres (the other horizontal side — into the floor). */
+  depth: number
   /** Height in metres. */
   height: number
   /** Max somersloop slots per machine (production amplification). */

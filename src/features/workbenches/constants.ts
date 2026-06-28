@@ -1,6 +1,7 @@
 /** Workbench domain constants. Dimensions are in metres. */
 
 export const DEFAULT_WORKBENCH_WIDTH = 8
+export const DEFAULT_WORKBENCH_DEPTH = 8
 export const DEFAULT_WORKBENCH_HEIGHT = 4
 
 export const MIN_WORKBENCH_DIM = 1
