@@ -1,5 +1,6 @@
 import { combineReducers, configureStore, type Action } from '@reduxjs/toolkit'
 
+import connectionsReducer from '@/features/connections/connectionsSlice'
 import conveyorsReducer from '@/features/conveyors/conveyorsSlice'
 import extractorsReducer from '@/features/extractors/extractorsSlice'
 import floorsReducer from '@/features/floors/floorsSlice'
@@ -20,6 +21,7 @@ const combinedReducer = combineReducers({
   extractors: extractorsReducer,
   spacers: spacersReducer,
   conveyors: conveyorsReducer,
+  connections: connectionsReducer,
   products: productsReducer,
   materials: materialsReducer,
   recipes: recipesReducer,

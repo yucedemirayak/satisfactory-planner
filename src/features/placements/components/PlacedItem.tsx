@@ -2,6 +2,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
+import {
+  connectionAdded,
+  connectionSourceSet,
+} from '@/features/connections/connectionsSlice'
+import { selectConnectionSource } from '@/features/connections/selectors'
 import { selectPxPerMeter } from '@/features/floors/selectors'
 
 import type { PlacementDragData } from '../dnd'
@@ -49,6 +54,8 @@ export function PlacedItem({
   )
   const selected = useAppSelector(selectSelectedPlacementId) === placement.id
   const pxPerMeter = useAppSelector(selectPxPerMeter)
+  const pendingFrom = useAppSelector(selectConnectionSource)
+  const defaultConveyorId = useAppSelector((s) => s.conveyors.items[0]?.id ?? '')
 
   const data: PlacementDragData = {
     type: 'placement',
@@ -77,10 +84,32 @@ export function PlacedItem({
   // Conveyor ports for an assigned recipe: one node per input (left) / output
   // (right), like the machine's belt connections.
   const showPorts = Boolean(box) && !isExtractor && recipe
-  const inputCount = recipe ? recipe.inputs.filter((i) => i.refId).length : 0
-  const outputCount = recipe ? recipe.outputs.filter((o) => o.refId).length : 0
+  const inputPorts = recipe ? recipe.inputs.filter((i) => i.refId) : []
+  const outputPorts = recipe ? recipe.outputs.filter((o) => o.refId) : []
   // Extractors have a single output (their material) — shown dead-centre.
   const showExtractorPort = isExtractor && Boolean(placement.materialId)
+
+  // Two-click wiring: click an output (source), then a matching input (target).
+  const portBase = 'cursor-pointer rounded-full ring-1 transition hover:scale-125'
+  const pickSource = (port: number, refId: string) =>
+    dispatch(connectionSourceSet({ placementId: placement.id, port, refId }))
+  const completeTo = (port: number, refId: string) => {
+    if (
+      !pendingFrom ||
+      pendingFrom.placementId === placement.id ||
+      pendingFrom.refId !== refId
+    )
+      return
+    dispatch(
+      connectionAdded({
+        fromPlacementId: pendingFrom.placementId,
+        fromPort: pendingFrom.port,
+        toPlacementId: placement.id,
+        toPort: port,
+        conveyorId: defaultConveyorId,
+      }),
+    )
+  }
 
   const baseStyle = {
     transform: CSS.Translate.toString(transform),
@@ -140,29 +169,65 @@ export function PlacedItem({
           {`${def.width}m`}
         </span>
       )}
-      {showPorts && inputCount > 0 && (
-        <span className="pointer-events-none absolute inset-y-0 left-0 flex flex-col items-center justify-center gap-0.5">
-          {Array.from({ length: inputCount }, (_, i) => (
-            <span
-              key={i}
-              className="size-1.5 rounded-full bg-sky-400 ring-1 ring-sky-200/40"
-            />
-          ))}
+      {showPorts && inputPorts.length > 0 && (
+        <span className="absolute inset-y-0 left-0 flex flex-col items-center justify-center gap-1">
+          {inputPorts.map((line, i) => {
+            const valid =
+              pendingFrom != null &&
+              pendingFrom.placementId !== placement.id &&
+              pendingFrom.refId === line.refId
+            return (
+              <button
+                key={i}
+                type="button"
+                data-port={`${placement.id}::in::${i}`}
+                aria-label="Input port"
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  completeTo(i, line.refId)
+                }}
+                className={`size-2.5 bg-sky-400 ${portBase} ${valid ? 'scale-125 ring-2 ring-emerald-400' : 'ring-sky-200/50'}`}
+              />
+            )
+          })}
         </span>
       )}
-      {showPorts && outputCount > 0 && (
-        <span className="pointer-events-none absolute inset-y-0 right-0 flex flex-col items-center justify-center gap-0.5">
-          {Array.from({ length: outputCount }, (_, i) => (
-            <span
-              key={i}
-              className="size-1.5 rounded-full bg-ficsit ring-1 ring-ficsit/40"
-            />
-          ))}
+      {showPorts && outputPorts.length > 0 && (
+        <span className="absolute inset-y-0 right-0 flex flex-col items-center justify-center gap-1">
+          {outputPorts.map((line, i) => {
+            const isSrc =
+              pendingFrom?.placementId === placement.id && pendingFrom.port === i
+            return (
+              <button
+                key={i}
+                type="button"
+                data-port={`${placement.id}::out::${i}`}
+                aria-label="Output port"
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  pickSource(i, line.refId)
+                }}
+                className={`size-2.5 bg-ficsit ${portBase} ${isSrc ? 'scale-125 ring-2 ring-ficsit' : 'ring-ficsit/50'}`}
+              />
+            )
+          })}
         </span>
       )}
       {showExtractorPort && (
-        <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <span className="size-1.5 rounded-full bg-ficsit ring-1 ring-ficsit/40" />
+        <span className="absolute inset-0 flex items-center justify-center">
+          <button
+            type="button"
+            data-port={`${placement.id}::out::0`}
+            aria-label="Output port"
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation()
+              pickSource(0, placement.materialId ?? '')
+            }}
+            className={`size-2.5 bg-ficsit ${portBase} ${pendingFrom?.placementId === placement.id ? 'scale-125 ring-2 ring-ficsit' : 'ring-ficsit/50'}`}
+          />
         </span>
       )}
       {box && (

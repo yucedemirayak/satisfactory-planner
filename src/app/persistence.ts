@@ -31,6 +31,7 @@ export type PersistedState = Pick<
   | 'materials'
   | 'recipes'
   | 'placements'
+  | 'connections'
   | 'production'
 >
 
@@ -45,6 +46,7 @@ const PERSISTED_KEYS: ReadonlyArray<keyof PersistedState> = [
   'materials',
   'recipes',
   'placements',
+  'connections',
   'production',
 ]
 
@@ -68,6 +70,7 @@ function pickPersisted(state: RootState): PersistedState {
     materials: state.materials,
     recipes: state.recipes,
     placements: state.placements,
+    connections: state.connections,
     production: state.production,
   }
 }
@@ -85,6 +88,15 @@ function migrate(raw: Record<string, unknown>): void {
     const seed = (defaultProject as { data?: { conveyors?: unknown } }).data
       ?.conveyors
     raw.conveyors = seed ? structuredClone(seed) : { items: [] }
+  }
+
+  // Connections slice added later; always reset transient UI (pendingFrom /
+  // selectedId) on load, keeping any saved links.
+  const conn = raw.connections as { items?: unknown } | undefined
+  raw.connections = {
+    items: Array.isArray(conn?.items) ? conn.items : [],
+    pendingFrom: null,
+    selectedId: null,
   }
 
   const workbenches = raw.workbenches as

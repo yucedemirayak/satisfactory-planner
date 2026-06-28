@@ -14,7 +14,7 @@ import {
   type DropAnimation,
 } from '@dnd-kit/core'
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import {
@@ -39,6 +39,13 @@ import {
   type DropData,
 } from '@/features/placements'
 import type { PlacementKind } from '@/features/placements/types'
+import {
+  ConnectionInspector,
+  ConnectionLayer,
+  connectionSelected,
+  connectionSourceCleared,
+  selectConnectionSource,
+} from '@/features/connections'
 import { selectExtractors } from '@/features/extractors'
 import { selectSpacers } from '@/features/spacers'
 import { selectWorkbenches } from '@/features/workbenches/selectors'
@@ -76,6 +83,8 @@ function FloorPlanPage() {
   const count = useAppSelector(selectFloorCount)
   const totalHeight = useAppSelector(selectTotalHeight)
   const footprint = useAppSelector(selectFactoryFootprint)
+  const pendingFrom = useAppSelector(selectConnectionSource)
+  const contentRef = useRef<HTMLDivElement | null>(null)
   const byFloor = useAppSelector(selectPlacementsByFloor)
   const workbenches = useAppSelector(selectWorkbenches)
   const extractors = useAppSelector(selectExtractors)
@@ -83,6 +92,17 @@ function FloorPlanPage() {
   const pxPerMeter = useAppSelector(selectPxPerMeter)
   const [activeDrag, setActiveDrag] = useState<ActiveDrag | null>(null)
   const [dropTarget, setDropTarget] = useState<DropTarget | null>(null)
+
+  // Esc cancels a mid-wiring source pick and deselects any connection.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      dispatch(connectionSourceCleared())
+      dispatch(connectionSelected(null))
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [dispatch])
 
   const sensors = useSensors(
     // Mouse: small drag distance starts a drag.
@@ -237,32 +257,43 @@ function FloorPlanPage() {
           </div>
         </header>
 
+        {pendingFrom && (
+          <p className="rounded-md border border-ficsit/40 bg-ficsit/10 px-3 py-1.5 text-sm text-ficsit">
+            Pick a matching <span className="font-medium">input</span> port to
+            connect — or press Esc to cancel.
+          </p>
+        )}
+
         <div className="grid min-h-0 flex-1 grid-cols-[13rem_1fr_18rem] gap-4">
           <Palette />
 
           <div className="min-h-0 overflow-auto rounded-lg border border-edge bg-surface-1 p-4">
-            <FloorStack
-              renderFloorContent={(floor) => {
-                // Open a gap only when the dragged item is *incoming* to this
-                // floor (palette, or moved from another floor). Same-floor
-                // reordering is handled by dnd-kit's native sortable shifting.
-                const isTarget = dropTarget?.floorId === floor.id
-                const incoming =
-                  activeDrag !== null && activeDrag.sourceFloorId !== floor.id
-                return (
-                  <FloorDropArea
-                    floorId={floor.id}
-                    gapIndex={isTarget && incoming ? dropTarget.index : null}
-                    gapWidth={activeDrag?.width ?? 0}
-                  />
-                )
-              }}
-            />
+            <div ref={contentRef} className="relative w-max min-w-full">
+              <FloorStack
+                renderFloorContent={(floor) => {
+                  // Open a gap only when the dragged item is *incoming* to this
+                  // floor (palette, or moved from another floor). Same-floor
+                  // reordering is handled by dnd-kit's native sortable shifting.
+                  const isTarget = dropTarget?.floorId === floor.id
+                  const incoming =
+                    activeDrag !== null && activeDrag.sourceFloorId !== floor.id
+                  return (
+                    <FloorDropArea
+                      floorId={floor.id}
+                      gapIndex={isTarget && incoming ? dropTarget.index : null}
+                      gapWidth={activeDrag?.width ?? 0}
+                    />
+                  )
+                }}
+              />
+              <ConnectionLayer containerRef={contentRef} />
+            </div>
           </div>
 
           <div className="flex min-h-0 flex-col gap-4 overflow-y-auto">
             <FloorInspector />
             <PlacementInspector />
+            <ConnectionInspector />
           </div>
         </div>
       </section>
