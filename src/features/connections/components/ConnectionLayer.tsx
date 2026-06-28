@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState, type RefObject } from 'react'
+import { useEffect, useState, type RefObject } from 'react'
 
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import { selectPxPerMeter } from '@/features/floors/selectors'
@@ -44,31 +44,40 @@ export function ConnectionLayer({
   const [tick, setTick] = useState(0)
 
   // Re-measure port positions whenever layout-affecting state changes.
-  useLayoutEffect(() => {
+  useEffect(() => {
     const container = containerRef.current
     if (!container) {
       setSegments([])
       return
     }
-    const crect = container.getBoundingClientRect()
-    const next: Segment[] = []
-    for (const v of views) {
-      const a = portCenter(container, crect, `${v.fromPlacementId}::out::${v.fromPort}`)
-      const b = portCenter(container, crect, `${v.toPlacementId}::in::${v.toPort}`)
-      if (!a || !b) continue
-      const dx = Math.max(24, Math.abs(b.x - a.x) * 0.4)
-      next.push({
-        id: v.id,
-        d: `M ${a.x} ${a.y} C ${a.x + dx} ${a.y}, ${b.x - dx} ${b.y}, ${b.x} ${b.y}`,
-        over: v.overCapacity,
-        selected: v.id === selectedId,
-      })
+    const measure = () => {
+      const crect = container.getBoundingClientRect()
+      const next: Segment[] = []
+      for (const v of views) {
+        const a = portCenter(container, crect, `${v.fromPlacementId}::out::${v.fromPort}`)
+        const b = portCenter(container, crect, `${v.toPlacementId}::in::${v.toPort}`)
+        if (!a || !b) continue
+        const dx = Math.max(24, Math.abs(b.x - a.x) * 0.4)
+        next.push({
+          id: v.id,
+          d: `M ${a.x} ${a.y} C ${a.x + dx} ${a.y}, ${b.x - dx} ${b.y}, ${b.x} ${b.y}`,
+          over: v.overCapacity,
+          selected: v.id === selectedId,
+        })
+      }
+      setSegments(next)
     }
-    setSegments(next)
+    measure()
+    // Re-measure after paint: on the first open the layout (grid/flex sizing,
+    // fonts) may not be settled when this effect first runs, so ports report
+    // wrong/zero positions and lines don't render until an unrelated re-render.
+    // A next-frame pass fixes the initial render.
+    const raf = requestAnimationFrame(measure)
+    return () => cancelAnimationFrame(raf)
   }, [views, byFloor, floors, pxPerMeter, selectedId, containerRef, tick])
 
   // Re-measure on container/window resize (wrapping, scrollbar, zoom of page).
-  useLayoutEffect(() => {
+  useEffect(() => {
     const container = containerRef.current
     if (!container) return
     const ro = new ResizeObserver(() => setTick((t) => t + 1))
