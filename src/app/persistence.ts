@@ -1,3 +1,5 @@
+import defaultProject from '@/data/defaultProject.json'
+
 import type { RootState } from './store'
 
 /**
@@ -129,15 +131,31 @@ function migrate(raw: Record<string, unknown>): void {
 }
 
 export function loadState(): PersistedState | undefined {
-  if (typeof localStorage === 'undefined') return undefined
+  if (typeof localStorage === 'undefined') return getDefaultProject()
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return undefined
+    // First run (nothing saved yet) → seed from the bundled default project.
+    if (!raw) return getDefaultProject()
     const parsed = JSON.parse(raw) as Record<string, unknown>
     migrate(parsed)
     return parsed as unknown as PersistedState
   } catch (error) {
     if (import.meta.env.DEV) console.warn('Failed to load persisted state', error)
+    return undefined
+  }
+}
+
+/**
+ * The bundled Satisfactory catalogue (workbenches, extractors, materials,
+ * products, recipes — no floor plan). Used both as the first-run seed and by
+ * the "Reset to default" action. Cloned before migrating so the imported module
+ * object stays pristine. Returns undefined (→ empty state) on failure.
+ */
+export function getDefaultProject(): PersistedState | undefined {
+  try {
+    return coerceProject(structuredClone(defaultProject as unknown))
+  } catch (error) {
+    if (import.meta.env.DEV) console.warn('Failed to load default project', error)
     return undefined
   }
 }
@@ -173,7 +191,15 @@ export function parseProjectFile(text: string): PersistedState {
   } catch {
     throw new Error("This file isn't valid JSON.")
   }
+  return coerceProject(parsed)
+}
 
+/**
+ * Validate + migrate an already-parsed project object into hydratable state.
+ * Accepts both the metadata envelope and a bare state object (e.g. hand-edited
+ * or the bundled default). Throws a user-facing Error on anything unusable.
+ */
+function coerceProject(parsed: unknown): PersistedState {
   if (!parsed || typeof parsed !== 'object') {
     throw new Error('Unrecognised project file.')
   }

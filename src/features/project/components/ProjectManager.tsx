@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 import { useAppDispatch, useAppSelector, useAppStore } from '@/app/hooks'
 import { appStateImported } from '@/app/appActions'
 import {
+  getDefaultProject,
   parseProjectFile,
   serializeProject,
   type PersistedState,
@@ -57,6 +58,7 @@ export function ProjectManager() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [pending, setPending] = useState<PendingImport | null>(null)
   const [notice, setNotice] = useState<Notice>(null)
+  const [resetArmed, setResetArmed] = useState(false)
 
   const handleExport = () => {
     downloadProjectFile(serializeProject(store.getState()))
@@ -91,6 +93,17 @@ export function ProjectManager() {
       message: `Imported "${pending.fileName}".`,
     })
     setPending(null)
+  }
+
+  const confirmReset = () => {
+    const data = getDefaultProject()
+    setResetArmed(false)
+    if (!data) {
+      setNotice({ type: 'error', message: 'Default project is unavailable.' })
+      return
+    }
+    dispatch(appStateImported(data))
+    setNotice({ type: 'success', message: 'Reset to the default project.' })
   }
 
   return (
@@ -187,6 +200,45 @@ export function ProjectManager() {
               className="mt-auto rounded-md border border-edge bg-surface-2 px-3 py-2 text-sm font-semibold text-gray-200 transition hover:border-ficsit/50 hover:text-gray-100"
             >
               Choose file…
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Danger zone */}
+      <div className="rounded-lg border border-red-500/40 bg-red-500/5 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="font-semibold text-red-300">Reset to default</h2>
+            <p className="text-sm text-gray-500">
+              Restore the bundled catalogue and clear your floor plan — the
+              first-run state. This can't be undone.
+            </p>
+          </div>
+          {resetArmed ? (
+            <div className="flex shrink-0 gap-2">
+              <button
+                type="button"
+                onClick={confirmReset}
+                className="rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white transition hover:brightness-110"
+              >
+                Yes, reset everything
+              </button>
+              <button
+                type="button"
+                onClick={() => setResetArmed(false)}
+                className="rounded-md border border-edge px-3 py-2 text-sm font-medium text-gray-300 transition hover:bg-surface-2"
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setResetArmed(true)}
+              className="shrink-0 rounded-md border border-red-500/50 px-3 py-2 text-sm font-semibold text-red-300 transition hover:bg-red-500/15"
+            >
+              Reset to default
             </button>
           )}
         </div>
