@@ -2,10 +2,13 @@ import { createSlice, nanoid, type PayloadAction } from '@reduxjs/toolkit'
 
 import {
   DEFAULT_FLOOR_HEIGHT,
+  DEFAULT_GRID_SIZE,
   DEFAULT_PX_PER_METER,
   MAX_FLOOR_HEIGHT,
+  MAX_GRID_SIZE,
   MAX_PX_PER_METER,
   MIN_FLOOR_HEIGHT,
+  MIN_GRID_SIZE,
   MIN_PX_PER_METER,
 } from './constants'
 import type { Floor, InsertPosition } from './types'
@@ -17,6 +20,8 @@ export interface FloorsState {
   selectedId: string | null
   /** Floor-plan scale in pixels per metre (user-adjustable zoom). */
   pxPerMeter: number
+  /** Grid snap resolution in metres for placing items along a floor. */
+  gridSize: number
 }
 
 const initialState: FloorsState = {
@@ -24,6 +29,7 @@ const initialState: FloorsState = {
   items: [],
   selectedId: null,
   pxPerMeter: DEFAULT_PX_PER_METER,
+  gridSize: DEFAULT_GRID_SIZE,
 }
 
 const clampHeight = (height: number): number =>
@@ -33,6 +39,11 @@ const clampPxPerMeter = (value: number): number =>
   Number.isFinite(value)
     ? Math.min(MAX_PX_PER_METER, Math.max(MIN_PX_PER_METER, Math.round(value)))
     : DEFAULT_PX_PER_METER
+
+const clampGridSize = (value: number): number =>
+  Number.isFinite(value) && value > 0
+    ? Math.min(MAX_GRID_SIZE, Math.max(MIN_GRID_SIZE, value))
+    : DEFAULT_GRID_SIZE
 
 /** Resolve an InsertPosition to a concrete array index for the current list. */
 const resolveIndex = (items: Floor[], position: InsertPosition): number => {
@@ -94,6 +105,9 @@ const floorsSlice = createSlice({
     pxPerMeterChanged(state, action: PayloadAction<number>) {
       state.pxPerMeter = clampPxPerMeter(action.payload)
     },
+    gridSizeChanged(state, action: PayloadAction<number>) {
+      state.gridSize = clampGridSize(action.payload)
+    },
   },
 })
 
@@ -104,6 +118,7 @@ export const {
   floorHeightChanged,
   floorRenamed,
   pxPerMeterChanged,
+  gridSizeChanged,
 } = floorsSlice.actions
 
 export default floorsSlice.reducer

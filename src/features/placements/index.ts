@@ -19,7 +19,7 @@ export {
   placementConfigChanged,
   placementConfigRemoved,
 } from './placementsSlice'
-export { selectPlacementsByFloor } from './selectors'
+export { selectPlacementsByFloor, selectOverlappingPlacementIds } from './selectors'
 export { placementFactors, extractorRate } from './calc'
 export { selectProductionBalance } from './balance'
 export type { ProductBalance } from './balance'

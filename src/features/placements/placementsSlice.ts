@@ -80,6 +80,8 @@ const validateSelection = (state: PlacementsState): void => {
   }
 }
 
+const clampX = (x: number): number => (Number.isFinite(x) ? Math.max(0, x) : 0)
+
 /** Remove a placement by id from anywhere and return it. */
 const extract = (
   state: PlacementsState,
@@ -93,23 +95,6 @@ const extract = (
   return undefined
 }
 
-/**
- * Insert a placement into a floor relative to `overId`. With `after` it lands
- * just after the target, otherwise just before. A null/unknown `overId` appends.
- */
-const insert = (
-  state: PlacementsState,
-  floorId: string,
-  placement: Placement,
-  overId: string | null,
-  after: boolean,
-): void => {
-  const list = (state.byFloor[floorId] ??= [])
-  const at = overId ? list.findIndex((p) => p.id === overId) : -1
-  if (at === -1) list.push(placement)
-  else list.splice(at + (after ? 1 : 0), 0, placement)
-}
-
 const placementsSlice = createSlice({
   name: 'placements',
   initialState,
@@ -117,23 +102,17 @@ const placementsSlice = createSlice({
     placementAdded: {
       reducer(
         state,
-        action: PayloadAction<{
-          placement: Placement
-          floorId: string
-          overId: string | null
-          after: boolean
-        }>,
+        action: PayloadAction<{ placement: Placement; floorId: string }>,
       ) {
-        const { placement, floorId, overId, after } = action.payload
-        insert(state, floorId, placement, overId, after)
+        const { placement, floorId } = action.payload
+        ;(state.byFloor[floorId] ??= []).push(placement)
         state.selectedId = placement.id
       },
       prepare(args: {
         kind: PlacementKind
         refId: string
         floorId: string
-        overId: string | null
-        after: boolean
+        x: number
       }) {
         return {
           payload: {
@@ -141,6 +120,7 @@ const placementsSlice = createSlice({
               id: nanoid(),
               kind: args.kind,
               refId: args.refId,
+              x: clampX(args.x),
               quantity: DEFAULT_PLACEMENT_QUANTITY,
               recipeId: null,
               configs: [],
@@ -149,24 +129,24 @@ const placementsSlice = createSlice({
               tier: DEFAULT_TIER,
             },
             floorId: args.floorId,
-            overId: args.overId,
-            after: args.after,
           },
         }
       },
     },
+    /** Move a placement to a floor at a snapped x position (free placement). */
     placementMoved(
       state,
       action: PayloadAction<{
         placementId: string
         toFloorId: string
-        overId: string | null
-        after: boolean
+        x: number
       }>,
     ) {
-      const { placementId, toFloorId, overId, after } = action.payload
+      const { placementId, toFloorId, x } = action.payload
       const placement = extract(state, placementId)
-      if (placement) insert(state, toFloorId, placement, overId, after)
+      if (!placement) return
+      placement.x = clampX(x)
+      ;(state.byFloor[toFloorId] ??= []).push(placement)
     },
     placementRemoved(state, action: PayloadAction<string>) {
       extract(state, action.payload)

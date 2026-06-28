@@ -99,6 +99,10 @@ function migrate(raw: Record<string, unknown>): void {
     selectedId: null,
   }
 
+  // Floor-plan grid added later — default the snap size.
+  const floors = raw.floors as { gridSize?: unknown } | undefined
+  if (floors && typeof floors.gridSize !== 'number') floors.gridSize = 1
+
   const workbenches = raw.workbenches as
     | { items?: Array<Record<string, unknown>> }
     | undefined
@@ -154,20 +158,54 @@ function migrate(raw: Record<string, unknown>): void {
     | undefined
   const byFloor = placements?.byFloor
   if (!byFloor) return
+
+  // Width lookups (metres) to convert the old ordered sequence into grid x's.
+  const widthMap = (items?: Array<Record<string, unknown>>): Map<string, number> =>
+    new Map(
+      (items ?? [])
+        .filter((it) => typeof it.id === 'string')
+        .map((it) => [it.id as string, typeof it.width === 'number' ? it.width : 0]),
+    )
+  const wbWidth = widthMap(workbenches?.items)
+  const exWidth = widthMap(extractors?.items)
+  const spWidth = widthMap(
+    (raw.spacers as { items?: Array<Record<string, unknown>> } | undefined)?.items,
+  )
+  const widthOf = (p: Record<string, unknown>): number => {
+    const refId = p.refId as string
+    if (p.kind === 'workbench') return wbWidth.get(refId) ?? 0
+    if (p.kind === 'extractor') return exWidth.get(refId) ?? 0
+    return spWidth.get(refId) ?? 0
+  }
+
+  // Grid migration: walk the old left→right order, assigning each item an `x`
+  // (metres) from the running cursor. Spacers are dropped but their width still
+  // advances the cursor, so the gaps they created are preserved as empty grid.
   for (const floorId of Object.keys(byFloor)) {
-    byFloor[floorId] = byFloor[floorId].map((p) => {
-      const next: Record<string, unknown> =
+    let cursor = 0
+    const next: Array<Record<string, unknown>> = []
+    for (const p of byFloor[floorId]) {
+      const norm: Record<string, unknown> =
         'workbenchId' in p && !('kind' in p)
           ? { id: p.id, kind: 'workbench', refId: p.workbenchId }
           : { ...p }
-      if (typeof next.quantity !== 'number') next.quantity = 1
-      if (next.recipeId === undefined) next.recipeId = null
-      if (!Array.isArray(next.configs)) next.configs = []
-      if (next.materialId === undefined) next.materialId = null
-      if (next.purity === undefined) next.purity = 'normal'
-      if (typeof next.tier !== 'number') next.tier = 1
-      return next
-    })
+      if (typeof norm.quantity !== 'number') norm.quantity = 1
+      if (norm.recipeId === undefined) norm.recipeId = null
+      if (!Array.isArray(norm.configs)) norm.configs = []
+      if (norm.materialId === undefined) norm.materialId = null
+      if (norm.purity === undefined) norm.purity = 'normal'
+      if (typeof norm.tier !== 'number') norm.tier = 1
+
+      const w = widthOf(norm)
+      if (norm.kind === 'spacer') {
+        cursor += w // drop the spacer, keep the gap it made
+        continue
+      }
+      if (typeof norm.x !== 'number') norm.x = cursor
+      cursor = (norm.x as number) + w
+      next.push(norm)
+    }
+    byFloor[floorId] = next
   }
 }
 

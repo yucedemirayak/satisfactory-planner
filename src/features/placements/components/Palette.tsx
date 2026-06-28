@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import { useAppSelector } from '@/app/hooks'
 import { PATHS } from '@/app/paths'
 import { extractorLabel, selectExtractors } from '@/features/extractors'
-import { selectSpacers, spacerLabel } from '@/features/spacers'
 import { workbenchLabel } from '@/features/workbenches/helpers'
 import { selectWorkbenches } from '@/features/workbenches/selectors'
 
@@ -21,11 +20,10 @@ function EmptyHint({ to, label }: { to: string; label: string }) {
   )
 }
 
-/** Sidebar of draggable workbenches and spacers to drop onto floors. */
+/** Sidebar of draggable workbenches and extractors to drop onto floors. */
 export function Palette() {
   const workbenches = useAppSelector(selectWorkbenches)
   const extractors = useAppSelector(selectExtractors)
-  const spacers = useAppSelector(selectSpacers)
 
   return (
     <aside className="flex h-full flex-col gap-4 overflow-y-auto rounded-lg border border-edge bg-surface-1 p-3">
@@ -91,34 +89,6 @@ export function Palette() {
               </span>
               <span className="shrink-0 font-mono text-xs text-gray-500">
                 {ex.width}×{ex.height}
-              </span>
-            </PaletteItem>
-          ))
-        )}
-      </section>
-
-      <section className="flex flex-col gap-2">
-        <div>
-          <h2 className="text-sm font-semibold tracking-wide text-gray-300 uppercase">
-            Spacers
-          </h2>
-          <p className="text-xs text-gray-500">Gaps between workbenches.</p>
-        </div>
-        {spacers.length === 0 ? (
-          <EmptyHint to={PATHS.spacers} label="Create some" />
-        ) : (
-          spacers.map((sp, i) => (
-            <PaletteItem
-              key={sp.id}
-              dndId={`palette-sp-${sp.id}`}
-              data={{ type: 'palette', kind: 'spacer', refId: sp.id }}
-            >
-              <span className="size-4 shrink-0 rounded-sm border-2 border-dashed border-gray-600" />
-              <span className="min-w-0 flex-1 truncate text-sm text-gray-200">
-                {spacerLabel(sp, i)}
-              </span>
-              <span className="shrink-0 font-mono text-xs text-gray-500">
-                {sp.width}m
               </span>
             </PaletteItem>
           ))

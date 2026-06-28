@@ -9,7 +9,6 @@ import { MaterialManager } from '@/features/materials'
 import { ProductManager } from '@/features/products'
 import { ProjectManager } from '@/features/project'
 import { RecipeManager } from '@/features/recipes'
-import { SpacerManager } from '@/features/spacers'
 import { WorkbenchManager } from '@/features/workbenches'
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
@@ -36,9 +35,6 @@ function App() {
           </NavLink>
           <NavLink to={PATHS.extractors} className={navLinkClass}>
             Extractors
-          </NavLink>
-          <NavLink to={PATHS.spacers} className={navLinkClass}>
-            Spacers
           </NavLink>
           <NavLink to={PATHS.conveyors} className={navLinkClass}>
             Conveyors
@@ -68,7 +64,6 @@ function App() {
           <Route path={PATHS.floors} element={<FloorPlanPage />} />
           <Route path={PATHS.workbenches} element={<WorkbenchManager />} />
           <Route path={PATHS.extractors} element={<ExtractorManager />} />
-          <Route path={PATHS.spacers} element={<SpacerManager />} />
           <Route path={PATHS.conveyors} element={<ConveyorManager />} />
           <Route path={PATHS.materials} element={<MaterialManager />} />
           <Route path={PATHS.products} element={<ProductManager />} />

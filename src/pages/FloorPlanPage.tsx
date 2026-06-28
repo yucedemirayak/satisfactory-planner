@@ -6,8 +6,11 @@ import {
   TouchSensor,
   closestCenter,
   defaultDropAnimationSideEffects,
+  pointerWithin,
+  rectIntersection,
   useSensor,
   useSensors,
+  type CollisionDetection,
   type DragEndEvent,
   type DragOverEvent,
   type DragStartEvent,
@@ -18,23 +21,23 @@ import { useEffect, useRef, useState } from 'react'
 
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import {
+  FloorGridControl,
   FloorInspector,
   FloorScaleControl,
   FloorStack,
   selectFloorCount,
+  selectGridSize,
   selectPxPerMeter,
   selectTotalHeight,
 } from '@/features/floors'
 import {
   DragPreview,
   FloorDropArea,
-  MIN_BLOCK_PX,
   Palette,
   PlacementInspector,
   placementAdded,
   placementMoved,
   selectFactoryFootprint,
-  selectPlacementsByFloor,
   type DragData,
   type DropData,
 } from '@/features/placements'
@@ -46,23 +49,39 @@ import {
   connectionSourceCleared,
   selectConnectionSource,
 } from '@/features/connections'
-import { selectExtractors } from '@/features/extractors'
-import { selectSpacers } from '@/features/spacers'
-import { selectWorkbenches } from '@/features/workbenches/selectors'
 
 interface DropTarget {
   floorId: string
-  /** Insertion index within the floor's placement list. */
-  index: number
+  /** Snapped left position (metres) where the dragged item would land. */
+  x: number
 }
 
 interface ActiveDrag {
   kind: PlacementKind
   refId: string
-  /** Source floor for an existing placement; null for palette items. */
-  sourceFloorId: string | null
-  /** Rendered width (px) of the dragged item, for the live drop gap. */
-  width: number
+}
+
+/**
+ * Target the plan only when the pointer is actually inside a droppable (a floor
+ * area or a placed block). Releasing anywhere else yields no collision → `over`
+ * is null → the drop is a no-op and the item stays exactly where it was. When
+ * the pointer is inside the plan we defer to closestCenter (keeps the nice
+ * insert-between ordering). Keyboard dnd has no pointer, so it falls back too.
+ */
+const collisionDetection: CollisionDetection = (args) => {
+  // Forgiving while the drag overlaps the plan — pointer inside a droppable OR
+  // the dragged item's rect intersecting any floor/block — so the live drop gap
+  // (and insert-between ordering) shows via closestCenter. Only a fully-outside
+  // release yields no collision → `over` is null → no-op drop. Keyboard dnd has
+  // no pointer, so it falls back too.
+  if (
+    pointerWithin(args).length > 0 ||
+    rectIntersection(args).length > 0 ||
+    args.pointerCoordinates == null
+  ) {
+    return closestCenter(args)
+  }
+  return []
 }
 
 /** Smooth "settle into place" on drop, with a slight overshoot. */
@@ -85,11 +104,8 @@ function FloorPlanPage() {
   const footprint = useAppSelector(selectFactoryFootprint)
   const pendingFrom = useAppSelector(selectConnectionSource)
   const contentRef = useRef<HTMLDivElement | null>(null)
-  const byFloor = useAppSelector(selectPlacementsByFloor)
-  const workbenches = useAppSelector(selectWorkbenches)
-  const extractors = useAppSelector(selectExtractors)
-  const spacers = useAppSelector(selectSpacers)
   const pxPerMeter = useAppSelector(selectPxPerMeter)
+  const gridSize = useAppSelector(selectGridSize)
   const [activeDrag, setActiveDrag] = useState<ActiveDrag | null>(null)
   const [dropTarget, setDropTarget] = useState<DropTarget | null>(null)
 
@@ -114,62 +130,27 @@ function FloorPlanPage() {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   )
 
-  /** Rendered width (px) of an item by kind+refId, for the live drop gap. */
-  const itemWidth = (kind: PlacementKind, refId: string) => {
-    const def =
-      kind === 'workbench'
-        ? workbenches.find((w) => w.id === refId)
-        : kind === 'extractor'
-          ? extractors.find((e) => e.id === refId)
-          : spacers.find((s) => s.id === refId)
-    return Math.max(MIN_BLOCK_PX, (def?.width ?? 0) * pxPerMeter)
-  }
-
   /**
-   * Resolve where a drag currently points: which floor, before/after which
-   * block (`overId`/`after`) and the resulting insertion `index`. Shared by the
-   * live drop gap (onDragOver) and the commit (onDragEnd) so they agree.
+   * Resolve a drag to a target floor + snapped left position (metres). The only
+   * droppables are floor areas (placements are free-draggable, not droppable),
+   * so `over` is always a floor. Null when released outside the plan → no-op.
    */
   const resolveDrop = (event: DragOverEvent | DragEndEvent) => {
     const { active, over } = event
     if (!over) return null
     const activeData = active.data.current as DragData | undefined
     const overData = over.data.current as DropData | undefined
-    if (!activeData || !overData) return null
-
-    const floorId = overData.floorId
-    const list = byFloor[floorId] ?? []
-
-    let overId: string | null = null
-    let after = false
-    if (overData.type === 'placement') {
-      overId = String(over.id)
-      // Pick before/after by which half of the block the drag centre is on.
-      const activeRect = active.rect.current.translated
-      if (activeRect) {
-        const activeCenterX = activeRect.left + activeRect.width / 2
-        const overCenterX = over.rect.left + over.rect.width / 2
-        after = activeCenterX > overCenterX
-      }
-    }
-
-    const overIdx = overId ? list.findIndex((p) => p.id === overId) : -1
-    const index = overIdx === -1 ? list.length : overIdx + (after ? 1 : 0)
-    return { activeData, floorId, overId, after, index }
+    const activeRect = active.rect.current.translated
+    if (!activeData || !overData || !activeRect) return null
+    // Item's left relative to the floor area, snapped to the grid.
+    const leftPx = activeRect.left - over.rect.left
+    const x = Math.max(0, Math.round(leftPx / pxPerMeter / gridSize) * gridSize)
+    return { activeData, floorId: overData.floorId, x }
   }
 
   const handleDragStart = (event: DragStartEvent) => {
     const data = event.active.data.current as DragData | undefined
-    setActiveDrag(
-      data
-        ? {
-            kind: data.kind,
-            refId: data.refId,
-            sourceFloorId: data.type === 'placement' ? data.floorId : null,
-            width: itemWidth(data.kind, data.refId),
-          }
-        : null,
-    )
+    setActiveDrag(data ? { kind: data.kind, refId: data.refId } : null)
     document.body.classList.add('dnd-dragging')
   }
 
@@ -177,10 +158,8 @@ function FloorPlanPage() {
     const res = resolveDrop(event)
     setDropTarget((prev) => {
       if (!res) return null
-      if (prev && prev.floorId === res.floorId && prev.index === res.index) {
-        return prev
-      }
-      return { floorId: res.floorId, index: res.index }
+      if (prev && prev.floorId === res.floorId && prev.x === res.x) return prev
+      return { floorId: res.floorId, x: res.x }
     })
   }
 
@@ -194,7 +173,7 @@ function FloorPlanPage() {
     resetDrag()
     const res = resolveDrop(event)
     if (!res) return
-    const { activeData, floorId, overId, after } = res
+    const { activeData, floorId, x } = res
 
     if (activeData.type === 'palette') {
       dispatch(
@@ -202,21 +181,24 @@ function FloorPlanPage() {
           kind: activeData.kind,
           refId: activeData.refId,
           floorId,
-          overId,
-          after,
+          x,
         }),
       )
     } else {
-      const placementId = String(event.active.id)
-      if (placementId === overId) return
-      dispatch(placementMoved({ placementId, toFloorId: floorId, overId, after }))
+      dispatch(
+        placementMoved({
+          placementId: String(event.active.id),
+          toFloorId: floorId,
+          x,
+        }),
+      )
     }
   }
 
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCenter}
+      collisionDetection={collisionDetection}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
@@ -231,6 +213,7 @@ function FloorPlanPage() {
             </p>
           </div>
           <div className="flex items-center gap-6">
+            <FloorGridControl />
             <FloorScaleControl />
             <dl className="flex gap-6 text-right">
               <div>
@@ -271,17 +254,22 @@ function FloorPlanPage() {
             <div ref={contentRef} className="relative w-max min-w-full">
               <FloorStack
                 renderFloorContent={(floor) => {
-                  // Open a gap only when the dragged item is *incoming* to this
-                  // floor (palette, or moved from another floor). Same-floor
-                  // reordering is handled by dnd-kit's native sortable shifting.
-                  const isTarget = dropTarget?.floorId === floor.id
-                  const incoming =
-                    activeDrag !== null && activeDrag.sourceFloorId !== floor.id
+                  // Ghost the dragged item at its snapped landing spot on the
+                  // floor the pointer is over (the original block dims in place).
+                  const showGhost =
+                    activeDrag !== null && dropTarget?.floorId === floor.id
                   return (
                     <FloorDropArea
                       floorId={floor.id}
-                      gapIndex={isTarget && incoming ? dropTarget.index : null}
-                      gapWidth={activeDrag?.width ?? 0}
+                      ghost={
+                        showGhost
+                          ? {
+                              kind: activeDrag.kind,
+                              refId: activeDrag.refId,
+                              x: dropTarget.x,
+                            }
+                          : null
+                      }
                     />
                   )
                 }}

@@ -30,6 +30,8 @@ export interface Placement {
   kind: PlacementKind
   /** Ref to a Workbench or Spacer definition, per `kind`. */
   refId: string
+  /** Left-edge position along the floor, in metres (snapped to the grid). */
+  x: number
   /**
    * How many of this item are placed here (shown as "×N" in the floor plan).
    * Informational for now — it does not change the 2D footprint. Workbench-only.

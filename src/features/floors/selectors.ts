@@ -1,6 +1,6 @@
 import type { RootState } from '@/app/store'
 
-import { DEFAULT_PX_PER_METER } from './constants'
+import { DEFAULT_GRID_SIZE, DEFAULT_PX_PER_METER } from './constants'
 
 /** Floors ordered bottom→top (index 0 = ground floor). */
 export const selectFloors = (state: RootState) => state.floors.items
@@ -8,6 +8,10 @@ export const selectFloors = (state: RootState) => state.floors.items
 /** Floor-plan scale (px per metre); falls back to default for older saves. */
 export const selectPxPerMeter = (state: RootState) =>
   state.floors.pxPerMeter ?? DEFAULT_PX_PER_METER
+
+/** Grid snap resolution in metres; falls back to default for older saves. */
+export const selectGridSize = (state: RootState) =>
+  state.floors.gridSize ?? DEFAULT_GRID_SIZE
 
 export const selectFloorCount = (state: RootState) => state.floors.items.length
 

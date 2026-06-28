@@ -1,5 +1,5 @@
-import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
+import { useDraggable } from '@dnd-kit/core'
+import type { CSSProperties } from 'react'
 
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import {
@@ -11,14 +11,15 @@ import { selectPxPerMeter } from '@/features/floors/selectors'
 
 import type { PlacementDragData } from '../dnd'
 import { placementRemoved, placementSelected } from '../placementsSlice'
-import { selectSelectedPlacementId } from '../selectors'
+import {
+  selectOverlappingPlacementIds,
+  selectSelectedPlacementId,
+} from '../selectors'
 import type { Placement } from '../types'
 
 interface PlacedItemProps {
   placement: Placement
   floorId: string
-  /** Animated empty space opened before this block (px) to preview a drop. */
-  gapBefore?: number
 }
 
 export const MIN_BLOCK_PX = 20
@@ -27,11 +28,7 @@ export const MIN_BLOCK_PX = 20
  * An item sitting on a floor — a workbench / extractor (coloured block) or a
  * spacer (dashed full-height gap). Draggable to reorder / move; click to select.
  */
-export function PlacedItem({
-  placement,
-  floorId,
-  gapBefore = 0,
-}: PlacedItemProps) {
+export function PlacedItem({ placement, floorId }: PlacedItemProps) {
   const dispatch = useAppDispatch()
   const workbench = useAppSelector((s) =>
     s.workbenches.items.find((w) => w.id === placement.refId),
@@ -53,6 +50,9 @@ export function PlacedItem({
       : undefined,
   )
   const selected = useAppSelector(selectSelectedPlacementId) === placement.id
+  const overlapping = useAppSelector(selectOverlappingPlacementIds).has(
+    placement.id,
+  )
   const pxPerMeter = useAppSelector(selectPxPerMeter)
   const pendingFrom = useAppSelector(selectConnectionSource)
   const defaultConveyorId = useAppSelector((s) => s.conveyors.items[0]?.id ?? '')
@@ -63,8 +63,12 @@ export function PlacedItem({
     kind: placement.kind,
     refId: placement.refId,
   }
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: placement.id, data })
+  // useDraggable (not sortable): the item is free-positioned by x; the moving
+  // visual is the DragOverlay clone, so the original just dims while dragging.
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: placement.id,
+    data,
+  })
 
   const isExtractor = placement.kind === 'extractor'
   const isSpacer = placement.kind === 'spacer'
@@ -111,17 +115,20 @@ export function PlacedItem({
     )
   }
 
-  const baseStyle = {
-    transform: CSS.Translate.toString(transform),
-    transition: [transition, 'margin-left 160ms ease'].filter(Boolean).join(', '),
-    marginLeft: gapBefore,
-    width,
+  const baseStyle: CSSProperties = {
+    position: 'absolute',
+    left: placement.x * pxPerMeter,
     opacity: isDragging ? 0.4 : 1,
   }
 
   const sharedClass =
-    'group/wb relative shrink-0 cursor-grab touch-none overflow-hidden active:cursor-grabbing'
-  const ring = selected ? ' ring-2 ring-ficsit' : ''
+    'group/wb absolute cursor-grab touch-none overflow-hidden active:cursor-grabbing'
+  // Overlap warning (red) takes priority over the selection ring (ficsit).
+  const ring = overlapping
+    ? ' ring-2 ring-red-500'
+    : selected
+      ? ' ring-2 ring-ficsit'
+      : ''
 
   return (
     <div
@@ -134,16 +141,18 @@ export function PlacedItem({
         box
           ? {
               ...baseStyle,
+              bottom: 0,
+              width,
               height: Math.max(MIN_BLOCK_PX, box.height * pxPerMeter),
               borderColor: box.color,
               backgroundColor: `${box.color}33`,
             }
-          : baseStyle
+          : { ...baseStyle, top: 0, bottom: 0, width }
       }
       className={
         box
-          ? `${sharedClass} self-end rounded-sm border-2${ring}`
-          : `${sharedClass} h-full self-stretch rounded-sm border-2 border-dashed border-gray-600 bg-gray-500/10${ring}`
+          ? `${sharedClass} rounded-sm border-2${ring}`
+          : `${sharedClass} rounded-sm border-2 border-dashed border-gray-600 bg-gray-500/10${ring}`
       }
       title={
         box
