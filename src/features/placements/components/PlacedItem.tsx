@@ -74,6 +74,14 @@ export function PlacedItem({
       ? recipe.name.trim() || 'Recipe'
       : null
 
+  // Conveyor ports for an assigned recipe: one node per input (left) / output
+  // (right), like the machine's belt connections.
+  const showPorts = Boolean(box) && !isExtractor && recipe
+  const inputCount = recipe ? recipe.inputs.filter((i) => i.refId).length : 0
+  const outputCount = recipe ? recipe.outputs.filter((o) => o.refId).length : 0
+  // Extractors have a single output (their material) — shown dead-centre.
+  const showExtractorPort = isExtractor && Boolean(placement.materialId)
+
   const baseStyle = {
     transform: CSS.Translate.toString(transform),
     transition: [transition, 'margin-left 160ms ease'].filter(Boolean).join(', '),
@@ -130,6 +138,31 @@ export function PlacedItem({
       ) : (
         <span className="pointer-events-none flex h-full items-center justify-center px-1 text-[10px] font-medium text-gray-400">
           {`${def.width}m`}
+        </span>
+      )}
+      {showPorts && inputCount > 0 && (
+        <span className="pointer-events-none absolute inset-y-0 left-0 flex flex-col items-center justify-center gap-0.5">
+          {Array.from({ length: inputCount }, (_, i) => (
+            <span
+              key={i}
+              className="size-1.5 rounded-full bg-sky-400 ring-1 ring-sky-200/40"
+            />
+          ))}
+        </span>
+      )}
+      {showPorts && outputCount > 0 && (
+        <span className="pointer-events-none absolute inset-y-0 right-0 flex flex-col items-center justify-center gap-0.5">
+          {Array.from({ length: outputCount }, (_, i) => (
+            <span
+              key={i}
+              className="size-1.5 rounded-full bg-ficsit ring-1 ring-ficsit/40"
+            />
+          ))}
+        </span>
+      )}
+      {showExtractorPort && (
+        <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <span className="size-1.5 rounded-full bg-ficsit ring-1 ring-ficsit/40" />
         </span>
       )}
       {box && (
