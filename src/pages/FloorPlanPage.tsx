@@ -251,7 +251,7 @@ function FloorPlanPage() {
           <Palette />
 
           <div className="min-h-0 overflow-auto rounded-lg border border-edge bg-surface-1 p-4">
-            <div ref={contentRef} className="relative w-max min-w-full">
+            <div ref={contentRef} className="relative isolate w-max min-w-full">
               <FloorStack
                 renderFloorContent={(floor) => {
                   // Ghost the dragged item at its snapped landing spot on the

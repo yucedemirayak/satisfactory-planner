@@ -94,7 +94,8 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
   const showExtractorPort = isExtractor && Boolean(placement.materialId)
 
   // Two-click wiring: click an output (source), then a matching input (target).
-  const portBase = 'cursor-pointer rounded-full ring-1 transition hover:scale-125'
+  const portBase =
+    'pointer-events-auto cursor-pointer rounded-full ring-1 transition hover:scale-125'
   const pickSource = (port: number, refId: string) =>
     dispatch(connectionSourceSet({ placementId: placement.id, port, refId }))
   const completeTo = (port: number, refId: string) => {
@@ -179,7 +180,7 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
         </span>
       )}
       {showPorts && inputPorts.length > 0 && (
-        <span className="absolute inset-y-0 left-0 flex flex-col items-center justify-center gap-1">
+        <span className="pointer-events-none absolute bottom-0 left-0 top-1/2 z-30 flex flex-col items-center justify-center gap-1">
           {inputPorts.map((line, i) => {
             const valid =
               pendingFrom != null &&
@@ -203,7 +204,7 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
         </span>
       )}
       {showPorts && outputPorts.length > 0 && (
-        <span className="absolute inset-y-0 right-0 flex flex-col items-center justify-center gap-1">
+        <span className="pointer-events-none absolute bottom-1/2 right-0 top-0 z-30 flex flex-col items-center justify-center gap-1">
           {outputPorts.map((line, i) => {
             const isSrc =
               pendingFrom?.placementId === placement.id && pendingFrom.port === i
@@ -225,19 +226,17 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
         </span>
       )}
       {showExtractorPort && (
-        <span className="absolute inset-0 flex items-center justify-center">
-          <button
-            type="button"
-            data-port={`${placement.id}::out::0`}
-            aria-label="Output port"
-            onPointerDown={(e) => e.stopPropagation()}
-            onClick={(e) => {
-              e.stopPropagation()
-              pickSource(0, placement.materialId ?? '')
-            }}
-            className={`size-2.5 bg-ficsit ${portBase} ${pendingFrom?.placementId === placement.id ? 'scale-125 ring-2 ring-ficsit' : 'ring-ficsit/50'}`}
-          />
-        </span>
+        <button
+          type="button"
+          data-port={`${placement.id}::out::0`}
+          aria-label="Output port"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation()
+            pickSource(0, placement.materialId ?? '')
+          }}
+          className={`absolute left-1/2 top-1/2 z-30 size-2.5 -translate-x-1/2 -translate-y-1/2 bg-ficsit ${portBase} ${pendingFrom?.placementId === placement.id ? 'scale-125 ring-2 ring-ficsit' : 'ring-ficsit/50'}`}
+        />
       )}
       {box && (
         <span className="pointer-events-none absolute bottom-0.5 left-1 font-mono text-[10px] font-semibold text-ficsit">

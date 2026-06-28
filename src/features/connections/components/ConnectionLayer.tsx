@@ -24,6 +24,26 @@ const portCenter = (
   return { x: r.left + r.width / 2 - crect.left, y: r.top + r.height / 2 - crect.top }
 }
 
+interface Pt {
+  x: number
+  y: number
+}
+
+/**
+ * Build an SVG path through `pts` using only horizontal/vertical runs with sharp
+ * 90° corners (so shared trunks read as clean T-junctions). Consecutive duplicate
+ * points are dropped first so we don't emit redundant segments.
+ */
+function orthPath(pts: Pt[]): string {
+  const p: Pt[] = []
+  for (const q of pts) {
+    const last = p[p.length - 1]
+    if (!last || last.x !== q.x || last.y !== q.y) p.push(q)
+  }
+  if (p.length < 2) return ''
+  return p.map((q, i) => `${i === 0 ? 'M' : 'L'} ${q.x} ${q.y}`).join(' ')
+}
+
 /**
  * SVG overlay drawing each connection as a curve between its source output and
  * target input port. Lives inside the (scrolling, zooming) plan content, so port
@@ -57,10 +77,19 @@ export function ConnectionLayer({
         const a = portCenter(container, crect, `${v.fromPlacementId}::out::${v.fromPort}`)
         const b = portCenter(container, crect, `${v.toPlacementId}::in::${v.toPort}`)
         if (!a || !b) continue
-        const dx = Math.max(24, Math.abs(b.x - a.x) * 0.4)
+        // Orthogonal route: run vertically from the output along a "trunk"
+        // directly above it, to the target's row, then turn into the input.
+        // Output ports sit on the top edge (each at its own x), so every link
+        // from the same output port resolves to the same trunk x → their vertical
+        // runs coincide (one shared trunk, no double lines) and extra links branch
+        // off as T-junctions.
         next.push({
           id: v.id,
-          d: `M ${a.x} ${a.y} C ${a.x + dx} ${a.y}, ${b.x - dx} ${b.y}, ${b.x} ${b.y}`,
+          d: orthPath([
+            { x: a.x, y: a.y },
+            { x: a.x, y: b.y },
+            { x: b.x, y: b.y },
+          ]),
           over: v.overCapacity,
           selected: v.id === selectedId,
         })
@@ -92,7 +121,7 @@ export function ConnectionLayer({
 
   if (segments.length === 0) return null
   return (
-    <svg className="pointer-events-none absolute inset-0 size-full overflow-visible">
+    <svg className="pointer-events-none absolute inset-0 z-10 size-full overflow-visible">
       {segments.map((s) => (
         <g key={s.id}>
           {/* fat invisible hit target for easy selection */}
@@ -103,6 +132,19 @@ export function ConnectionLayer({
             strokeWidth={14}
             style={{ pointerEvents: 'stroke', cursor: 'pointer' }}
             onClick={(e) => {
+              // A port under the pointer wins: forward the click so wiring still
+              // works where a belt crosses an input/output node, instead of
+              // selecting the line. (Belt-and-suspenders with the port z-layer.)
+              const port = document
+                .elementsFromPoint(e.clientX, e.clientY)
+                .find(
+                  (el): el is HTMLElement =>
+                    el instanceof HTMLElement && el.hasAttribute('data-port'),
+                )
+              if (port) {
+                port.click()
+                return
+              }
               e.stopPropagation()
               dispatch(connectionSelected(s.id))
             }}
