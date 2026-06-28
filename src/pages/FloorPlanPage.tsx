@@ -12,7 +12,7 @@ import {
   useSensors,
   type CollisionDetection,
   type DragEndEvent,
-  type DragOverEvent,
+  type DragMoveEvent,
   type DragStartEvent,
   type DropAnimation,
 } from '@dnd-kit/core'
@@ -69,18 +69,18 @@ interface ActiveDrag {
  * insert-between ordering). Keyboard dnd has no pointer, so it falls back too.
  */
 const collisionDetection: CollisionDetection = (args) => {
-  // Forgiving while the drag overlaps the plan — pointer inside a droppable OR
-  // the dragged item's rect intersecting any floor/block — so the live drop gap
-  // (and insert-between ordering) shows via closestCenter. Only a fully-outside
-  // release yields no collision → `over` is null → no-op drop. Keyboard dnd has
-  // no pointer, so it falls back too.
-  if (
-    pointerWithin(args).length > 0 ||
-    rectIntersection(args).length > 0 ||
-    args.pointerCoordinates == null
-  ) {
-    return closestCenter(args)
-  }
+  // Prefer the floor actually under the pointer, so the ghost (and the drop)
+  // targets the cursor's floor. closestCenter compares the *dragged item's* rect
+  // centre to floor centres, so a tall item straddling floors snaps to a
+  // neighbour and the ghost lands on the wrong floor (looking absent). Fall back
+  // to rect overlap, then — only for keyboard dnd, which has no pointer —
+  // closestCenter. A fully-outside release yields no collision → `over` is null
+  // → no-op drop.
+  const pointer = pointerWithin(args)
+  if (pointer.length > 0) return pointer
+  const intersecting = rectIntersection(args)
+  if (intersecting.length > 0) return intersecting
+  if (args.pointerCoordinates == null) return closestCenter(args)
   return []
 }
 
@@ -135,15 +135,19 @@ function FloorPlanPage() {
    * droppables are floor areas (placements are free-draggable, not droppable),
    * so `over` is always a floor. Null when released outside the plan → no-op.
    */
-  const resolveDrop = (event: DragOverEvent | DragEndEvent) => {
-    const { active, over } = event
+  const resolveDrop = (event: DragMoveEvent | DragEndEvent) => {
+    const { active, over, delta } = event
     if (!over) return null
     const activeData = active.data.current as DragData | undefined
     const overData = over.data.current as DropData | undefined
-    const activeRect = active.rect.current.translated
-    if (!activeData || !overData || !activeRect) return null
-    // Item's left relative to the floor area, snapped to the grid.
-    const leftPx = activeRect.left - over.rect.left
+    const initial = active.rect.current.initial
+    if (!activeData || !overData || !initial) return null
+    // Dragged item's current left edge = where it started + how far it moved.
+    // We derive it from the start rect + drag delta rather than the live
+    // "translated" rect: with a DragOverlay the source node never gets a
+    // transform, so its translated rect stays at the origin and the ghost would
+    // stick to the item's original spot instead of following the cursor.
+    const leftPx = initial.left + delta.x - over.rect.left
     const x = Math.max(0, Math.round(leftPx / pxPerMeter / gridSize) * gridSize)
     return { activeData, floorId: overData.floorId, x }
   }
@@ -154,7 +158,10 @@ function FloorPlanPage() {
     document.body.classList.add('dnd-dragging')
   }
 
-  const handleDragOver = (event: DragOverEvent) => {
+  // Update the ghost on every move (not onDragOver, which only fires when the
+  // `over` target itself changes — so dragging *within* one floor would never
+  // refresh the snapped x and the ghost would stick to its starting spot).
+  const handleDragMove = (event: DragMoveEvent) => {
     const res = resolveDrop(event)
     setDropTarget((prev) => {
       if (!res) return null
@@ -200,7 +207,7 @@ function FloorPlanPage() {
       sensors={sensors}
       collisionDetection={collisionDetection}
       onDragStart={handleDragStart}
-      onDragOver={handleDragOver}
+      onDragMove={handleDragMove}
       onDragEnd={handleDragEnd}
       onDragCancel={resetDrag}
     >
