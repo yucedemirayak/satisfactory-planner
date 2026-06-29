@@ -10,6 +10,7 @@ interface Segment {
   id: string
   d: string
   over: boolean
+  mismatch: boolean
   selected: boolean
 }
 
@@ -74,8 +75,8 @@ export function ConnectionLayer({
       const crect = container.getBoundingClientRect()
       const next: Segment[] = []
       for (const v of views) {
-        const a = portCenter(container, crect, `${v.fromPlacementId}::out::${v.fromPort}`)
-        const b = portCenter(container, crect, `${v.toPlacementId}::in::${v.toPort}`)
+        const a = portCenter(container, crect, `${v.from.id}::out::${v.from.port}`)
+        const b = portCenter(container, crect, `${v.to.id}::in::${v.to.port}`)
         if (!a || !b) continue
         // Orthogonal route: run vertically from the output along a "trunk"
         // directly above it, to the target's row, then turn into the input.
@@ -91,6 +92,7 @@ export function ConnectionLayer({
             { x: b.x, y: b.y },
           ]),
           over: v.overCapacity,
+          mismatch: v.mismatch,
           selected: v.id === selectedId,
         })
       }
@@ -160,7 +162,9 @@ export function ConnectionLayer({
                 ? 'stroke-ficsit'
                 : s.over
                   ? 'stroke-red-500'
-                  : 'stroke-gray-400'
+                  : s.mismatch
+                    ? 'stroke-amber-500'
+                    : 'stroke-gray-400'
             }
           />
         </g>

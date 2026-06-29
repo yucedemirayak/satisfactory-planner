@@ -1,13 +1,19 @@
 import { createSlice, nanoid, type PayloadAction } from '@reduxjs/toolkit'
 
 import { conveyorRemoved } from '@/features/conveyors/conveyorsSlice'
+import { nodeRemoved } from '@/features/nodes/nodesSlice'
 import {
   placementMaterialChanged,
   placementRecipeChanged,
   placementRemoved,
 } from '@/features/placements/placementsSlice'
 
-import type { Connection, PendingFrom } from './types'
+import type {
+  Connection,
+  ConnectionEnd,
+  EndpointRef,
+  PendingFrom,
+} from './types'
 
 export interface ConnectionsState {
   items: Connection[]
@@ -23,6 +29,9 @@ const initialState: ConnectionsState = {
   selectedId: null,
 }
 
+const sameEnd = (a: ConnectionEnd, b: ConnectionEnd): boolean =>
+  a.ref === b.ref && a.id === b.id && a.port === b.port
+
 const connectionsSlice = createSlice({
   name: 'connections',
   initialState,
@@ -32,7 +41,7 @@ const connectionsSlice = createSlice({
       const f = state.pendingFrom
       const p = action.payload
       state.pendingFrom =
-        f && f.placementId === p.placementId && f.port === p.port ? null : p
+        f && f.ref === p.ref && f.id === p.id && f.port === p.port ? null : p
     },
     connectionSourceCleared(state) {
       state.pendingFrom = null
@@ -40,14 +49,11 @@ const connectionsSlice = createSlice({
     connectionAdded: {
       reducer(state, action: PayloadAction<Connection>) {
         const c = action.payload
-        const dup = state.items.some(
-          (x) =>
-            x.fromPlacementId === c.fromPlacementId &&
-            x.fromPort === c.fromPort &&
-            x.toPlacementId === c.toPlacementId &&
-            x.toPort === c.toPort,
+        // One belt per port: reject if either endpoint's port is already wired.
+        const clash = state.items.some(
+          (x) => sameEnd(x.from, c.from) || sameEnd(x.to, c.to),
         )
-        if (!dup) {
+        if (!clash) {
           state.items.push(c)
           state.selectedId = c.id
         }
@@ -73,26 +79,34 @@ const connectionsSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // A placement's ports vanish/shift when it's removed or its recipe/material
+    // An endpoint's ports vanish/shift when it's removed or its recipe/material
     // changes — drop any connection touching it. (Other cascades — e.g. deleting
-    // a workbench — leave entries that selectConnectionViews filters out.)
+    // a workbench definition — leave entries that selectConnectionViews filters.)
     const dropTouching = (
       state: ConnectionsState,
-      placementId: string,
+      ref: EndpointRef,
+      id: string,
     ): void => {
       state.items = state.items.filter(
         (c) =>
-          c.fromPlacementId !== placementId && c.toPlacementId !== placementId,
+          !(
+            (c.from.ref === ref && c.from.id === id) ||
+            (c.to.ref === ref && c.to.id === id)
+          ),
       )
-      if (state.pendingFrom?.placementId === placementId) {
-        state.pendingFrom = null
-      }
+      const f = state.pendingFrom
+      if (f && f.ref === ref && f.id === id) state.pendingFrom = null
     }
-    builder.addCase(placementRemoved, (s, a) => dropTouching(s, a.payload))
-    builder.addCase(placementRecipeChanged, (s, a) => dropTouching(s, a.payload.id))
-    builder.addCase(placementMaterialChanged, (s, a) =>
-      dropTouching(s, a.payload.id),
+    builder.addCase(placementRemoved, (s, a) =>
+      dropTouching(s, 'placement', a.payload),
     )
+    builder.addCase(placementRecipeChanged, (s, a) =>
+      dropTouching(s, 'placement', a.payload.id),
+    )
+    builder.addCase(placementMaterialChanged, (s, a) =>
+      dropTouching(s, 'placement', a.payload.id),
+    )
+    builder.addCase(nodeRemoved, (s, a) => dropTouching(s, 'node', a.payload))
     builder.addCase(conveyorRemoved, (s, a) => {
       s.items = s.items.filter((c) => c.conveyorId !== a.payload)
     })

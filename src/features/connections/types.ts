@@ -1,23 +1,40 @@
+/** Which side of the model an endpoint lives on. */
+export type EndpointRef = 'placement' | 'node'
+
 /**
- * A conveyor link between an output port of one placement and an input port of
- * another. Ports are positional indexes into each placement's *valid* (refId-
- * filtered) port list — outputs for `from`, inputs for `to`. The carried item is
- * derived from the source output, so it isn't stored.
+ * One end of a conveyor link: a port on a machine placement or on a splitter/
+ * merger route node. `port` is a positional index into that endpoint's port list
+ * — outputs for a `from` end, inputs for a `to` end. Ids are globally unique, so
+ * `ref` only disambiguates which slice to resolve the id against.
+ */
+export interface ConnectionEnd {
+  ref: EndpointRef
+  id: string
+  port: number
+}
+
+/**
+ * A conveyor link from an output port (`from`) to an input port (`to`). Either
+ * end may be a machine placement or a route node. Each port carries at most one
+ * belt — fan-out/in goes through splitters/mergers. The carried item is derived
+ * from the upstream source, so it isn't stored.
  */
 export interface Connection {
   id: string
-  fromPlacementId: string
-  fromPort: number
-  toPlacementId: string
-  toPort: number
+  from: ConnectionEnd
+  to: ConnectionEnd
   /** Conveyor (belt) tier id carrying this link. */
   conveyorId: string
 }
 
-/** Mid two-click selection: the chosen source output port + its item id. */
+/** Mid two-click selection: the chosen source output port. */
 export interface PendingFrom {
-  placementId: string
+  ref: EndpointRef
+  id: string
   port: number
-  /** Product/material id of the source output, for input-match validation. */
-  refId: string
+  /**
+   * Source output item id when known (a machine output); null for route-node
+   * outputs, whose carried item is resolved from the flow graph.
+   */
+  refId: string | null
 }

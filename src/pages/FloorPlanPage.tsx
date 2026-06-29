@@ -51,17 +51,26 @@ import {
   connectionSourceCleared,
   selectConnectionSource,
 } from '@/features/connections'
+import {
+  NodeInspector,
+  NodePreview,
+  nodeAdded,
+  nodeMoved,
+  nodeSelected,
+  type NodeKind,
+} from '@/features/nodes'
 
 interface DropTarget {
   floorId: string
-  /** Snapped left position (metres) where the dragged item would land. */
+  /** Left position (metres) where the dragged item would land (machines snap). */
   x: number
+  /** Top position (metres) — only used by free-positioned route nodes. */
+  y: number
 }
 
-interface ActiveDrag {
-  kind: PlacementKind
-  refId: string
-}
+type ActiveDrag =
+  | { type: 'machine'; kind: PlacementKind; refId: string }
+  | { type: 'node'; kind: NodeKind }
 
 /**
  * Target the plan only when the pointer is actually inside a droppable (a floor
@@ -111,11 +120,12 @@ function FloorPlanPage() {
   const [activeDrag, setActiveDrag] = useState<ActiveDrag | null>(null)
   const [dropTarget, setDropTarget] = useState<DropTarget | null>(null)
 
-  // Clear every selection (wiring source, connection, placement, floor) on Esc.
+  // Clear every selection (wiring source, connection, placement, node, floor).
   const deselectAll = useCallback(() => {
     dispatch(connectionSourceCleared())
     dispatch(connectionSelected(null))
     dispatch(placementSelected(null))
+    dispatch(nodeSelected(null))
     dispatch(floorSelected(null))
   }, [dispatch])
 
@@ -150,19 +160,32 @@ function FloorPlanPage() {
     const overData = over.data.current as DropData | undefined
     const initial = active.rect.current.initial
     if (!activeData || !overData || !initial) return null
-    // Dragged item's current left edge = where it started + how far it moved.
+    // Dragged item's current top-left = where it started + how far it moved.
     // We derive it from the start rect + drag delta rather than the live
     // "translated" rect: with a DragOverlay the source node never gets a
     // transform, so its translated rect stays at the origin and the ghost would
     // stick to the item's original spot instead of following the cursor.
     const leftPx = initial.left + delta.x - over.rect.left
-    const x = Math.max(0, Math.round(leftPx / pxPerMeter / gridSize) * gridSize)
-    return { activeData, floorId: overData.floorId, x }
+    const topPx = initial.top + delta.y - over.rect.top
+    const isNode =
+      activeData.type === 'palette-node' || activeData.type === 'node'
+    // Route nodes are free-positioned (2D, no grid); machines snap x to the grid.
+    const x = isNode
+      ? Math.max(0, leftPx / pxPerMeter)
+      : Math.max(0, Math.round(leftPx / pxPerMeter / gridSize) * gridSize)
+    const y = Math.max(0, topPx / pxPerMeter)
+    return { activeData, floorId: overData.floorId, x, y }
   }
 
   const handleDragStart = (event: DragStartEvent) => {
     const data = event.active.data.current as DragData | undefined
-    setActiveDrag(data ? { kind: data.kind, refId: data.refId } : null)
+    if (data?.type === 'palette-node' || data?.type === 'node') {
+      setActiveDrag({ type: 'node', kind: data.kind })
+    } else if (data) {
+      setActiveDrag({ type: 'machine', kind: data.kind, refId: data.refId })
+    } else {
+      setActiveDrag(null)
+    }
     document.body.classList.add('dnd-dragging')
   }
 
@@ -173,8 +196,14 @@ function FloorPlanPage() {
     const res = resolveDrop(event)
     setDropTarget((prev) => {
       if (!res) return null
-      if (prev && prev.floorId === res.floorId && prev.x === res.x) return prev
-      return { floorId: res.floorId, x: res.x }
+      if (
+        prev &&
+        prev.floorId === res.floorId &&
+        prev.x === res.x &&
+        prev.y === res.y
+      )
+        return prev
+      return { floorId: res.floorId, x: res.x, y: res.y }
     })
   }
 
@@ -188,7 +217,7 @@ function FloorPlanPage() {
     resetDrag()
     const res = resolveDrop(event)
     if (!res) return
-    const { activeData, floorId, x } = res
+    const { activeData, floorId, x, y } = res
 
     if (activeData.type === 'palette') {
       dispatch(
@@ -199,7 +228,7 @@ function FloorPlanPage() {
           x,
         }),
       )
-    } else {
+    } else if (activeData.type === 'placement') {
       dispatch(
         placementMoved({
           placementId: String(event.active.id),
@@ -207,6 +236,10 @@ function FloorPlanPage() {
           x,
         }),
       )
+    } else if (activeData.type === 'palette-node') {
+      dispatch(nodeAdded({ kind: activeData.kind, floorId, x, y }))
+    } else {
+      dispatch(nodeMoved({ id: String(event.active.id), floorId, x, y }))
     }
   }
 
@@ -269,19 +302,28 @@ function FloorPlanPage() {
             <div ref={contentRef} className="relative isolate w-max min-w-full">
               <FloorStack
                 renderFloorContent={(floor) => {
-                  // Ghost the dragged item at its snapped landing spot on the
-                  // floor the pointer is over (the original block dims in place).
-                  const showGhost =
-                    activeDrag !== null && dropTarget?.floorId === floor.id
+                  // Ghost the dragged item at its landing spot on the floor the
+                  // pointer is over (the original dims in place): a machine snaps
+                  // to the grid, a route node lands at a free 2D position.
+                  const onFloor = dropTarget?.floorId === floor.id
                   return (
                     <FloorDropArea
                       floorId={floor.id}
                       ghost={
-                        showGhost
+                        onFloor && activeDrag?.type === 'machine'
                           ? {
                               kind: activeDrag.kind,
                               refId: activeDrag.refId,
                               x: dropTarget.x,
+                            }
+                          : null
+                      }
+                      nodeGhost={
+                        onFloor && activeDrag?.type === 'node'
+                          ? {
+                              kind: activeDrag.kind,
+                              x: dropTarget.x,
+                              y: dropTarget.y,
                             }
                           : null
                       }
@@ -296,14 +338,17 @@ function FloorPlanPage() {
           <div className="flex min-h-0 flex-col gap-4 overflow-y-auto">
             <FloorInspector />
             <PlacementInspector />
+            <NodeInspector />
             <ConnectionInspector />
           </div>
         </div>
       </section>
 
       <DragOverlay dropAnimation={DROP_ANIMATION}>
-        {activeDrag ? (
+        {activeDrag?.type === 'machine' ? (
           <DragPreview kind={activeDrag.kind} refId={activeDrag.refId} />
+        ) : activeDrag?.type === 'node' ? (
+          <NodePreview kind={activeDrag.kind} />
         ) : null}
       </DragOverlay>
     </DndContext>

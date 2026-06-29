@@ -94,6 +94,39 @@ export function Palette() {
           ))
         )}
       </section>
+
+      <section className="flex flex-col gap-2">
+        <div>
+          <h2 className="text-sm font-semibold tracking-wide text-gray-300 uppercase">
+            Routing
+          </h2>
+          <p className="text-xs text-gray-500">
+            Split / merge belts. Drop anywhere.
+          </p>
+        </div>
+        {(
+          [
+            { kind: 'splitter', label: 'Splitter', flow: '1 → 3' },
+            { kind: 'merger', label: 'Merger', flow: '3 → 1' },
+          ] as const
+        ).map(({ kind, label, flow }) => (
+          <PaletteItem
+            key={kind}
+            dndId={`palette-node-${kind}`}
+            data={{ type: 'palette-node', kind }}
+          >
+            <span className="flex size-4 shrink-0 items-center justify-center rounded-sm border border-sky-400/70 text-[8px] font-bold text-sky-300">
+              {kind === 'splitter' ? 'S' : 'M'}
+            </span>
+            <span className="min-w-0 flex-1 truncate text-sm text-gray-200">
+              {label}
+            </span>
+            <span className="shrink-0 font-mono text-xs text-gray-500">
+              {flow}
+            </span>
+          </PaletteItem>
+        ))}
+      </section>
     </aside>
   )
 }

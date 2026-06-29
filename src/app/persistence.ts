@@ -32,6 +32,8 @@ export type PersistedState = Pick<
   | 'recipes'
   | 'placements'
   | 'connections'
+  | 'nodes'
+  | 'nodeTypes'
   | 'production'
 >
 
@@ -47,6 +49,8 @@ const PERSISTED_KEYS: ReadonlyArray<keyof PersistedState> = [
   'recipes',
   'placements',
   'connections',
+  'nodes',
+  'nodeTypes',
   'production',
 ]
 
@@ -71,6 +75,8 @@ function pickPersisted(state: RootState): PersistedState {
     recipes: state.recipes,
     placements: state.placements,
     connections: state.connections,
+    nodes: state.nodes,
+    nodeTypes: state.nodeTypes,
     production: state.production,
   }
 }
@@ -91,12 +97,47 @@ function migrate(raw: Record<string, unknown>): void {
   }
 
   // Connections slice added later; always reset transient UI (pendingFrom /
-  // selectedId) on load, keeping any saved links.
+  // selectedId) on load, keeping any saved links. Endpoints used to be flat
+  // ({ fromPlacementId, fromPort, ... }); upgrade them to the tagged
+  // { from: { ref, id, port }, to: {...} } shape (ref defaults to 'placement').
   const conn = raw.connections as { items?: unknown } | undefined
+  const connItems = (
+    Array.isArray(conn?.items) ? conn.items : []
+  ) as Array<Record<string, unknown>>
+  for (const c of connItems) {
+    if (!c.from && 'fromPlacementId' in c) {
+      c.from = { ref: 'placement', id: c.fromPlacementId, port: c.fromPort ?? 0 }
+      c.to = { ref: 'placement', id: c.toPlacementId, port: c.toPort ?? 0 }
+      delete c.fromPlacementId
+      delete c.fromPort
+      delete c.toPlacementId
+      delete c.toPort
+    }
+  }
   raw.connections = {
-    items: Array.isArray(conn?.items) ? conn.items : [],
+    // Keep only well-formed links (a valid tagged from/to); drop anything an old
+    // or interrupted save left half-shaped so selectors never hit a missing end.
+    items: connItems.filter(
+      (c) =>
+        c.from &&
+        typeof c.from === 'object' &&
+        c.to &&
+        typeof c.to === 'object',
+    ),
     pendingFrom: null,
     selectedId: null,
+  }
+
+  // Route nodes (splitters / mergers) added later — seed empty.
+  if (!raw.nodes) raw.nodes = { items: [], selectedId: null }
+
+  // Editable splitter/merger footprints added later — seed/backfill each kind.
+  const nt = raw.nodeTypes as
+    | { splitter?: unknown; merger?: unknown }
+    | undefined
+  raw.nodeTypes = {
+    splitter: nt?.splitter ?? { width: 2, height: 2 },
+    merger: nt?.merger ?? { width: 2, height: 2 },
   }
 
   // Floor-plan grid added later — default the snap size.

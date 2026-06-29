@@ -1,8 +1,11 @@
 import { createSelector } from '@reduxjs/toolkit'
 
 import type { RootState } from '@/app/store'
+import { nodePortCounts } from '@/features/nodes/types'
 import { extractorRate, placementFactors } from '@/features/placements/calc'
 import type { Placement } from '@/features/placements/types'
+
+import type { Connection, ConnectionEnd } from './types'
 
 export const selectConnectionSource = (s: RootState) => s.connections.pendingFrom
 
@@ -12,10 +15,8 @@ export const selectSelectedConnectionId = (s: RootState) =>
 /** A connection enriched with the carried item, its flow rate and belt capacity. */
 export interface ConnectionView {
   id: string
-  fromPlacementId: string
-  fromPort: number
-  toPlacementId: string
-  toPort: number
+  from: ConnectionEnd
+  to: ConnectionEnd
   conveyorId: string
   /** Product/material id flowing along the link. */
   itemRefId: string
@@ -24,7 +25,19 @@ export interface ConnectionView {
   /** The belt's max throughput (0 if the conveyor is gone). */
   capacity: number
   overCapacity: boolean
+  /** Carried item doesn't match the target input, or a merger mixes items. */
+  mismatch: boolean
 }
+
+interface Flow {
+  rate: number
+  /** Carried item id, or '' when unknown/empty. */
+  item: string
+  /** A merger is carrying more than one distinct item. */
+  conflict: boolean
+}
+
+const NO_FLOW: Flow = { rate: 0, item: '', conflict: false }
 
 /** Valid output ports of a placement as {refId, rate per minute}. */
 function outputPortsOf(
@@ -62,9 +75,14 @@ function inputRefsOf(
 }
 
 /**
- * Connections that still resolve to existing, item-matching ports, enriched for
- * rendering/inspection. Filters out stale entries (deleted endpoints, changed
- * recipes, mismatched items) so the rest of the app only sees valid links.
+ * Connections that still resolve to existing ports, enriched with the per-belt
+ * flow computed across the splitter/merger graph, for rendering / inspection.
+ *
+ * Flow propagates forward from machine outputs (known rate + item): a splitter
+ * divides its input equally among its *connected* outputs, a merger sums its
+ * inputs (flagging a conflict if they carry different items). Item matching to a
+ * machine input — and merger conflicts — surface as `mismatch` rather than being
+ * dropped. Stale links (deleted endpoint / out-of-range port) are filtered out.
  */
 export const selectConnectionViews = createSelector(
   [
@@ -74,8 +92,9 @@ export const selectConnectionViews = createSelector(
     (s: RootState) => s.workbenches.items,
     (s: RootState) => s.extractors.items,
     (s: RootState) => s.conveyors.items,
+    (s: RootState) => s.nodes.items,
   ],
-  (items, byFloor, recipes, workbenches, extractors, conveyors) => {
+  (items, byFloor, recipes, workbenches, extractors, conveyors, nodes) => {
     const placements = new Map<string, Placement>()
     for (const list of Object.values(byFloor)) {
       for (const p of list) placements.set(p.id, p)
@@ -84,32 +103,134 @@ export const selectConnectionViews = createSelector(
     const wbSlots = new Map(workbenches.map((w) => [w.id, w.sloopSlots]))
     const exRate = new Map(extractors.map((e) => [e.id, e.baseRate]))
     const convRate = new Map(conveyors.map((c) => [c.id, c.maxRate]))
+    const nodesById = new Map(nodes.map((n) => [n.id, n]))
 
-    const views: ConnectionView[] = []
+    // Belts grouped by the node they enter / leave (each port carries ≤1 belt).
+    const intoNode = new Map<string, Connection[]>()
+    const fromNode = new Map<string, Connection[]>()
+    const push = (m: Map<string, Connection[]>, id: string, c: Connection) => {
+      const list = m.get(id)
+      if (list) list.push(c)
+      else m.set(id, [c])
+    }
     for (const c of items) {
-      const from = placements.get(c.fromPlacementId)
-      const to = placements.get(c.toPlacementId)
-      if (!from || !to) continue
+      if (c.to.ref === 'node') push(intoNode, c.to.id, c)
+      if (c.from.ref === 'node') push(fromNode, c.from.id, c)
+    }
+
+    const machineOutput = (end: ConnectionEnd): Flow => {
+      const p = placements.get(end.id)
+      if (!p) return NO_FLOW
       const out = outputPortsOf(
-        from,
+        p,
         recipesById,
         (id) => wbSlots.get(id) ?? 1,
         (id) => exRate.get(id),
-      )[c.fromPort]
-      const inRef = inputRefsOf(to, recipesById)[c.toPort]
-      if (!out || inRef == null || out.refId !== inRef) continue
+      )[end.port]
+      return out ? { rate: out.rate, item: out.refId, conflict: false } : NO_FLOW
+    }
+
+    // Flow carried by a belt, memoised; recursion walks upstream through nodes.
+    const cache = new Map<string, Flow>()
+    const visiting = new Set<string>()
+    const flowOf = (c: Connection): Flow => {
+      const hit = cache.get(c.id)
+      if (hit) return hit
+      if (visiting.has(c.id)) return NO_FLOW // cycle guard
+      visiting.add(c.id)
+
+      let result: Flow
+      if (c.from.ref === 'placement') {
+        result = machineOutput(c.from)
+      } else {
+        const n = nodesById.get(c.from.id)
+        if (!n) {
+          result = NO_FLOW
+        } else if (n.kind === 'splitter') {
+          const inBelt = intoNode.get(n.id)?.[0]
+          const inFlow = inBelt ? flowOf(inBelt) : NO_FLOW
+          const divisor = fromNode.get(n.id)?.length || 1
+          result = {
+            rate: inFlow.rate / divisor,
+            item: inFlow.item,
+            conflict: inFlow.conflict,
+          }
+        } else {
+          // merger: sum inputs; conflict if they carry different items
+          let rate = 0
+          let conflict = false
+          const seen = new Set<string>()
+          for (const inBelt of intoNode.get(n.id) ?? []) {
+            const f = flowOf(inBelt)
+            rate += f.rate
+            if (f.item) seen.add(f.item)
+            if (f.conflict) conflict = true
+          }
+          if (seen.size > 1) conflict = true
+          result = {
+            rate,
+            item: seen.size === 1 ? [...seen][0] : '',
+            conflict,
+          }
+        }
+      }
+
+      visiting.delete(c.id)
+      cache.set(c.id, result)
+      return result
+    }
+
+    // Validate a `from` (output) endpoint exists and its port is in range.
+    const validFrom = (end: ConnectionEnd): boolean => {
+      if (end.ref === 'node') {
+        const n = nodesById.get(end.id)
+        return !!n && end.port < nodePortCounts(n.kind).outputs
+      }
+      const p = placements.get(end.id)
+      if (!p) return false
+      return (
+        end.port <
+        outputPortsOf(
+          p,
+          recipesById,
+          (id) => wbSlots.get(id) ?? 1,
+          (id) => exRate.get(id),
+        ).length
+      )
+    }
+
+    // Required item of a `to` (input) endpoint: '' for a node (accepts any), the
+    // item id for a machine input, or null when the endpoint/port is invalid.
+    const sinkItem = (end: ConnectionEnd): string | null => {
+      if (end.ref === 'node') {
+        const n = nodesById.get(end.id)
+        return n && end.port < nodePortCounts(n.kind).inputs ? '' : null
+      }
+      const p = placements.get(end.id)
+      if (!p) return null
+      return inputRefsOf(p, recipesById)[end.port] ?? null
+    }
+
+    const views: ConnectionView[] = []
+    for (const c of items) {
+      if (!c.from || !c.to) continue // defend against malformed saved links
+      if (!validFrom(c.from)) continue
+      const reqItem = sinkItem(c.to)
+      if (reqItem === null) continue
+      const f = flowOf(c)
       const capacity = convRate.get(c.conveyorId) ?? 0
+      const mismatch =
+        f.conflict || (reqItem !== '' && f.item !== '' && f.item !== reqItem)
       views.push({
         id: c.id,
-        fromPlacementId: c.fromPlacementId,
-        fromPort: c.fromPort,
-        toPlacementId: c.toPlacementId,
-        toPort: c.toPort,
+        from: c.from,
+        to: c.to,
         conveyorId: c.conveyorId,
-        itemRefId: out.refId,
-        sourceRate: out.rate,
+        itemRefId: f.item,
+        sourceRate: f.rate,
         capacity,
-        overCapacity: capacity > 0 && out.rate > capacity + 1e-9,
+        overCapacity: capacity > 0 && f.rate > capacity + 1e-9,
+        mismatch,
       })
     }
     return views

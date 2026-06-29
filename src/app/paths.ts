@@ -5,6 +5,7 @@ export const PATHS = {
   extractors: '/extractors',
   spacers: '/spacers',
   conveyors: '/conveyors',
+  routing: '/routing',
   materials: '/materials',
   products: '/products',
   recipes: '/recipes',

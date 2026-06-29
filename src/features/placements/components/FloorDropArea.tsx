@@ -2,6 +2,12 @@ import { useDroppable } from '@dnd-kit/core'
 
 import { useAppSelector } from '@/app/hooks'
 import { selectGridSize, selectPxPerMeter } from '@/features/floors/selectors'
+import {
+  GhostNode,
+  NodeItem,
+  selectNodes,
+  type NodeKind,
+} from '@/features/nodes'
 
 import type { FloorDropData } from '../dnd'
 import { selectFloorPlacements } from '../selectors'
@@ -11,13 +17,20 @@ import { PlacedItem } from './PlacedItem'
 
 interface FloorDropAreaProps {
   floorId: string
-  /** The dragged item previewed as a ghost at its snapped x (or null). */
+  /** The dragged machine previewed as a ghost at its snapped x (or null). */
   ghost?: { kind: PlacementKind; refId: string; x: number } | null
+  /** The dragged route node previewed as a ghost at its free 2D spot (or null). */
+  nodeGhost?: { kind: NodeKind; x: number; y: number } | null
 }
 
 /** Droppable grid area covering a floor band; items are free-positioned by x. */
-export function FloorDropArea({ floorId, ghost = null }: FloorDropAreaProps) {
+export function FloorDropArea({
+  floorId,
+  ghost = null,
+  nodeGhost = null,
+}: FloorDropAreaProps) {
   const placements = useAppSelector((s) => selectFloorPlacements(s, floorId))
+  const nodes = useAppSelector(selectNodes).filter((n) => n.floorId === floorId)
   const pxPerMeter = useAppSelector(selectPxPerMeter)
   const gridSize = useAppSelector(selectGridSize)
   const workbenches = useAppSelector((s) => s.workbenches.items)
@@ -58,7 +71,13 @@ export function FloorDropArea({ floorId, ghost = null }: FloorDropAreaProps) {
       {placements.map((p) => (
         <PlacedItem key={p.id} placement={p} floorId={floorId} />
       ))}
+      {nodes.map((n) => (
+        <NodeItem key={n.id} node={n} />
+      ))}
       {ghost && <GhostItem kind={ghost.kind} refId={ghost.refId} x={ghost.x} />}
+      {nodeGhost && (
+        <GhostNode kind={nodeGhost.kind} x={nodeGhost.x} y={nodeGhost.y} />
+      )}
     </div>
   )
 }

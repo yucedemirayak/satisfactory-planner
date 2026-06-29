@@ -1,11 +1,11 @@
 import { useDraggable } from '@dnd-kit/core'
 import type { ReactNode } from 'react'
 
-import type { PaletteDragData } from '../dnd'
+import type { PaletteDragData, PaletteNodeDragData } from '../dnd'
 
 interface PaletteItemProps {
   dndId: string
-  data: PaletteDragData
+  data: PaletteDragData | PaletteNodeDragData
   children: ReactNode
 }
 

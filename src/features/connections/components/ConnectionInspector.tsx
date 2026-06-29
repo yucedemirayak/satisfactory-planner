@@ -23,7 +23,9 @@ export function ConnectionInspector() {
       </div>
     )
 
-  const itemName = refNames[view.itemRefId] ?? 'Item'
+  const itemName = view.itemRefId
+    ? (refNames[view.itemRefId] ?? 'Item')
+    : 'Unknown'
 
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-edge bg-surface-1 p-4">
@@ -83,6 +85,13 @@ export function ConnectionInspector() {
       {view.overCapacity && (
         <p className="rounded-md border border-red-500/40 bg-red-500/10 px-2.5 py-1.5 text-xs text-red-300">
           ⚠ Flow exceeds belt capacity — use a faster conveyor or split the line.
+        </p>
+      )}
+
+      {view.mismatch && (
+        <p className="rounded-md border border-amber-500/40 bg-amber-500/10 px-2.5 py-1.5 text-xs text-amber-300">
+          ⚠ Item mismatch — this belt's item doesn't match the target input (or a
+          merger is mixing different items).
         </p>
       )}
     </div>

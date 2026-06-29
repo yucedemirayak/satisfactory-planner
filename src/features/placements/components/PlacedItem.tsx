@@ -97,20 +97,20 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
   const portBase =
     'pointer-events-auto cursor-pointer rounded-full ring-1 transition hover:scale-125'
   const pickSource = (port: number, refId: string) =>
-    dispatch(connectionSourceSet({ placementId: placement.id, port, refId }))
-  const completeTo = (port: number, refId: string) => {
-    if (
-      !pendingFrom ||
-      pendingFrom.placementId === placement.id ||
-      pendingFrom.refId !== refId
+    dispatch(
+      connectionSourceSet({ ref: 'placement', id: placement.id, port, refId }),
     )
-      return
+  const completeTo = (port: number, refId: string) => {
+    if (!pendingFrom) return
+    if (pendingFrom.ref === 'placement' && pendingFrom.id === placement.id) return
+    // Item must match when the source item is known (machine output). A route
+    // node's carried item is unknown here (refId null) → accept; the flow graph
+    // validates it.
+    if (pendingFrom.refId !== null && pendingFrom.refId !== refId) return
     dispatch(
       connectionAdded({
-        fromPlacementId: pendingFrom.placementId,
-        fromPort: pendingFrom.port,
-        toPlacementId: placement.id,
-        toPort: port,
+        from: { ref: pendingFrom.ref, id: pendingFrom.id, port: pendingFrom.port },
+        to: { ref: 'placement', id: placement.id, port },
         conveyorId: defaultConveyorId,
       }),
     )
@@ -184,8 +184,11 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
           {inputPorts.map((line, i) => {
             const valid =
               pendingFrom != null &&
-              pendingFrom.placementId !== placement.id &&
-              pendingFrom.refId === line.refId
+              !(
+                pendingFrom.ref === 'placement' &&
+                pendingFrom.id === placement.id
+              ) &&
+              (pendingFrom.refId === null || pendingFrom.refId === line.refId)
             return (
               <button
                 key={i}
@@ -207,7 +210,9 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
         <span className="pointer-events-none absolute bottom-1/2 right-0 top-0 z-30 flex flex-col items-center justify-center gap-1">
           {outputPorts.map((line, i) => {
             const isSrc =
-              pendingFrom?.placementId === placement.id && pendingFrom.port === i
+              pendingFrom?.ref === 'placement' &&
+              pendingFrom.id === placement.id &&
+              pendingFrom.port === i
             return (
               <button
                 key={i}
@@ -235,7 +240,7 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
             e.stopPropagation()
             pickSource(0, placement.materialId ?? '')
           }}
-          className={`absolute left-1/2 top-1/2 z-30 size-2.5 -translate-x-1/2 -translate-y-1/2 bg-ficsit ${portBase} ${pendingFrom?.placementId === placement.id ? 'scale-125 ring-2 ring-ficsit' : 'ring-ficsit/50'}`}
+          className={`absolute left-1/2 top-1/2 z-30 size-2.5 -translate-x-1/2 -translate-y-1/2 bg-ficsit ${portBase} ${pendingFrom?.ref === 'placement' && pendingFrom.id === placement.id ? 'scale-125 ring-2 ring-ficsit' : 'ring-ficsit/50'}`}
         />
       )}
       {box && (
