@@ -16,7 +16,12 @@ export function ConnectionInspector() {
   const refNames = useAppSelector(selectRefNames)
 
   const view = views.find((v) => v.id === selectedId)
-  if (!view) return null
+  if (!view)
+    return (
+      <div className="rounded-lg border border-edge bg-surface-1 p-4">
+        <p className="text-sm text-gray-500">Select a connection to edit.</p>
+      </div>
+    )
 
   const itemName = refNames[view.itemRefId] ?? 'Item'
 

@@ -17,7 +17,7 @@ import {
   type DropAnimation,
 } from '@dnd-kit/core'
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import {
@@ -25,6 +25,7 @@ import {
   FloorInspector,
   FloorScaleControl,
   FloorStack,
+  floorSelected,
   selectFloorCount,
   selectGridSize,
   selectPxPerMeter,
@@ -37,6 +38,7 @@ import {
   PlacementInspector,
   placementAdded,
   placementMoved,
+  placementSelected,
   selectFactoryFootprint,
   type DragData,
   type DropData,
@@ -109,16 +111,22 @@ function FloorPlanPage() {
   const [activeDrag, setActiveDrag] = useState<ActiveDrag | null>(null)
   const [dropTarget, setDropTarget] = useState<DropTarget | null>(null)
 
-  // Esc cancels a mid-wiring source pick and deselects any connection.
+  // Clear every selection (wiring source, connection, placement, floor) on Esc.
+  const deselectAll = useCallback(() => {
+    dispatch(connectionSourceCleared())
+    dispatch(connectionSelected(null))
+    dispatch(placementSelected(null))
+    dispatch(floorSelected(null))
+  }, [dispatch])
+
+  // Esc deselects everything.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return
-      dispatch(connectionSourceCleared())
-      dispatch(connectionSelected(null))
+      if (e.key === 'Escape') deselectAll()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [dispatch])
+  }, [deselectAll])
 
   const sensors = useSensors(
     // Mouse: small drag distance starts a drag.

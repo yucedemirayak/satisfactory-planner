@@ -196,7 +196,12 @@ export function PlacementInspector() {
   const products = useAppSelector(selectProducts)
   const materials = useAppSelector(selectMaterials)
 
-  if (!placement) return null
+  if (!placement)
+    return (
+      <aside className="rounded-lg border border-edge bg-surface-1 p-4">
+        <p className="text-sm text-gray-500">Select a machine to edit.</p>
+      </aside>
+    )
 
   const box = workbench ?? extractor
   const title = box?.name || spacer?.name || 'Placed item'

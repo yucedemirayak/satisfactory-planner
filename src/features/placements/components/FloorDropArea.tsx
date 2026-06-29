@@ -1,10 +1,9 @@
 import { useDroppable } from '@dnd-kit/core'
 
-import { useAppDispatch, useAppSelector } from '@/app/hooks'
+import { useAppSelector } from '@/app/hooks'
 import { selectGridSize, selectPxPerMeter } from '@/features/floors/selectors'
 
 import type { FloorDropData } from '../dnd'
-import { placementSelected } from '../placementsSlice'
 import { selectFloorPlacements } from '../selectors'
 import type { Placement, PlacementKind } from '../types'
 import { GhostItem } from './GhostItem'
@@ -18,7 +17,6 @@ interface FloorDropAreaProps {
 
 /** Droppable grid area covering a floor band; items are free-positioned by x. */
 export function FloorDropArea({ floorId, ghost = null }: FloorDropAreaProps) {
-  const dispatch = useAppDispatch()
   const placements = useAppSelector((s) => selectFloorPlacements(s, floorId))
   const pxPerMeter = useAppSelector(selectPxPerMeter)
   const gridSize = useAppSelector(selectGridSize)
@@ -47,8 +45,6 @@ export function FloorDropArea({ floorId, ghost = null }: FloorDropAreaProps) {
   return (
     <div
       ref={setNodeRef}
-      // Clicking empty floor space (blocks stopPropagation) clears the selection.
-      onClick={() => dispatch(placementSelected(null))}
       style={{
         backgroundImage: `repeating-linear-gradient(to right, rgba(255,255,255,0.06) 0 1px, transparent 1px ${gridPx}px)`,
       }}
