@@ -161,6 +161,15 @@
           "height": 20,
           "baseRate": 120,
           "color": "#adb5bd"
+        },
+        {
+          "id": "ext__resource-well",
+          "name": "Resource Well",
+          "width": 12,
+          "depth": 12,
+          "height": 8,
+          "baseRate": 60,
+          "color": "#95d5b2"
         }
       ]
     },
@@ -905,7 +914,7 @@
         {
           "id": "mat__desc-nitrogengas-c",
           "name": "Nitrogen Gas",
-          "extractorId": null
+          "extractorId": "ext__resource-well"
         },
         {
           "id": "mat__desc-rawquartz-c",
