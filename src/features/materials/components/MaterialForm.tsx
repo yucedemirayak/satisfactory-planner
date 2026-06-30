@@ -4,6 +4,8 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import { extractorLabel, selectExtractors } from '@/features/extractors'
 
 import { materialAdded } from '../materialsSlice'
+import type { ItemPhase } from '../types'
+import { PhaseSelect } from './PhaseSelect'
 
 /** Form to create a new raw material (name + the extractor that mines it). */
 export function MaterialForm() {
@@ -11,14 +13,18 @@ export function MaterialForm() {
   const extractors = useAppSelector(selectExtractors)
   const [name, setName] = useState('')
   const [extractorId, setExtractorId] = useState('')
+  const [phase, setPhase] = useState<ItemPhase>('solid')
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const trimmed = name.trim()
     if (!trimmed) return
-    dispatch(materialAdded({ name: trimmed, extractorId: extractorId || null }))
+    dispatch(
+      materialAdded({ name: trimmed, extractorId: extractorId || null, phase }),
+    )
     setName('')
     setExtractorId('')
+    setPhase('solid')
   }
 
   return (
@@ -57,6 +63,11 @@ export function MaterialForm() {
             </option>
           ))}
         </select>
+      </label>
+
+      <label className="flex flex-col gap-1">
+        <span className="text-xs font-medium text-gray-400">Phase</span>
+        <PhaseSelect value={phase} onChange={setPhase} />
       </label>
 
       <button

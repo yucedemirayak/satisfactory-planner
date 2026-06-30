@@ -34,6 +34,7 @@ const materialsSlice = createSlice({
       if (changes.name !== undefined) material.name = changes.name
       if (changes.extractorId !== undefined)
         material.extractorId = changes.extractorId
+      if (changes.phase !== undefined) material.phase = changes.phase
     },
     materialRemoved(state, action: PayloadAction<string>) {
       state.items = state.items.filter((m) => m.id !== action.payload)

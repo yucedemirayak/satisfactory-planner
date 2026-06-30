@@ -7,6 +7,7 @@ import { ConveyorManager } from '@/features/conveyors'
 import { ExtractorManager } from '@/features/extractors'
 import { MaterialManager } from '@/features/materials'
 import { RoutingManager } from '@/features/nodes'
+import { PipelineManager } from '@/features/pipelines'
 import { ProductManager } from '@/features/products'
 import { ProjectManager } from '@/features/project'
 import { RecipeManager } from '@/features/recipes'
@@ -40,6 +41,9 @@ function App() {
           <NavLink to={PATHS.conveyors} className={navLinkClass}>
             Conveyors
           </NavLink>
+          <NavLink to={PATHS.pipelines} className={navLinkClass}>
+            Pipelines
+          </NavLink>
           <NavLink to={PATHS.routing} className={navLinkClass}>
             Routing
           </NavLink>
@@ -69,6 +73,7 @@ function App() {
           <Route path={PATHS.workbenches} element={<WorkbenchManager />} />
           <Route path={PATHS.extractors} element={<ExtractorManager />} />
           <Route path={PATHS.conveyors} element={<ConveyorManager />} />
+          <Route path={PATHS.pipelines} element={<PipelineManager />} />
           <Route path={PATHS.routing} element={<RoutingManager />} />
           <Route path={PATHS.materials} element={<MaterialManager />} />
           <Route path={PATHS.products} element={<ProductManager />} />

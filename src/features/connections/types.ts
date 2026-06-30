@@ -14,17 +14,21 @@ export interface ConnectionEnd {
 }
 
 /**
- * A conveyor link from an output port (`from`) to an input port (`to`). Either
+ * A transport link from an output port (`from`) to an input port (`to`). Either
  * end may be a machine placement or a route node. Each port carries at most one
- * belt — fan-out/in goes through splitters/mergers. The carried item is derived
+ * line — fan-out/in goes through splitters/mergers. The carried item is derived
  * from the upstream source, so it isn't stored.
  */
 export interface Connection {
   id: string
   from: ConnectionEnd
   to: ConnectionEnd
-  /** Conveyor (belt) tier id carrying this link. */
-  conveyorId: string
+  /**
+   * Transport tier id carrying this link — a conveyor (solid items) or a
+   * pipeline (fluids). The flow graph picks the right kind from the carried
+   * item's phase; a stale/mismatched id falls back to the first matching tier.
+   */
+  transportId: string
 }
 
 /** Mid two-click selection: the chosen source output port. */

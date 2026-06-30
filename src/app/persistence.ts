@@ -27,6 +27,7 @@ export type PersistedState = Pick<
   | 'extractors'
   | 'spacers'
   | 'conveyors'
+  | 'pipelines'
   | 'products'
   | 'materials'
   | 'recipes'
@@ -44,6 +45,7 @@ const PERSISTED_KEYS: ReadonlyArray<keyof PersistedState> = [
   'extractors',
   'spacers',
   'conveyors',
+  'pipelines',
   'products',
   'materials',
   'recipes',
@@ -70,6 +72,7 @@ function pickPersisted(state: RootState): PersistedState {
     extractors: state.extractors,
     spacers: state.spacers,
     conveyors: state.conveyors,
+    pipelines: state.pipelines,
     products: state.products,
     materials: state.materials,
     recipes: state.recipes,
@@ -96,6 +99,13 @@ function migrate(raw: Record<string, unknown>): void {
     raw.conveyors = seed ? structuredClone(seed) : { items: [] }
   }
 
+  // Pipelines slice added later — seed older saves with the default pipes.
+  if (!raw.pipelines) {
+    const seed = (defaultProject as { data?: { pipelines?: unknown } }).data
+      ?.pipelines
+    raw.pipelines = seed ? structuredClone(seed) : { items: [] }
+  }
+
   // Connections slice added later; always reset transient UI (pendingFrom /
   // selectedId) on load, keeping any saved links. Endpoints used to be flat
   // ({ fromPlacementId, fromPort, ... }); upgrade them to the tagged
@@ -112,6 +122,11 @@ function migrate(raw: Record<string, unknown>): void {
       delete c.fromPort
       delete c.toPlacementId
       delete c.toPort
+    }
+    // conveyorId generalised to transportId (conveyor or pipeline tier).
+    if (c.transportId === undefined && c.conveyorId !== undefined) {
+      c.transportId = c.conveyorId
+      delete c.conveyorId
     }
   }
   raw.connections = {
@@ -224,13 +239,24 @@ function migrate(raw: Record<string, unknown>): void {
     }
   }
 
-  // Material → extractor link added later — default to unassigned.
+  // Material → extractor link + item phase added later — default sensibly.
   const materials = raw.materials as
     | { items?: Array<Record<string, unknown>> }
     | undefined
   if (materials?.items) {
     for (const m of materials.items) {
       if (m.extractorId === undefined) m.extractorId = null
+      if (m.phase !== 'fluid' && m.phase !== 'solid') m.phase = 'solid'
+    }
+  }
+
+  // Product item phase added later — default to solid (belt-carried).
+  const products = raw.products as
+    | { items?: Array<Record<string, unknown>> }
+    | undefined
+  if (products?.items) {
+    for (const p of products.items) {
+      if (p.phase !== 'fluid' && p.phase !== 'solid') p.phase = 'solid'
     }
   }
 

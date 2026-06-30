@@ -1,6 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit'
 
 import type { RootState } from '@/app/store'
+import type { ItemPhase } from '@/features/materials'
 import { nodePortCounts } from '@/features/nodes/types'
 import { extractorRate, placementFactors } from '@/features/placements/calc'
 import type { Placement } from '@/features/placements/types'
@@ -12,17 +13,20 @@ export const selectConnectionSource = (s: RootState) => s.connections.pendingFro
 export const selectSelectedConnectionId = (s: RootState) =>
   s.connections.selectedId
 
-/** A connection enriched with the carried item, its flow rate and belt capacity. */
+/** A connection enriched with the carried item, its flow rate and capacity. */
 export interface ConnectionView {
   id: string
   from: ConnectionEnd
   to: ConnectionEnd
-  conveyorId: string
+  /** Effective transport tier (conveyor or pipeline) carrying this link. */
+  transportId: string
+  /** Whether the carried item travels on belts (solid) or in pipes (fluid). */
+  phase: ItemPhase
   /** Product/material id flowing along the link. */
   itemRefId: string
-  /** Items/min leaving the source output port (scaled by overclock/sloops/qty). */
+  /** Rate leaving the source output port (scaled by overclock/sloops/qty). */
   sourceRate: number
-  /** The belt's max throughput (0 if the conveyor is gone). */
+  /** The transport's max throughput (0 if no matching tier exists). */
   capacity: number
   overCapacity: boolean
   /** Carried item doesn't match the target input, or a merger mixes items. */
@@ -92,9 +96,23 @@ export const selectConnectionViews = createSelector(
     (s: RootState) => s.workbenches.items,
     (s: RootState) => s.extractors.items,
     (s: RootState) => s.conveyors.items,
+    (s: RootState) => s.pipelines.items,
     (s: RootState) => s.nodes.items,
+    (s: RootState) => s.materials.items,
+    (s: RootState) => s.products.items,
   ],
-  (items, byFloor, recipes, workbenches, extractors, conveyors, nodes) => {
+  (
+    items,
+    byFloor,
+    recipes,
+    workbenches,
+    extractors,
+    conveyors,
+    pipelines,
+    nodes,
+    materials,
+    products,
+  ) => {
     const placements = new Map<string, Placement>()
     for (const list of Object.values(byFloor)) {
       for (const p of list) placements.set(p.id, p)
@@ -103,7 +121,15 @@ export const selectConnectionViews = createSelector(
     const wbSlots = new Map(workbenches.map((w) => [w.id, w.sloopSlots]))
     const exRate = new Map(extractors.map((e) => [e.id, e.baseRate]))
     const convRate = new Map(conveyors.map((c) => [c.id, c.maxRate]))
+    const pipeRate = new Map(pipelines.map((p) => [p.id, p.maxRate]))
     const nodesById = new Map(nodes.map((n) => [n.id, n]))
+
+    // Item phase (solid → belt, fluid → pipe). Default solid when unknown.
+    const itemPhase = new Map<string, ItemPhase>()
+    for (const m of materials) itemPhase.set(m.id, m.phase)
+    for (const p of products) itemPhase.set(p.id, p.phase)
+    const firstConveyor = conveyors[0]?.id ?? ''
+    const firstPipeline = pipelines[0]?.id ?? ''
 
     // Belts grouped by the node they enter / leave (each port carries ≤1 belt).
     const intoNode = new Map<string, Connection[]>()
@@ -218,14 +244,30 @@ export const selectConnectionViews = createSelector(
       const reqItem = sinkItem(c.to)
       if (reqItem === null) continue
       const f = flowOf(c)
-      const capacity = convRate.get(c.conveyorId) ?? 0
+      // Pick transport by the carried item's phase. A stored id of the wrong
+      // kind (or a deleted tier) falls back to the first tier that matches.
+      const phase: ItemPhase = f.item
+        ? (itemPhase.get(f.item) ?? 'solid')
+        : 'solid'
+      const stored = c.transportId
+      const storedFits =
+        phase === 'fluid' ? pipeRate.has(stored) : convRate.has(stored)
+      const transportId = storedFits
+        ? stored
+        : phase === 'fluid'
+          ? firstPipeline
+          : firstConveyor
+      const capacity =
+        (phase === 'fluid' ? pipeRate.get(transportId) : convRate.get(transportId)) ??
+        0
       const mismatch =
         f.conflict || (reqItem !== '' && f.item !== '' && f.item !== reqItem)
       views.push({
         id: c.id,
         from: c.from,
         to: c.to,
-        conveyorId: c.conveyorId,
+        transportId,
+        phase,
         itemRefId: f.item,
         sourceRate: f.rate,
         capacity,

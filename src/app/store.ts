@@ -7,6 +7,7 @@ import floorsReducer from '@/features/floors/floorsSlice'
 import materialsReducer from '@/features/materials/materialsSlice'
 import nodesReducer from '@/features/nodes/nodesSlice'
 import nodeTypesReducer from '@/features/nodes/nodeTypesSlice'
+import pipelinesReducer from '@/features/pipelines/pipelinesSlice'
 import placementsReducer from '@/features/placements/placementsSlice'
 import productionReducer from '@/features/production/productionSlice'
 import productsReducer from '@/features/products/productsSlice'
@@ -23,6 +24,7 @@ const combinedReducer = combineReducers({
   extractors: extractorsReducer,
   spacers: spacersReducer,
   conveyors: conveyorsReducer,
+  pipelines: pipelinesReducer,
   connections: connectionsReducer,
   nodes: nodesReducer,
   nodeTypes: nodeTypesReducer,

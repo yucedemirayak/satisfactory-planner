@@ -62,7 +62,11 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
   const pxPerMeter = useAppSelector(selectPxPerMeter)
   const portScale = useAppSelector(selectPortScale)
   const pendingFrom = useAppSelector(selectConnectionSource)
-  const defaultConveyorId = useAppSelector((s) => s.conveyors.items[0]?.id ?? '')
+  // New links default to the first conveyor; the flow graph auto-switches a
+  // fluid line to a pipeline based on the carried item's phase.
+  const defaultTransportId = useAppSelector(
+    (s) => s.conveyors.items[0]?.id ?? '',
+  )
 
   const data: PlacementDragData = {
     type: 'placement',
@@ -147,7 +151,7 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
       connectionAdded({
         from: { ref: pendingFrom.ref, id: pendingFrom.id, port: pendingFrom.port },
         to: { ref: 'placement', id: placement.id, port },
-        conveyorId: defaultConveyorId,
+        transportId: defaultTransportId,
       }),
     )
   }

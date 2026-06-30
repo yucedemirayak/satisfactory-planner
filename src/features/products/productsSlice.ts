@@ -28,9 +28,9 @@ const productsSlice = createSlice({
     ) {
       const product = state.items.find((p) => p.id === action.payload.id)
       if (!product) return
-      if (action.payload.changes.name !== undefined) {
-        product.name = action.payload.changes.name
-      }
+      const { changes } = action.payload
+      if (changes.name !== undefined) product.name = changes.name
+      if (changes.phase !== undefined) product.phase = changes.phase
     },
     productRemoved(state, action: PayloadAction<string>) {
       state.items = state.items.filter((p) => p.id !== action.payload)

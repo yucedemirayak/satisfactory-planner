@@ -1,4 +1,5 @@
 import { useAppDispatch } from '@/app/hooks'
+import { PhaseSelect } from '@/features/materials'
 
 import { productLabel } from '../helpers'
 import { productRemoved, productUpdated } from '../productsSlice'
@@ -23,6 +24,14 @@ export function ProductCard({ product, index }: ProductCardProps) {
           dispatch(productUpdated({ id: product.id, changes: { name: e.target.value } }))
         }
         className="min-w-0 flex-1 rounded-md border border-edge bg-surface-0 px-2.5 py-1.5 text-sm text-gray-100 outline-none focus:border-ficsit"
+      />
+      <PhaseSelect
+        value={product.phase}
+        onChange={(phase) =>
+          dispatch(productUpdated({ id: product.id, changes: { phase } }))
+        }
+        ariaLabel="Phase"
+        className="w-20 shrink-0 rounded-md border border-edge bg-surface-0 px-2 py-1.5 text-sm text-gray-100 outline-none focus:border-ficsit"
       />
       <button
         type="button"

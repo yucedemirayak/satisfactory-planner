@@ -214,6 +214,20 @@
         }
       ]
     },
+    "pipelines": {
+      "items": [
+        {
+          "id": "pipe__mk1",
+          "name": "Pipeline Mk.1",
+          "maxRate": 300
+        },
+        {
+          "id": "pipe__mk2",
+          "name": "Pipeline Mk.2",
+          "maxRate": 600
+        }
+      ]
+    },
     "products": {
       "items": [
         {
@@ -246,7 +260,8 @@
         },
         {
           "id": "prod__desc-aluminasolution-c",
-          "name": "Alumina Solution"
+          "name": "Alumina Solution",
+          "phase": "fluid"
         },
         {
           "id": "prod__desc-aluminumcasing-c",
@@ -362,7 +377,8 @@
         },
         {
           "id": "prod__desc-darkenergy-c",
-          "name": "Dark Matter Residue"
+          "name": "Dark Matter Residue",
+          "phase": "fluid"
         },
         {
           "id": "prod__desc-diamond-c",
@@ -370,7 +386,8 @@
         },
         {
           "id": "prod__desc-dissolvedsilica-c",
-          "name": "Dissolved Silica"
+          "name": "Dissolved Silica",
+          "phase": "fluid"
         },
         {
           "id": "prod__desc-electromagneticcontrolrod-c",
@@ -398,7 +415,8 @@
         },
         {
           "id": "prod__desc-quantumenergy-c",
-          "name": "Excited Photonic Matter"
+          "name": "Excited Photonic Matter",
+          "phase": "fluid"
         },
         {
           "id": "prod__desc-rebar-explosive-c",
@@ -434,7 +452,8 @@
         },
         {
           "id": "prod__desc-liquidfuel-c",
-          "name": "Fuel"
+          "name": "Fuel",
+          "phase": "fluid"
         },
         {
           "id": "prod__desc-modularframefused-c",
@@ -474,7 +493,8 @@
         },
         {
           "id": "prod__desc-heavyoilresidue-c",
-          "name": "Heavy Oil Residue"
+          "name": "Heavy Oil Residue",
+          "phase": "fluid"
         },
         {
           "id": "prod__desc-highspeedconnector-c",
@@ -498,7 +518,8 @@
         },
         {
           "id": "prod__desc-ionizedfuel-c",
-          "name": "Ionized Fuel"
+          "name": "Ionized Fuel",
+          "phase": "fluid"
         },
         {
           "id": "prod__desc-ironingot-c",
@@ -526,7 +547,8 @@
         },
         {
           "id": "prod__desc-liquidbiofuel-c",
-          "name": "Liquid Biofuel"
+          "name": "Liquid Biofuel",
+          "phase": "fluid"
         },
         {
           "id": "prod__desc-spaceelevatorpart-6-c",
@@ -562,7 +584,8 @@
         },
         {
           "id": "prod__desc-nitricacid-c",
-          "name": "Nitric Acid"
+          "name": "Nitric Acid",
+          "phase": "fluid"
         },
         {
           "id": "prod__desc-nobeliskexplosive-c",
@@ -726,7 +749,8 @@
         },
         {
           "id": "prod__desc-rocketfuel-c",
-          "name": "Rocket Fuel"
+          "name": "Rocket Fuel",
+          "phase": "fluid"
         },
         {
           "id": "prod__desc-rotor-c",
@@ -806,7 +830,8 @@
         },
         {
           "id": "prod__desc-sulfuricacid-c",
-          "name": "Sulfuric Acid"
+          "name": "Sulfuric Acid",
+          "phase": "fluid"
         },
         {
           "id": "prod__desc-computersuper-c",
@@ -834,7 +859,8 @@
         },
         {
           "id": "prod__desc-liquidturbofuel-c",
-          "name": "Turbofuel"
+          "name": "Turbofuel",
+          "phase": "fluid"
         },
         {
           "id": "prod__desc-nuclearfuelrod-c",
@@ -899,7 +925,8 @@
         {
           "id": "mat__desc-liquidoil-c",
           "name": "Crude Oil",
-          "extractorId": "ext__oil-extractor"
+          "extractorId": "ext__oil-extractor",
+          "phase": "fluid"
         },
         {
           "id": "mat__desc-oreiron-c",
@@ -914,7 +941,8 @@
         {
           "id": "mat__desc-nitrogengas-c",
           "name": "Nitrogen Gas",
-          "extractorId": "ext__resource-well"
+          "extractorId": "ext__resource-well",
+          "phase": "fluid"
         },
         {
           "id": "mat__desc-rawquartz-c",
@@ -939,7 +967,8 @@
         {
           "id": "mat__desc-water-c",
           "name": "Water",
-          "extractorId": "ext__water-extractor"
+          "extractorId": "ext__water-extractor",
+          "phase": "fluid"
         }
       ]
     },

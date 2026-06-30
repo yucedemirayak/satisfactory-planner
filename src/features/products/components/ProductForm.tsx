@@ -1,20 +1,23 @@
 import { useState } from 'react'
 
 import { useAppDispatch } from '@/app/hooks'
+import { PhaseSelect, type ItemPhase } from '@/features/materials'
 
 import { productAdded } from '../productsSlice'
 
-/** Form to create a new product (name only for now). */
+/** Form to create a new product (name + phase). */
 export function ProductForm() {
   const dispatch = useAppDispatch()
   const [name, setName] = useState('')
+  const [phase, setPhase] = useState<ItemPhase>('solid')
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const trimmed = name.trim()
     if (!trimmed) return
-    dispatch(productAdded({ name: trimmed }))
+    dispatch(productAdded({ name: trimmed, phase }))
     setName('')
+    setPhase('solid')
   }
 
   return (
@@ -35,6 +38,11 @@ export function ProductForm() {
           onChange={(e) => setName(e.target.value)}
           className="rounded-md border border-edge bg-surface-0 px-2.5 py-1.5 text-sm text-gray-100 outline-none focus:border-ficsit"
         />
+      </label>
+
+      <label className="flex flex-col gap-1">
+        <span className="text-xs font-medium text-gray-400">Phase</span>
+        <PhaseSelect value={phase} onChange={setPhase} />
       </label>
 
       <button

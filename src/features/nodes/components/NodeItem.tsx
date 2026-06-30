@@ -28,7 +28,9 @@ export function NodeItem({ node }: { node: RouteNode }) {
   const cfg = useAppSelector((s) => s.nodeTypes[node.kind])
   const pendingFrom = useAppSelector(selectConnectionSource)
   const selected = useAppSelector(selectSelectedNodeId) === node.id
-  const defaultConveyorId = useAppSelector((s) => s.conveyors.items[0]?.id ?? '')
+  const defaultTransportId = useAppSelector(
+    (s) => s.conveyors.items[0]?.id ?? '',
+  )
 
   const data: NodeDragData = {
     type: 'node',
@@ -62,7 +64,7 @@ export function NodeItem({ node }: { node: RouteNode }) {
           port: pendingFrom.port,
         },
         to: { ref: 'node', id: node.id, port },
-        conveyorId: defaultConveyorId,
+        transportId: defaultTransportId,
       }),
     )
   }

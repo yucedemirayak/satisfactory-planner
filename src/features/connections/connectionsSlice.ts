@@ -1,6 +1,5 @@
 import { createSlice, nanoid, type PayloadAction } from '@reduxjs/toolkit'
 
-import { conveyorRemoved } from '@/features/conveyors/conveyorsSlice'
 import { nodeRemoved } from '@/features/nodes/nodesSlice'
 import {
   placementMaterialChanged,
@@ -70,12 +69,12 @@ const connectionsSlice = createSlice({
     connectionSelected(state, action: PayloadAction<string | null>) {
       state.selectedId = action.payload
     },
-    connectionConveyorChanged(
+    connectionTransportChanged(
       state,
-      action: PayloadAction<{ id: string; conveyorId: string }>,
+      action: PayloadAction<{ id: string; transportId: string }>,
     ) {
       const c = state.items.find((x) => x.id === action.payload.id)
-      if (c) c.conveyorId = action.payload.conveyorId
+      if (c) c.transportId = action.payload.transportId
     },
   },
   extraReducers: (builder) => {
@@ -107,9 +106,8 @@ const connectionsSlice = createSlice({
       dropTouching(s, 'placement', a.payload.id),
     )
     builder.addCase(nodeRemoved, (s, a) => dropTouching(s, 'node', a.payload))
-    builder.addCase(conveyorRemoved, (s, a) => {
-      s.items = s.items.filter((c) => c.conveyorId !== a.payload)
-    })
+    // Removing a transport tier doesn't drop links — the flow graph falls back
+    // to the first matching tier, so wiring survives belt/pipe edits.
   },
 })
 
@@ -119,7 +117,7 @@ export const {
   connectionAdded,
   connectionRemoved,
   connectionSelected,
-  connectionConveyorChanged,
+  connectionTransportChanged,
 } = connectionsSlice.actions
 
 export default connectionsSlice.reducer

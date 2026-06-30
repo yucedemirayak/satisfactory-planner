@@ -4,6 +4,7 @@ import { extractorLabel, selectExtractors } from '@/features/extractors'
 import { materialLabel } from '../helpers'
 import { materialRemoved, materialUpdated } from '../materialsSlice'
 import type { Material } from '../types'
+import { PhaseSelect } from './PhaseSelect'
 
 interface MaterialCardProps {
   material: Material
@@ -48,6 +49,14 @@ export function MaterialCard({ material, index }: MaterialCardProps) {
           </option>
         ))}
       </select>
+      <PhaseSelect
+        value={material.phase}
+        onChange={(phase) =>
+          dispatch(materialUpdated({ id: material.id, changes: { phase } }))
+        }
+        ariaLabel="Phase"
+        className="w-20 shrink-0 rounded-md border border-edge bg-surface-0 px-2 py-1.5 text-sm text-gray-100 outline-none focus:border-ficsit"
+      />
       <button
         type="button"
         onClick={() => dispatch(materialRemoved(material.id))}
