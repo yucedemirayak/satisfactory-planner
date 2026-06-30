@@ -2,9 +2,14 @@ import { Link } from 'react-router-dom'
 
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import { PATHS } from '@/app/paths'
-import { selectMaterials } from '@/features/materials'
+import { materialAssignableTo, selectMaterials } from '@/features/materials'
 import { selectProducts } from '@/features/products'
-import { recipeLabel, selectRecipes } from '@/features/recipes'
+import {
+  recipeAssignableTo,
+  recipeFitsWorkbench,
+  recipeLabel,
+  selectRecipes,
+} from '@/features/recipes'
 import type { RecipeItem } from '@/features/recipes'
 
 import { extractorRate, placementFactors } from '../calc'
@@ -224,17 +229,31 @@ export function PlacementInspector() {
       ))
     )
 
-  // Workbench recipe scaling.
+  // Workbench recipe scaling. Only recipes that fit this workbench's ports (and
+  // are bound to it / unbound) are assignable; the current pick always shows.
   const assignedRecipe = recipes.find((r) => r.id === placement.recipeId)
-  const availableRecipes = recipes
-    .map((recipe, index) => ({ recipe, index }))
-    .filter(
-      ({ recipe }) =>
-        recipe.workbenchId === placement.refId ||
-        recipe.workbenchId === null ||
-        recipe.id === placement.recipeId,
-    )
+  const availableRecipes = workbench
+    ? recipes
+        .map((recipe, index) => ({ recipe, index }))
+        .filter(
+          ({ recipe }) =>
+            recipeAssignableTo(recipe, workbench) ||
+            recipe.id === placement.recipeId,
+        )
+    : []
+  const recipeMisfit =
+    assignedRecipe && workbench && !recipeFitsWorkbench(assignedRecipe, workbench)
   const factors = placementFactors(placement, workbench?.sloopSlots ?? 0)
+
+  // Extractor: only materials this extractor mines (or unassigned) are offered;
+  // the current pick always stays visible.
+  const availableMaterials = extractor
+    ? materials.filter(
+        (m) =>
+          materialAssignableTo(m, placement.refId) ||
+          m.id === placement.materialId,
+      )
+    : materials
 
   return (
     <aside className="flex flex-col gap-4 rounded-lg border border-ficsit/40 bg-surface-1 p-4">
@@ -322,6 +341,16 @@ export function PlacementInspector() {
                 .
               </span>
             )}
+            {workbench && (
+              <span className="text-xs text-gray-500">
+                Ports: {workbench.inputs} in · {workbench.outputs} out
+              </span>
+            )}
+            {recipeMisfit && (
+              <span className="text-xs text-amber-400">
+                ⚠ Recipe needs more ports than this workbench has.
+              </span>
+            )}
           </label>
 
           <MachineConfigs placement={placement} sloopSlots={workbench?.sloopSlots ?? 0} />
@@ -359,19 +388,37 @@ export function PlacementInspector() {
               className="rounded-md border border-edge bg-surface-0 px-2 py-1.5 text-sm text-gray-100 outline-none focus:border-ficsit"
             >
               <option value="">None</option>
-              {materials.map((m) => (
+              {availableMaterials.map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.name}
                 </option>
               ))}
             </select>
-            {materials.length === 0 && (
+            {availableMaterials.length === 0 && (
               <span className="text-xs text-gray-500">
-                No materials yet —{' '}
-                <Link to={PATHS.materials} className="text-ficsit hover:underline">
-                  add one
-                </Link>
-                .
+                {materials.length === 0 ? (
+                  <>
+                    No materials yet —{' '}
+                    <Link
+                      to={PATHS.materials}
+                      className="text-ficsit hover:underline"
+                    >
+                      add one
+                    </Link>
+                    .
+                  </>
+                ) : (
+                  <>
+                    No materials assigned to this extractor — set one on the{' '}
+                    <Link
+                      to={PATHS.materials}
+                      className="text-ficsit hover:underline"
+                    >
+                      Materials
+                    </Link>{' '}
+                    page.
+                  </>
+                )}
               </span>
             )}
           </label>

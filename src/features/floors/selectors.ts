@@ -1,6 +1,10 @@
 import type { RootState } from '@/app/store'
 
-import { DEFAULT_GRID_SIZE, DEFAULT_PX_PER_METER } from './constants'
+import {
+  DEFAULT_GRID_SIZE,
+  DEFAULT_PORT_SCALE,
+  DEFAULT_PX_PER_METER,
+} from './constants'
 
 /** Floors ordered bottom→top (index 0 = ground floor). */
 export const selectFloors = (state: RootState) => state.floors.items
@@ -12,6 +16,10 @@ export const selectPxPerMeter = (state: RootState) =>
 /** Grid snap resolution in metres; falls back to default for older saves. */
 export const selectGridSize = (state: RootState) =>
   state.floors.gridSize ?? DEFAULT_GRID_SIZE
+
+/** Connection-port hit size in pixels; falls back to default for older saves. */
+export const selectPortScale = (state: RootState) =>
+  state.floors.portScale ?? DEFAULT_PORT_SCALE
 
 export const selectFloorCount = (state: RootState) => state.floors.items.length
 

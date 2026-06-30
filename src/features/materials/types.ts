@@ -5,6 +5,8 @@
 export interface Material {
   id: string
   name: string
+  /** Extractor this material is mined by, or null = unassigned. Refs Extractor. */
+  extractorId: string | null
 }
 
 export type MaterialDraft = Omit<Material, 'id'>

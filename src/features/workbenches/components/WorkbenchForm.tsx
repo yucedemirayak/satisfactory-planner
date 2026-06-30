@@ -5,11 +5,16 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import {
   DEFAULT_WORKBENCH_DEPTH,
   DEFAULT_WORKBENCH_HEIGHT,
+  DEFAULT_WORKBENCH_INPUTS,
+  DEFAULT_WORKBENCH_OUTPUTS,
   DEFAULT_WORKBENCH_SLOOP_SLOTS,
   DEFAULT_WORKBENCH_WIDTH,
   MAX_WORKBENCH_DIM,
+  MAX_WORKBENCH_INPUTS,
+  MAX_WORKBENCH_OUTPUTS,
   MAX_WORKBENCH_SLOOP_SLOTS,
   MIN_WORKBENCH_DIM,
+  MIN_WORKBENCH_PORTS,
   MIN_WORKBENCH_SLOOP_SLOTS,
   WORKBENCH_PALETTE,
 } from '../constants'
@@ -30,16 +35,31 @@ export function WorkbenchForm() {
   const [depth, setDepth] = useState(DEFAULT_WORKBENCH_DEPTH)
   const [height, setHeight] = useState(DEFAULT_WORKBENCH_HEIGHT)
   const [sloopSlots, setSloopSlots] = useState(DEFAULT_WORKBENCH_SLOOP_SLOTS)
+  const [inputs, setInputs] = useState(DEFAULT_WORKBENCH_INPUTS)
+  const [outputs, setOutputs] = useState(DEFAULT_WORKBENCH_OUTPUTS)
   const [color, setColor] = useState<string>(nextColor)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    dispatch(workbenchAdded({ name, width, depth, height, sloopSlots, color }))
+    dispatch(
+      workbenchAdded({
+        name,
+        width,
+        depth,
+        height,
+        sloopSlots,
+        inputs,
+        outputs,
+        color,
+      }),
+    )
     setName('')
     setWidth(DEFAULT_WORKBENCH_WIDTH)
     setDepth(DEFAULT_WORKBENCH_DEPTH)
     setHeight(DEFAULT_WORKBENCH_HEIGHT)
     setSloopSlots(DEFAULT_WORKBENCH_SLOOP_SLOTS)
+    setInputs(DEFAULT_WORKBENCH_INPUTS)
+    setOutputs(DEFAULT_WORKBENCH_OUTPUTS)
     const next =
       WORKBENCH_PALETTE[
         (WORKBENCH_PALETTE.indexOf(color as (typeof WORKBENCH_PALETTE)[number]) +
@@ -117,6 +137,28 @@ export function WorkbenchForm() {
             max={MAX_WORKBENCH_SLOOP_SLOTS}
             value={sloopSlots}
             onChange={(e) => setSloopSlots(Number(e.target.value))}
+            className={`${inputClass} font-mono`}
+          />
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="text-xs font-medium text-gray-400">Inputs</span>
+          <input
+            type="number"
+            min={MIN_WORKBENCH_PORTS}
+            max={MAX_WORKBENCH_INPUTS}
+            value={inputs}
+            onChange={(e) => setInputs(Number(e.target.value))}
+            className={`${inputClass} font-mono`}
+          />
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="text-xs font-medium text-gray-400">Outputs</span>
+          <input
+            type="number"
+            min={MIN_WORKBENCH_PORTS}
+            max={MAX_WORKBENCH_OUTPUTS}
+            value={outputs}
+            onChange={(e) => setOutputs(Number(e.target.value))}
             className={`${inputClass} font-mono`}
           />
         </label>

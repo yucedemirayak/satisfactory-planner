@@ -7,45 +7,25 @@ import {
   connectionSourceSet,
 } from '@/features/connections/connectionsSlice'
 import { selectConnectionSource } from '@/features/connections/selectors'
-import { selectPxPerMeter } from '@/features/floors/selectors'
+import { selectPortScale, selectPxPerMeter } from '@/features/floors/selectors'
 import type { NodeDragData } from '@/features/placements/dnd'
+import { portPosStyle, resolvePorts } from '@/features/ports'
 
 import { MIN_NODE_PX } from '../constants'
+import { DEFAULT_NODE_PORTS } from '../nodeTypesSlice'
 import { nodeRemoved, nodeSelected } from '../nodesSlice'
 import { selectSelectedNodeId } from '../selectors'
-import { nodePortCounts, type NodeKind, type RouteNode } from '../types'
+import type { RouteNode } from '../types'
 
 const portBase =
   'pointer-events-auto cursor-pointer rounded-full ring-1 transition hover:scale-125'
-
-type Edge = 'top' | 'bottom' | 'left' | 'right'
-
-/** Absolute placement (straddling the edge) for a port on each side. */
-const EDGE_POS: Record<Edge, string> = {
-  top: 'left-1/2 top-0 -translate-x-1/2 -translate-y-1/2',
-  bottom: 'bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2',
-  left: 'left-0 top-1/2 -translate-x-1/2 -translate-y-1/2',
-  right: 'right-0 top-1/2 -translate-y-1/2 translate-x-1/2',
-}
-
-const SPLITTER_OUT: Edge[] = ['left', 'top', 'right']
-const MERGER_IN: Edge[] = ['left', 'bottom', 'right']
-
-/**
- * Which edge a port sits on. Splitter: input at the bottom, outputs on
- * left/top/right. Merger: output at the top, inputs on left/bottom/right.
- */
-function portEdge(kind: NodeKind, type: 'in' | 'out', i: number): Edge {
-  if (kind === 'splitter')
-    return type === 'in' ? 'bottom' : (SPLITTER_OUT[i] ?? 'right')
-  return type === 'out' ? 'top' : (MERGER_IN[i] ?? 'left')
-}
 
 /** A splitter/merger placed freely on a floor; belts attach to its ports. */
 export function NodeItem({ node }: { node: RouteNode }) {
   const dispatch = useAppDispatch()
   const pxPerMeter = useAppSelector(selectPxPerMeter)
-  const size = useAppSelector((s) => s.nodeTypes[node.kind])
+  const portScale = useAppSelector(selectPortScale)
+  const cfg = useAppSelector((s) => s.nodeTypes[node.kind])
   const pendingFrom = useAppSelector(selectConnectionSource)
   const selected = useAppSelector(selectSelectedNodeId) === node.id
   const defaultConveyorId = useAppSelector((s) => s.conveyors.items[0]?.id ?? '')
@@ -60,10 +40,12 @@ export function NodeItem({ node }: { node: RouteNode }) {
     data,
   })
 
-  const { inputs, outputs } = nodePortCounts(node.kind)
-  const ports = [
-    ...Array.from({ length: inputs }, (_, i) => ({ type: 'in' as const, i })),
-    ...Array.from({ length: outputs }, (_, i) => ({ type: 'out' as const, i })),
+  const def = DEFAULT_NODE_PORTS[node.kind]
+  const inPorts = resolvePorts(cfg.inputPorts, def.inputPorts)
+  const outPorts = resolvePorts(cfg.outputPorts, def.outputPorts)
+  const portDescs = [
+    ...inPorts.map((pos, i) => ({ type: 'in' as const, i, pos })),
+    ...outPorts.map((pos, i) => ({ type: 'out' as const, i, pos })),
   ]
   const isSelf = pendingFrom?.ref === 'node' && pendingFrom.id === node.id
 
@@ -89,10 +71,12 @@ export function NodeItem({ node }: { node: RouteNode }) {
     position: 'absolute',
     left: node.x * pxPerMeter,
     top: node.y * pxPerMeter,
-    width: Math.max(MIN_NODE_PX, size.width * pxPerMeter),
-    height: Math.max(MIN_NODE_PX, size.height * pxPerMeter),
+    width: Math.max(MIN_NODE_PX, cfg.width * pxPerMeter),
+    height: Math.max(MIN_NODE_PX, cfg.height * pxPerMeter),
     opacity: isDragging ? 0.4 : 1,
   }
+  // Ports are a fixed pixel size (user-adjustable) so they stay clickable at any zoom.
+  const portStyle: CSSProperties = { width: portScale, height: portScale }
 
   return (
     <div
@@ -114,43 +98,47 @@ export function NodeItem({ node }: { node: RouteNode }) {
     >
       {node.kind === 'splitter' ? 'SPL' : 'MRG'}
 
-      {ports.map((p) => {
-        const pos = EDGE_POS[portEdge(node.kind, p.type, p.i)]
+      {portDescs.map((p) => {
+        const wrap: CSSProperties = { ...portPosStyle(p.pos), zIndex: 30 }
         if (p.type === 'in') {
           const valid = Boolean(pendingFrom) && !isSelf
           return (
-            <button
-              key={`in-${p.i}`}
-              type="button"
-              data-port={`${node.id}::in::${p.i}`}
-              aria-label="Input port"
-              onPointerDown={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation()
-                completeTo(p.i)
-              }}
-              className={`absolute z-30 size-2.5 bg-sky-400 ${pos} ${portBase} ${
-                valid ? 'scale-125 ring-2 ring-emerald-400' : 'ring-sky-200/50'
-              }`}
-            />
+            <span key={`in-${p.i}`} style={wrap}>
+              <button
+                type="button"
+                data-port={`${node.id}::in::${p.i}`}
+                aria-label="Input port"
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  completeTo(p.i)
+                }}
+                style={portStyle}
+                className={`block bg-sky-400 ${portBase} ${
+                  valid ? 'scale-125 ring-2 ring-emerald-400' : 'ring-sky-200/50'
+                }`}
+              />
+            </span>
           )
         }
         const isSrc = isSelf && pendingFrom.port === p.i
         return (
-          <button
-            key={`out-${p.i}`}
-            type="button"
-            data-port={`${node.id}::out::${p.i}`}
-            aria-label="Output port"
-            onPointerDown={(e) => e.stopPropagation()}
-            onClick={(e) => {
-              e.stopPropagation()
-              pickSource(p.i)
-            }}
-            className={`absolute z-30 size-2.5 bg-ficsit ${pos} ${portBase} ${
-              isSrc ? 'scale-125 ring-2 ring-ficsit' : 'ring-ficsit/50'
-            }`}
-          />
+          <span key={`out-${p.i}`} style={wrap}>
+            <button
+              type="button"
+              data-port={`${node.id}::out::${p.i}`}
+              aria-label="Output port"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation()
+                pickSource(p.i)
+              }}
+              style={portStyle}
+              className={`block bg-ficsit ${portBase} ${
+                isSrc ? 'scale-125 ring-2 ring-ficsit' : 'ring-ficsit/50'
+              }`}
+            />
+          </span>
         )
       })}
 

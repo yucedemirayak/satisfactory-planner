@@ -7,7 +7,13 @@ import {
   connectionSourceSet,
 } from '@/features/connections/connectionsSlice'
 import { selectConnectionSource } from '@/features/connections/selectors'
-import { selectPxPerMeter } from '@/features/floors/selectors'
+import { selectPortScale, selectPxPerMeter } from '@/features/floors/selectors'
+import {
+  edgePorts,
+  portPosStyle,
+  resolvePorts,
+  type PortPos,
+} from '@/features/ports'
 
 import type { PlacementDragData } from '../dnd'
 import { placementRemoved, placementSelected } from '../placementsSlice'
@@ -54,6 +60,7 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
     placement.id,
   )
   const pxPerMeter = useAppSelector(selectPxPerMeter)
+  const portScale = useAppSelector(selectPortScale)
   const pendingFrom = useAppSelector(selectConnectionSource)
   const defaultConveyorId = useAppSelector((s) => s.conveyors.items[0]?.id ?? '')
 
@@ -85,17 +92,46 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
       ? recipe.name.trim() || 'Recipe'
       : null
 
-  // Conveyor ports for an assigned recipe: one node per input (left) / output
-  // (right), like the machine's belt connections.
-  const showPorts = Boolean(box) && !isExtractor && recipe
-  const inputPorts = recipe ? recipe.inputs.filter((i) => i.refId) : []
-  const outputPorts = recipe ? recipe.outputs.filter((o) => o.refId) : []
+  // Port slots come from the workbench definition (fixed count); the assigned
+  // recipe fills them in order. A slot with no recipe item is empty (faded,
+  // not wireable). Value = the carried item's refId, or null when empty. Each
+  // port sits on its configured edge; ports sharing an edge are spread evenly.
+  const showPorts = Boolean(workbench) && !isExtractor
+  const portDescs: {
+    type: 'in' | 'out'
+    index: number
+    refId: string | null
+    pos: PortPos
+  }[] = workbench
+    ? [
+        ...resolvePorts(
+          workbench.inputPorts,
+          edgePorts(workbench.inputs, 'left'),
+        ).map((pos, i) => ({
+          type: 'in' as const,
+          index: i,
+          refId: recipe?.inputs[i]?.refId || null,
+          pos,
+        })),
+        ...resolvePorts(
+          workbench.outputPorts,
+          edgePorts(workbench.outputs, 'right'),
+        ).map((pos, i) => ({
+          type: 'out' as const,
+          index: i,
+          refId: recipe?.outputs[i]?.refId || null,
+          pos,
+        })),
+      ]
+    : []
   // Extractors have a single output (their material) — shown dead-centre.
   const showExtractorPort = isExtractor && Boolean(placement.materialId)
 
   // Two-click wiring: click an output (source), then a matching input (target).
   const portBase =
     'pointer-events-auto cursor-pointer rounded-full ring-1 transition hover:scale-125'
+  // Ports are a fixed pixel size (user-adjustable) so they stay clickable at any zoom.
+  const portStyle: CSSProperties = { width: portScale, height: portScale }
   const pickSource = (port: number, refId: string) =>
     dispatch(
       connectionSourceSet({ ref: 'placement', id: placement.id, port, refId }),
@@ -122,8 +158,10 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
     opacity: isDragging ? 0.4 : 1,
   }
 
+  // No overflow-hidden: ports straddle the box edge and must not be clipped
+  // (the rounded corners still clip the background fill via border-radius).
   const sharedClass =
-    'group/wb absolute cursor-grab touch-none overflow-hidden active:cursor-grabbing'
+    'group/wb absolute cursor-grab touch-none active:cursor-grabbing'
   // Overlap warning (red) takes priority over the selection ring (ficsit).
   const ring = overlapping
     ? ' ring-2 ring-red-500'
@@ -179,57 +217,68 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
           {`${def.width}m`}
         </span>
       )}
-      {showPorts && inputPorts.length > 0 && (
-        <span className="pointer-events-none absolute bottom-0 left-0 top-1/2 z-30 flex flex-col items-center justify-center gap-1">
-          {inputPorts.map((line, i) => {
+      {showPorts &&
+        portDescs.map((p) => {
+          const wrap: CSSProperties = {
+            ...portPosStyle(p.pos),
+            zIndex: 30,
+          }
+          // Empty slot: faded, non-interactive marker (no recipe item here).
+          if (!p.refId)
+            return (
+              <span key={`${p.type}-${p.index}`} style={wrap}>
+                <span
+                  style={portStyle}
+                  className="block rounded-full bg-gray-600/40 ring-1 ring-gray-500/40"
+                />
+              </span>
+            )
+          if (p.type === 'in') {
             const valid =
               pendingFrom != null &&
               !(
                 pendingFrom.ref === 'placement' &&
                 pendingFrom.id === placement.id
               ) &&
-              (pendingFrom.refId === null || pendingFrom.refId === line.refId)
+              (pendingFrom.refId === null || pendingFrom.refId === p.refId)
             return (
-              <button
-                key={i}
-                type="button"
-                data-port={`${placement.id}::in::${i}`}
-                aria-label="Input port"
-                onPointerDown={(e) => e.stopPropagation()}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  completeTo(i, line.refId)
-                }}
-                className={`size-2.5 bg-sky-400 ${portBase} ${valid ? 'scale-125 ring-2 ring-emerald-400' : 'ring-sky-200/50'}`}
-              />
+              <span key={`in-${p.index}`} style={wrap}>
+                <button
+                  type="button"
+                  data-port={`${placement.id}::in::${p.index}`}
+                  aria-label="Input port"
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    completeTo(p.index, p.refId as string)
+                  }}
+                  style={portStyle}
+                  className={`block bg-sky-400 ${portBase} ${valid ? 'scale-125 ring-2 ring-emerald-400' : 'ring-sky-200/50'}`}
+                />
+              </span>
             )
-          })}
-        </span>
-      )}
-      {showPorts && outputPorts.length > 0 && (
-        <span className="pointer-events-none absolute bottom-1/2 right-0 top-0 z-30 flex flex-col items-center justify-center gap-1">
-          {outputPorts.map((line, i) => {
-            const isSrc =
-              pendingFrom?.ref === 'placement' &&
-              pendingFrom.id === placement.id &&
-              pendingFrom.port === i
-            return (
+          }
+          const isSrc =
+            pendingFrom?.ref === 'placement' &&
+            pendingFrom.id === placement.id &&
+            pendingFrom.port === p.index
+          return (
+            <span key={`out-${p.index}`} style={wrap}>
               <button
-                key={i}
                 type="button"
-                data-port={`${placement.id}::out::${i}`}
+                data-port={`${placement.id}::out::${p.index}`}
                 aria-label="Output port"
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={(e) => {
                   e.stopPropagation()
-                  pickSource(i, line.refId)
+                  pickSource(p.index, p.refId as string)
                 }}
-                className={`size-2.5 bg-ficsit ${portBase} ${isSrc ? 'scale-125 ring-2 ring-ficsit' : 'ring-ficsit/50'}`}
+                style={portStyle}
+                className={`block bg-ficsit ${portBase} ${isSrc ? 'scale-125 ring-2 ring-ficsit' : 'ring-ficsit/50'}`}
               />
-            )
-          })}
-        </span>
-      )}
+            </span>
+          )
+        })}
       {showExtractorPort && (
         <button
           type="button"
@@ -240,7 +289,8 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
             e.stopPropagation()
             pickSource(0, placement.materialId ?? '')
           }}
-          className={`absolute left-1/2 top-1/2 z-30 size-2.5 -translate-x-1/2 -translate-y-1/2 bg-ficsit ${portBase} ${pendingFrom?.ref === 'placement' && pendingFrom.id === placement.id ? 'scale-125 ring-2 ring-ficsit' : 'ring-ficsit/50'}`}
+          style={portStyle}
+          className={`absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2 bg-ficsit ${portBase} ${pendingFrom?.ref === 'placement' && pendingFrom.id === placement.id ? 'scale-125 ring-2 ring-ficsit' : 'ring-ficsit/50'}`}
         />
       )}
       {box && (

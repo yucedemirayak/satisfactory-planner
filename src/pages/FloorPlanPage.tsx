@@ -23,6 +23,7 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import {
   FloorGridControl,
   FloorInspector,
+  FloorPortControl,
   FloorScaleControl,
   FloorStack,
   floorSelected,
@@ -261,6 +262,7 @@ function FloorPlanPage() {
             </p>
           </div>
           <div className="flex items-center gap-6">
+            <FloorPortControl />
             <FloorGridControl />
             <FloorScaleControl />
             <dl className="flex gap-6 text-right">

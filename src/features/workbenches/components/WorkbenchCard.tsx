@@ -1,14 +1,28 @@
-import { useAppDispatch } from '@/app/hooks'
+import { useAppDispatch, useAppSelector } from '@/app/hooks'
+import { selectGridSize } from '@/features/floors/selectors'
+import {
+  PortGridEditor,
+  edgePorts,
+  resolvePorts,
+  type EditablePort,
+} from '@/features/ports'
 
 import {
   MAX_WORKBENCH_DIM,
+  MAX_WORKBENCH_INPUTS,
+  MAX_WORKBENCH_OUTPUTS,
   MAX_WORKBENCH_SLOOP_SLOTS,
   MIN_WORKBENCH_DIM,
+  MIN_WORKBENCH_PORTS,
   MIN_WORKBENCH_SLOOP_SLOTS,
 } from '../constants'
 import { workbenchLabel } from '../helpers'
 import type { Workbench } from '../types'
-import { workbenchRemoved, workbenchUpdated } from '../workbenchesSlice'
+import {
+  workbenchPortPosChanged,
+  workbenchRemoved,
+  workbenchUpdated,
+} from '../workbenchesSlice'
 import { WorkbenchPreview } from './WorkbenchPreview'
 
 interface WorkbenchCardProps {
@@ -24,6 +38,21 @@ export function WorkbenchCard({ workbench, index }: WorkbenchCardProps) {
   const dispatch = useAppDispatch()
   const update = (changes: Parameters<typeof workbenchUpdated>[0]['changes']) =>
     dispatch(workbenchUpdated({ id: workbench.id, changes }))
+  const gridSize = useAppSelector(selectGridSize)
+
+  const inPorts = resolvePorts(
+    workbench.inputPorts,
+    edgePorts(workbench.inputs, 'left'),
+  )
+  const outPorts = resolvePorts(
+    workbench.outputPorts,
+    edgePorts(workbench.outputs, 'right'),
+  )
+  const ports: EditablePort[] = [
+    ...inPorts.map((pos, index) => ({ side: 'inputs' as const, index, pos })),
+    ...outPorts.map((pos, index) => ({ side: 'outputs' as const, index, pos })),
+  ]
+  const hasPorts = workbench.inputs + workbench.outputs > 0
 
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-edge bg-surface-1 p-3">
@@ -109,7 +138,46 @@ export function WorkbenchCard({ workbench, index }: WorkbenchCardProps) {
             className={dimInputClass}
           />
         </label>
+        <label className="flex flex-col gap-1">
+          <span className="text-xs font-medium text-gray-400">Inputs</span>
+          <input
+            type="number"
+            min={MIN_WORKBENCH_PORTS}
+            max={MAX_WORKBENCH_INPUTS}
+            value={workbench.inputs}
+            onChange={(e) => update({ inputs: Number(e.target.value) })}
+            className={dimInputClass}
+          />
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="text-xs font-medium text-gray-400">Outputs</span>
+          <input
+            type="number"
+            min={MIN_WORKBENCH_PORTS}
+            max={MAX_WORKBENCH_OUTPUTS}
+            value={workbench.outputs}
+            onChange={(e) => update({ outputs: Number(e.target.value) })}
+            className={dimInputClass}
+          />
+        </label>
       </div>
+
+      {hasPorts && (
+        <div className="flex flex-col gap-2">
+          <span className="text-xs font-medium text-gray-400">Port layout</span>
+          <PortGridEditor
+            width={workbench.width}
+            height={workbench.height}
+            gridSize={gridSize}
+            ports={ports}
+            onMove={(side, index, pos) =>
+              dispatch(
+                workbenchPortPosChanged({ id: workbench.id, side, index, pos }),
+              )
+            }
+          />
+        </div>
+      )}
     </div>
   )
 }

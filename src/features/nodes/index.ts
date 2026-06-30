@@ -11,7 +11,12 @@ export {
   nodeRemoved,
   nodeSelected,
 } from './nodesSlice'
-export { default as nodeTypesReducer, nodeSizeChanged } from './nodeTypesSlice'
+export {
+  default as nodeTypesReducer,
+  nodeSizeChanged,
+  nodePortPosChanged,
+  DEFAULT_NODE_PORTS,
+} from './nodeTypesSlice'
 export {
   selectNodes,
   selectFloorNodes,

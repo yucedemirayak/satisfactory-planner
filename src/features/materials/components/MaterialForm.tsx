@@ -1,20 +1,24 @@
 import { useState } from 'react'
 
-import { useAppDispatch } from '@/app/hooks'
+import { useAppDispatch, useAppSelector } from '@/app/hooks'
+import { extractorLabel, selectExtractors } from '@/features/extractors'
 
 import { materialAdded } from '../materialsSlice'
 
-/** Form to create a new raw material (name only). */
+/** Form to create a new raw material (name + the extractor that mines it). */
 export function MaterialForm() {
   const dispatch = useAppDispatch()
+  const extractors = useAppSelector(selectExtractors)
   const [name, setName] = useState('')
+  const [extractorId, setExtractorId] = useState('')
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const trimmed = name.trim()
     if (!trimmed) return
-    dispatch(materialAdded({ name: trimmed }))
+    dispatch(materialAdded({ name: trimmed, extractorId: extractorId || null }))
     setName('')
+    setExtractorId('')
   }
 
   return (
@@ -35,6 +39,24 @@ export function MaterialForm() {
           onChange={(e) => setName(e.target.value)}
           className="rounded-md border border-edge bg-surface-0 px-2.5 py-1.5 text-sm text-gray-100 outline-none focus:border-ficsit"
         />
+      </label>
+
+      <label className="flex flex-col gap-1">
+        <span className="text-xs font-medium text-gray-400">
+          Extracted by
+        </span>
+        <select
+          value={extractorId}
+          onChange={(e) => setExtractorId(e.target.value)}
+          className="rounded-md border border-edge bg-surface-0 px-2 py-1.5 text-sm text-gray-100 outline-none focus:border-ficsit"
+        >
+          <option value="">Any extractor</option>
+          {extractors.map((ex, i) => (
+            <option key={ex.id} value={ex.id}>
+              {extractorLabel(ex, i)}
+            </option>
+          ))}
+        </select>
       </label>
 
       <button

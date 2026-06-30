@@ -18,18 +18,30 @@ interface RecipeColumnProps {
   side: RecipeSide
   title: string
   lines: RecipeItem[]
+  /** Port cap from the assigned workbench, else the recipe's own max. */
+  max: number
+  /** Whether the cap comes from a bound workbench (affects the warning copy). */
+  workbenchBound: boolean
 }
 
-function RecipeColumn({ recipeId, side, title, lines }: RecipeColumnProps) {
+function RecipeColumn({
+  recipeId,
+  side,
+  title,
+  lines,
+  max,
+  workbenchBound,
+}: RecipeColumnProps) {
   const dispatch = useAppDispatch()
-  const max = MAX_BY_SIDE[side]
   const full = lines.length >= max
+  // Can only exceed the cap if the workbench was shrunk after lines were added.
+  const over = lines.length > max
 
   return (
     <div className="flex flex-col gap-2">
       <h3 className="text-xs font-semibold tracking-wide text-gray-400 uppercase">
         {title}{' '}
-        <span className="font-mono text-gray-600">
+        <span className={`font-mono ${over ? 'text-amber-400' : 'text-gray-600'}`}>
           ({lines.length}/{max})
         </span>
       </h3>
@@ -42,10 +54,22 @@ function RecipeColumn({ recipeId, side, title, lines }: RecipeColumnProps) {
           line={line}
         />
       ))}
+      {over && (
+        <p className="text-xs text-amber-400">
+          ⚠ Too many — this workbench has only {max}{' '}
+          {side === 'inputs' ? 'input' : 'output'}
+          {max === 1 ? '' : 's'}.
+        </p>
+      )}
       <button
         type="button"
         disabled={full}
         onClick={() => dispatch(recipeLineAdded({ id: recipeId, side }))}
+        title={
+          full && workbenchBound
+            ? "Limited by the assigned workbench's port count"
+            : undefined
+        }
         className="self-start rounded-md border border-dashed border-edge px-2 py-1 text-xs text-gray-400 transition hover:border-ficsit hover:text-ficsit disabled:cursor-not-allowed disabled:opacity-40"
       >
         + Add {side === 'inputs' ? 'input' : 'output'}
@@ -63,6 +87,14 @@ interface RecipeCardProps {
 export function RecipeCard({ recipe, index }: RecipeCardProps) {
   const dispatch = useAppDispatch()
   const workbenches = useAppSelector(selectWorkbenches)
+
+  // When bound to a workbench, the line caps come from its port counts;
+  // otherwise the recipe's own absolute maxima apply.
+  const boundWorkbench = recipe.workbenchId
+    ? workbenches.find((w) => w.id === recipe.workbenchId)
+    : undefined
+  const inputMax = boundWorkbench ? boundWorkbench.inputs : MAX_BY_SIDE.inputs
+  const outputMax = boundWorkbench ? boundWorkbench.outputs : MAX_BY_SIDE.outputs
 
   return (
     <div className="flex flex-col gap-4 rounded-lg border border-edge bg-surface-1 p-4">
@@ -116,12 +148,16 @@ export function RecipeCard({ recipe, index }: RecipeCardProps) {
           side="inputs"
           title="Inputs"
           lines={recipe.inputs}
+          max={inputMax}
+          workbenchBound={Boolean(boundWorkbench)}
         />
         <RecipeColumn
           recipeId={recipe.id}
           side="outputs"
           title="Outputs"
           lines={recipe.outputs}
+          max={outputMax}
+          workbenchBound={Boolean(boundWorkbench)}
         />
       </div>
     </div>

@@ -17,6 +17,8 @@
           "depth": 5,
           "height": 8.5,
           "sloopSlots": 1,
+          "inputs": 1,
+          "outputs": 1,
           "color": "#fa9549"
         },
         {
@@ -26,6 +28,8 @@
           "depth": 9,
           "height": 9,
           "sloopSlots": 2,
+          "inputs": 2,
+          "outputs": 1,
           "color": "#e85d4e"
         },
         {
@@ -35,6 +39,8 @@
           "depth": 7.9,
           "height": 8,
           "sloopSlots": 1,
+          "inputs": 1,
+          "outputs": 1,
           "color": "#4ea8de"
         },
         {
@@ -44,6 +50,8 @@
           "depth": 9,
           "height": 11,
           "sloopSlots": 2,
+          "inputs": 2,
+          "outputs": 1,
           "color": "#5e9cff"
         },
         {
@@ -53,6 +61,8 @@
           "depth": 18,
           "height": 12,
           "sloopSlots": 4,
+          "inputs": 4,
+          "outputs": 1,
           "color": "#9b5de5"
         },
         {
@@ -62,6 +72,8 @@
           "depth": 10,
           "height": 30,
           "sloopSlots": 2,
+          "inputs": 2,
+          "outputs": 2,
           "color": "#f4a261"
         },
         {
@@ -71,6 +83,8 @@
           "depth": 8,
           "height": 12,
           "sloopSlots": 2,
+          "inputs": 2,
+          "outputs": 2,
           "color": "#2a9d8f"
         },
         {
@@ -80,6 +94,8 @@
           "depth": 16,
           "height": 15,
           "sloopSlots": 4,
+          "inputs": 4,
+          "outputs": 2,
           "color": "#e76f51"
         },
         {
@@ -89,6 +105,8 @@
           "depth": 24,
           "height": 32,
           "sloopSlots": 4,
+          "inputs": 3,
+          "outputs": 1,
           "color": "#c77dff"
         },
         {
@@ -98,6 +116,8 @@
           "depth": 16,
           "height": 18,
           "sloopSlots": 1,
+          "inputs": 2,
+          "outputs": 2,
           "color": "#80ed99"
         },
         {
@@ -107,6 +127,8 @@
           "depth": 22,
           "height": 18,
           "sloopSlots": 4,
+          "inputs": 4,
+          "outputs": 2,
           "color": "#ffd6a5"
         }
       ]
@@ -847,55 +869,68 @@
       "items": [
         {
           "id": "mat__desc-orebauxite-c",
-          "name": "Bauxite"
+          "name": "Bauxite",
+          "extractorId": "ext__miner"
         },
         {
           "id": "mat__desc-oregold-c",
-          "name": "Caterium Ore"
+          "name": "Caterium Ore",
+          "extractorId": "ext__miner"
         },
         {
           "id": "mat__desc-coal-c",
-          "name": "Coal"
+          "name": "Coal",
+          "extractorId": "ext__miner"
         },
         {
           "id": "mat__desc-orecopper-c",
-          "name": "Copper Ore"
+          "name": "Copper Ore",
+          "extractorId": "ext__miner"
         },
         {
           "id": "mat__desc-liquidoil-c",
-          "name": "Crude Oil"
+          "name": "Crude Oil",
+          "extractorId": "ext__oil-extractor"
         },
         {
           "id": "mat__desc-oreiron-c",
-          "name": "Iron Ore"
+          "name": "Iron Ore",
+          "extractorId": "ext__miner"
         },
         {
           "id": "mat__desc-stone-c",
-          "name": "Limestone"
+          "name": "Limestone",
+          "extractorId": "ext__miner"
         },
         {
           "id": "mat__desc-nitrogengas-c",
-          "name": "Nitrogen Gas"
+          "name": "Nitrogen Gas",
+          "extractorId": null
         },
         {
           "id": "mat__desc-rawquartz-c",
-          "name": "Raw Quartz"
+          "name": "Raw Quartz",
+          "extractorId": "ext__miner"
         },
         {
           "id": "mat__desc-sam-c",
-          "name": "SAM"
+          "name": "SAM",
+          "extractorId": "ext__miner"
         },
         {
           "id": "mat__desc-sulfur-c",
-          "name": "Sulfur"
+          "name": "Sulfur",
+          "extractorId": "ext__miner"
         },
         {
           "id": "mat__desc-oreuranium-c",
-          "name": "Uranium"
+          "name": "Uranium",
+          "extractorId": "ext__miner"
         },
         {
           "id": "mat__desc-water-c",
-          "name": "Water"
+          "name": "Water",
+          "extractorId": "ext__water-extractor"
         }
       ]
     },

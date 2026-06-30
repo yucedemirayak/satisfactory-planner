@@ -2,5 +2,5 @@
 export { MaterialManager } from './components/MaterialManager'
 export { default as materialsReducer } from './materialsSlice'
 export { selectMaterials } from './selectors'
-export { materialLabel } from './helpers'
+export { materialLabel, materialAssignableTo } from './helpers'
 export type { Material } from './types'

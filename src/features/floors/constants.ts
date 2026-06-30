@@ -22,6 +22,18 @@ export const PX_PER_METER_STEP = 1
  * User-adjustable; positions snap to multiples of this.
  */
 export const DEFAULT_GRID_SIZE = 1
-export const MIN_GRID_SIZE = 0.25
+export const MIN_GRID_SIZE = 0.1
 export const MAX_GRID_SIZE = 8
-export const GRID_SIZE_OPTIONS = [0.25, 0.5, 1, 2, 4, 8] as const
+export const GRID_SIZE_OPTIONS = [
+  0.1, 0.25, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 4, 5, 6, 8,
+] as const
+
+/**
+ * Connection-port hit size in screen pixels. Ports are a fixed pixel size (not
+ * metre-scaled) so they stay clickable at any zoom; user-adjustable for easier
+ * targeting on dense floors.
+ */
+export const DEFAULT_PORT_SCALE = 12
+export const MIN_PORT_SCALE = 8
+export const MAX_PORT_SCALE = 28
+export const PORT_SCALE_STEP = 2

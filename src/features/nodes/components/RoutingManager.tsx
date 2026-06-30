@@ -1,7 +1,17 @@
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
+import { selectGridSize } from '@/features/floors/selectors'
+import {
+  PortGridEditor,
+  resolvePorts,
+  type EditablePort,
+} from '@/features/ports'
 
 import { MAX_NODE_SIZE, MIN_NODE_SIZE } from '../constants'
-import { nodeSizeChanged } from '../nodeTypesSlice'
+import {
+  DEFAULT_NODE_PORTS,
+  nodePortPosChanged,
+  nodeSizeChanged,
+} from '../nodeTypesSlice'
 import { nodePortCounts, type NodeKind } from '../types'
 
 const KINDS: { kind: NodeKind; label: string }[] = [
@@ -70,9 +80,24 @@ function DimField({
 function RoutingCard({ kind, label }: { kind: NodeKind; label: string }) {
   const dispatch = useAppDispatch()
   const size = useAppSelector((s) => s.nodeTypes[kind])
+  const gridSize = useAppSelector(selectGridSize)
   const { inputs, outputs } = nodePortCounts(kind)
   const set = (changes: { width?: number; height?: number }) =>
     dispatch(nodeSizeChanged({ kind, changes }))
+
+  const def = DEFAULT_NODE_PORTS[kind]
+  const ports: EditablePort[] = [
+    ...resolvePorts(size.inputPorts, def.inputPorts).map((pos, index) => ({
+      side: 'inputs' as const,
+      index,
+      pos,
+    })),
+    ...resolvePorts(size.outputPorts, def.outputPorts).map((pos, index) => ({
+      side: 'outputs' as const,
+      index,
+      pos,
+    })),
+  ]
 
   return (
     <div className="flex flex-col gap-4 rounded-lg border border-edge bg-surface-1 p-4">
@@ -97,6 +122,19 @@ function RoutingCard({ kind, label }: { kind: NodeKind; label: string }) {
         value={size.height}
         onChange={(v) => set({ height: v })}
       />
+
+      <div className="flex flex-col gap-2">
+        <span className="text-xs font-medium text-gray-400">Port layout</span>
+        <PortGridEditor
+          width={size.width}
+          height={size.height}
+          gridSize={gridSize}
+          ports={ports}
+          onMove={(side, index, pos) =>
+            dispatch(nodePortPosChanged({ kind, side, index, pos }))
+          }
+        />
+      </div>
     </div>
   )
 }

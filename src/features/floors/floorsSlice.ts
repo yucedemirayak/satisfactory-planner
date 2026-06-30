@@ -3,12 +3,15 @@ import { createSlice, nanoid, type PayloadAction } from '@reduxjs/toolkit'
 import {
   DEFAULT_FLOOR_HEIGHT,
   DEFAULT_GRID_SIZE,
+  DEFAULT_PORT_SCALE,
   DEFAULT_PX_PER_METER,
   MAX_FLOOR_HEIGHT,
   MAX_GRID_SIZE,
+  MAX_PORT_SCALE,
   MAX_PX_PER_METER,
   MIN_FLOOR_HEIGHT,
   MIN_GRID_SIZE,
+  MIN_PORT_SCALE,
   MIN_PX_PER_METER,
 } from './constants'
 import type { Floor, InsertPosition } from './types'
@@ -22,6 +25,8 @@ export interface FloorsState {
   pxPerMeter: number
   /** Grid snap resolution in metres for placing items along a floor. */
   gridSize: number
+  /** Connection-port hit size in screen pixels (fixed, zoom-independent). */
+  portScale: number
 }
 
 const initialState: FloorsState = {
@@ -30,6 +35,7 @@ const initialState: FloorsState = {
   selectedId: null,
   pxPerMeter: DEFAULT_PX_PER_METER,
   gridSize: DEFAULT_GRID_SIZE,
+  portScale: DEFAULT_PORT_SCALE,
 }
 
 const clampHeight = (height: number): number =>
@@ -44,6 +50,11 @@ const clampGridSize = (value: number): number =>
   Number.isFinite(value) && value > 0
     ? Math.min(MAX_GRID_SIZE, Math.max(MIN_GRID_SIZE, value))
     : DEFAULT_GRID_SIZE
+
+const clampPortScale = (value: number): number =>
+  Number.isFinite(value)
+    ? Math.min(MAX_PORT_SCALE, Math.max(MIN_PORT_SCALE, Math.round(value)))
+    : DEFAULT_PORT_SCALE
 
 /** Resolve an InsertPosition to a concrete array index for the current list. */
 const resolveIndex = (items: Floor[], position: InsertPosition): number => {
@@ -108,6 +119,9 @@ const floorsSlice = createSlice({
     gridSizeChanged(state, action: PayloadAction<number>) {
       state.gridSize = clampGridSize(action.payload)
     },
+    portScaleChanged(state, action: PayloadAction<number>) {
+      state.portScale = clampPortScale(action.payload)
+    },
   },
 })
 
@@ -119,6 +133,7 @@ export const {
   floorRenamed,
   pxPerMeterChanged,
   gridSizeChanged,
+  portScaleChanged,
 } = floorsSlice.actions
 
 export default floorsSlice.reducer

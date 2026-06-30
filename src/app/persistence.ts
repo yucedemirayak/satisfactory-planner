@@ -131,13 +131,40 @@ function migrate(raw: Record<string, unknown>): void {
   // Route nodes (splitters / mergers) added later — seed empty.
   if (!raw.nodes) raw.nodes = { items: [], selectedId: null }
 
-  // Editable splitter/merger footprints added later — seed/backfill each kind.
+  // Editable splitter/merger footprints + port positions — seed/backfill.
+  type Pos = { fx: number; fy: number }
   const nt = raw.nodeTypes as
-    | { splitter?: unknown; merger?: unknown }
+    | { splitter?: Record<string, unknown>; merger?: Record<string, unknown> }
     | undefined
+  const seedNodeType = (
+    cfg: Record<string, unknown> | undefined,
+    inputPorts: Pos[],
+    outputPorts: Pos[],
+  ) => ({
+    width: typeof cfg?.width === 'number' ? cfg.width : 2,
+    height: typeof cfg?.height === 'number' ? cfg.height : 2,
+    inputPorts: Array.isArray(cfg?.inputPorts) ? cfg.inputPorts : inputPorts,
+    outputPorts: Array.isArray(cfg?.outputPorts) ? cfg.outputPorts : outputPorts,
+  })
   raw.nodeTypes = {
-    splitter: nt?.splitter ?? { width: 2, height: 2 },
-    merger: nt?.merger ?? { width: 2, height: 2 },
+    splitter: seedNodeType(
+      nt?.splitter,
+      [{ fx: 0.5, fy: 1 }],
+      [
+        { fx: 0, fy: 0.5 },
+        { fx: 0.5, fy: 0 },
+        { fx: 1, fy: 0.5 },
+      ],
+    ),
+    merger: seedNodeType(
+      nt?.merger,
+      [
+        { fx: 0, fy: 0.5 },
+        { fx: 0.5, fy: 1 },
+        { fx: 1, fy: 0.5 },
+      ],
+      [{ fx: 0.5, fy: 0 }],
+    ),
   }
 
   // Floor-plan grid added later — default the snap size.
@@ -151,6 +178,9 @@ function migrate(raw: Record<string, unknown>): void {
     for (const wb of workbenches.items) {
       if (typeof wb.sloopSlots !== 'number') wb.sloopSlots = 1
       if (typeof wb.depth !== 'number') wb.depth = 8
+      // Port counts added later — default to a single in/out (Constructor-like).
+      if (typeof wb.inputs !== 'number') wb.inputs = 1
+      if (typeof wb.outputs !== 'number') wb.outputs = 1
     }
   }
 
@@ -191,6 +221,16 @@ function migrate(raw: Record<string, unknown>): void {
           delete line.productId
         }
       }
+    }
+  }
+
+  // Material → extractor link added later — default to unassigned.
+  const materials = raw.materials as
+    | { items?: Array<Record<string, unknown>> }
+    | undefined
+  if (materials?.items) {
+    for (const m of materials.items) {
+      if (m.extractorId === undefined) m.extractorId = null
     }
   }
 

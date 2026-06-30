@@ -1,3 +1,5 @@
+import type { PortPos } from '@/features/ports'
+
 /**
  * A user-defined workbench (machine footprint) that can later be placed onto
  * floors. Dimensions are in metres, matching floor heights.
@@ -14,6 +16,14 @@ export interface Workbench {
   height: number
   /** Max somersloop slots per machine (production amplification). */
   sloopSlots: number
+  /** Number of input ports (recipes assigned here may use at most this many). */
+  inputs: number
+  /** Number of output ports. */
+  outputs: number
+  /** Position of each input port on the face (index-aligned); missing → left edge. */
+  inputPorts?: PortPos[]
+  /** Position of each output port on the face (index-aligned); missing → right edge. */
+  outputPorts?: PortPos[]
   /** Hex colour used to identify the workbench visually. */
   color: string
 }
