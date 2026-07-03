@@ -50,3 +50,11 @@ export function edgePorts(count: number, side: 'left' | 'right'): PortPos[] {
     fy: (i + 1) / (count + 1),
   }))
 }
+
+/** Default positions down the centre of the face (extractors output mid-box). */
+export function centerPorts(count: number): PortPos[] {
+  return Array.from({ length: count }, (_, i) => ({
+    fx: 0.5,
+    fy: (i + 1) / (count + 1),
+  }))
+}

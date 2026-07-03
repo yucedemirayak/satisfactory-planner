@@ -7,12 +7,15 @@ import {
   DEFAULT_EXTRACTOR_BASE_RATE,
   DEFAULT_EXTRACTOR_DEPTH,
   DEFAULT_EXTRACTOR_HEIGHT,
+  DEFAULT_EXTRACTOR_OUTPUTS,
   DEFAULT_EXTRACTOR_WIDTH,
   EXTRACTOR_PALETTE,
   MAX_EXTRACTOR_BASE_RATE,
   MAX_EXTRACTOR_DIM,
+  MAX_EXTRACTOR_OUTPUTS,
   MIN_EXTRACTOR_BASE_RATE,
   MIN_EXTRACTOR_DIM,
+  MIN_EXTRACTOR_OUTPUTS,
 } from '../constants'
 import { extractorAdded } from '../extractorsSlice'
 import { selectNextExtractorColor } from '../selectors'
@@ -30,16 +33,20 @@ export function ExtractorForm() {
   const [depth, setDepth] = useState(DEFAULT_EXTRACTOR_DEPTH)
   const [height, setHeight] = useState(DEFAULT_EXTRACTOR_HEIGHT)
   const [baseRate, setBaseRate] = useState(DEFAULT_EXTRACTOR_BASE_RATE)
+  const [outputs, setOutputs] = useState(DEFAULT_EXTRACTOR_OUTPUTS)
   const [color, setColor] = useState<string>(nextColor)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    dispatch(extractorAdded({ name, width, depth, height, baseRate, color }))
+    dispatch(
+      extractorAdded({ name, width, depth, height, baseRate, outputs, color }),
+    )
     setName('')
     setWidth(DEFAULT_EXTRACTOR_WIDTH)
     setDepth(DEFAULT_EXTRACTOR_DEPTH)
     setHeight(DEFAULT_EXTRACTOR_HEIGHT)
     setBaseRate(DEFAULT_EXTRACTOR_BASE_RATE)
+    setOutputs(DEFAULT_EXTRACTOR_OUTPUTS)
     const next =
       EXTRACTOR_PALETTE[
         (EXTRACTOR_PALETTE.indexOf(color as (typeof EXTRACTOR_PALETTE)[number]) +
@@ -118,6 +125,17 @@ export function ExtractorForm() {
             step="any"
             value={baseRate}
             onChange={(e) => setBaseRate(Number(e.target.value))}
+            className={`${inputClass} font-mono`}
+          />
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="text-xs font-medium text-gray-400">Outputs</span>
+          <input
+            type="number"
+            min={MIN_EXTRACTOR_OUTPUTS}
+            max={MAX_EXTRACTOR_OUTPUTS}
+            value={outputs}
+            onChange={(e) => setOutputs(Number(e.target.value))}
             className={`${inputClass} font-mono`}
           />
         </label>

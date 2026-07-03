@@ -214,6 +214,8 @@ function migrate(raw: Record<string, unknown>): void {
         delete e.h
       }
       if (typeof e.depth !== 'number') e.depth = 8
+      // Output port count added later — extractors used to have a single output.
+      if (typeof e.outputs !== 'number') e.outputs = 1
     }
   }
 

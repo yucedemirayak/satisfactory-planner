@@ -2,6 +2,7 @@
 export { PortGridEditor, type EditablePort } from './components/PortGridEditor'
 export {
   cellCount,
+  centerPorts,
   clamp01,
   edgePorts,
   portPosStyle,

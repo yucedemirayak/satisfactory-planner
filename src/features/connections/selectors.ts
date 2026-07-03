@@ -48,12 +48,16 @@ function outputPortsOf(
   p: Placement,
   recipesById: Map<string, { outputs: { refId: string; rate: number }[] }>,
   workbenchSloopSlots: (refId: string) => number,
-  extractorBaseRate: (refId: string) => number | undefined,
+  extractorOf: (refId: string) => { baseRate: number; outputs: number } | undefined,
 ): { refId: string; rate: number }[] {
   if (p.kind === 'extractor') {
-    if (!p.materialId) return []
-    const base = extractorBaseRate(p.refId)
-    return [{ refId: p.materialId, rate: base ? extractorRate(p, base) : 0 }]
+    const item = p.materialId
+    if (!item) return []
+    const ex = extractorOf(p.refId)
+    // Every port carries the material; total extraction splits evenly across them.
+    const count = Math.max(1, ex?.outputs ?? 1)
+    const perPort = ex ? extractorRate(p, ex.baseRate) / count : 0
+    return Array.from({ length: count }, () => ({ refId: item, rate: perPort }))
   }
   if (p.kind === 'workbench' && p.recipeId) {
     const r = recipesById.get(p.recipeId)
@@ -119,7 +123,7 @@ export const selectConnectionViews = createSelector(
     }
     const recipesById = new Map(recipes.map((r) => [r.id, r]))
     const wbSlots = new Map(workbenches.map((w) => [w.id, w.sloopSlots]))
-    const exRate = new Map(extractors.map((e) => [e.id, e.baseRate]))
+    const exById = new Map(extractors.map((e) => [e.id, e]))
     const convRate = new Map(conveyors.map((c) => [c.id, c.maxRate]))
     const pipeRate = new Map(pipelines.map((p) => [p.id, p.maxRate]))
     const nodesById = new Map(nodes.map((n) => [n.id, n]))
@@ -151,7 +155,7 @@ export const selectConnectionViews = createSelector(
         p,
         recipesById,
         (id) => wbSlots.get(id) ?? 1,
-        (id) => exRate.get(id),
+        (id) => exById.get(id),
       )[end.port]
       return out ? { rate: out.rate, item: out.refId, conflict: false } : NO_FLOW
     }
@@ -220,7 +224,7 @@ export const selectConnectionViews = createSelector(
           p,
           recipesById,
           (id) => wbSlots.get(id) ?? 1,
-          (id) => exRate.get(id),
+          (id) => exById.get(id),
         ).length
       )
     }

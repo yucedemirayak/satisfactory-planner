@@ -1,13 +1,26 @@
-import { useAppDispatch } from '@/app/hooks'
+import { useAppDispatch, useAppSelector } from '@/app/hooks'
+import { selectGridSize } from '@/features/floors/selectors'
+import {
+  PortGridEditor,
+  centerPorts,
+  resolvePorts,
+  type EditablePort,
+} from '@/features/ports'
 import { WorkbenchPreview } from '@/features/workbenches'
 
 import {
   MAX_EXTRACTOR_BASE_RATE,
   MAX_EXTRACTOR_DIM,
+  MAX_EXTRACTOR_OUTPUTS,
   MIN_EXTRACTOR_BASE_RATE,
   MIN_EXTRACTOR_DIM,
+  MIN_EXTRACTOR_OUTPUTS,
 } from '../constants'
-import { extractorRemoved, extractorUpdated } from '../extractorsSlice'
+import {
+  extractorPortPosChanged,
+  extractorRemoved,
+  extractorUpdated,
+} from '../extractorsSlice'
 import { extractorLabel } from '../helpers'
 import type { Extractor } from '../types'
 
@@ -24,6 +37,13 @@ export function ExtractorCard({ extractor, index }: ExtractorCardProps) {
   const dispatch = useAppDispatch()
   const update = (changes: Parameters<typeof extractorUpdated>[0]['changes']) =>
     dispatch(extractorUpdated({ id: extractor.id, changes }))
+  const gridSize = useAppSelector(selectGridSize)
+
+  // Extractors only output — every editable port is an output slot.
+  const ports: EditablePort[] = resolvePorts(
+    extractor.outputPorts,
+    centerPorts(extractor.outputs),
+  ).map((pos, portIndex) => ({ side: 'outputs' as const, index: portIndex, pos }))
 
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-edge bg-surface-1 p-3">
@@ -110,6 +130,32 @@ export function ExtractorCard({ extractor, index }: ExtractorCardProps) {
             className={dimInput}
           />
         </label>
+        <label className="flex flex-col gap-1">
+          <span className="text-xs font-medium text-gray-400">Outputs</span>
+          <input
+            type="number"
+            min={MIN_EXTRACTOR_OUTPUTS}
+            max={MAX_EXTRACTOR_OUTPUTS}
+            value={extractor.outputs}
+            onChange={(e) => update({ outputs: Number(e.target.value) })}
+            className={dimInput}
+          />
+        </label>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <span className="text-xs font-medium text-gray-400">Port layout</span>
+        <PortGridEditor
+          width={extractor.width}
+          height={extractor.height}
+          gridSize={gridSize}
+          ports={ports}
+          onMove={(_side, portIndex, pos) =>
+            dispatch(
+              extractorPortPosChanged({ id: extractor.id, index: portIndex, pos }),
+            )
+          }
+        />
       </div>
     </div>
   )

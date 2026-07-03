@@ -11,6 +11,11 @@ export const DEFAULT_EXTRACTOR_BASE_RATE = 60
 export const MIN_EXTRACTOR_BASE_RATE = 0
 export const MAX_EXTRACTOR_BASE_RATE = 100000
 
+/** Extractors only output (no inputs); most buildings have a single port. */
+export const DEFAULT_EXTRACTOR_OUTPUTS = 1
+export const MIN_EXTRACTOR_OUTPUTS = 1
+export const MAX_EXTRACTOR_OUTPUTS = 6
+
 export const EXTRACTOR_PALETTE = [
   '#8ecae6',
   '#a7c957',

@@ -9,6 +9,7 @@ import {
 import { selectConnectionSource } from '@/features/connections/selectors'
 import { selectPortScale, selectPxPerMeter } from '@/features/floors/selectors'
 import {
+  centerPorts,
   edgePorts,
   portPosStyle,
   resolvePorts,
@@ -96,40 +97,50 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
       ? recipe.name.trim() || 'Recipe'
       : null
 
-  // Port slots come from the workbench definition (fixed count); the assigned
-  // recipe fills them in order. A slot with no recipe item is empty (faded,
-  // not wireable). Value = the carried item's refId, or null when empty. Each
+  // Port slots come from the building definition (fixed count). On a workbench
+  // the assigned recipe fills them in order; on an extractor every output slot
+  // carries the assigned material. A slot with no item is empty (faded, not
+  // wireable). Value = the carried item's refId, or null when empty. Each
   // port sits on its configured edge; ports sharing an edge are spread evenly.
-  const showPorts = Boolean(workbench) && !isExtractor
   const portDescs: {
     type: 'in' | 'out'
     index: number
     refId: string | null
     pos: PortPos
-  }[] = workbench
-    ? [
-        ...resolvePorts(
-          workbench.inputPorts,
-          edgePorts(workbench.inputs, 'left'),
-        ).map((pos, i) => ({
-          type: 'in' as const,
-          index: i,
-          refId: recipe?.inputs[i]?.refId || null,
-          pos,
-        })),
-        ...resolvePorts(
-          workbench.outputPorts,
-          edgePorts(workbench.outputs, 'right'),
-        ).map((pos, i) => ({
-          type: 'out' as const,
-          index: i,
-          refId: recipe?.outputs[i]?.refId || null,
-          pos,
-        })),
-      ]
-    : []
-  // Extractors have a single output (their material) — shown dead-centre.
-  const showExtractorPort = isExtractor && Boolean(placement.materialId)
+  }[] =
+    !isExtractor && workbench
+      ? [
+          ...resolvePorts(
+            workbench.inputPorts,
+            edgePorts(workbench.inputs, 'left'),
+          ).map((pos, i) => ({
+            type: 'in' as const,
+            index: i,
+            refId: recipe?.inputs[i]?.refId || null,
+            pos,
+          })),
+          ...resolvePorts(
+            workbench.outputPorts,
+            edgePorts(workbench.outputs, 'right'),
+          ).map((pos, i) => ({
+            type: 'out' as const,
+            index: i,
+            refId: recipe?.outputs[i]?.refId || null,
+            pos,
+          })),
+        ]
+      : isExtractor && extractor
+        ? resolvePorts(
+            extractor.outputPorts,
+            centerPorts(extractor.outputs),
+          ).map((pos, i) => ({
+            type: 'out' as const,
+            index: i,
+            refId: placement.materialId || null,
+            pos,
+          }))
+        : []
+  const showPorts = portDescs.length > 0
 
   // Two-click wiring: click an output (source), then a matching input (target).
   const portBase =
@@ -283,20 +294,6 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
             </span>
           )
         })}
-      {showExtractorPort && (
-        <button
-          type="button"
-          data-port={`${placement.id}::out::0`}
-          aria-label="Output port"
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.stopPropagation()
-            pickSource(0, placement.materialId ?? '')
-          }}
-          style={portStyle}
-          className={`absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2 bg-ficsit ${portBase} ${pendingFrom?.ref === 'placement' && pendingFrom.id === placement.id ? 'scale-125 ring-2 ring-ficsit' : 'ring-ficsit/50'}`}
-        />
-      )}
       {box && (
         <span className="pointer-events-none absolute bottom-0.5 left-1 font-mono text-[10px] font-semibold text-ficsit">
           ×{placement.quantity}
