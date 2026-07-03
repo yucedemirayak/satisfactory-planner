@@ -3,6 +3,7 @@ import { NavLink, Navigate, Route, Routes } from 'react-router-dom'
 import { PATHS } from '@/app/paths'
 import FloorPlanPage from '@/pages/FloorPlanPage'
 import ProductionPage from '@/pages/ProductionPage'
+import SettingsPage from '@/pages/SettingsPage'
 import { ConveyorManager } from '@/features/conveyors'
 import { ExtractorManager } from '@/features/extractors'
 import { MaterialManager } from '@/features/materials'
@@ -20,6 +21,25 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
       : 'text-gray-400 hover:bg-surface-2 hover:text-gray-200'
   }`
 
+/** Gear icon — the only way into the Settings pages. */
+function GearIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="size-5"
+      aria-hidden
+    >
+      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  )
+}
+
 function App() {
   return (
     <div className="flex h-screen flex-col bg-surface-0 text-gray-200">
@@ -32,54 +52,48 @@ function App() {
           <NavLink to={PATHS.floors} className={navLinkClass}>
             Floor Plan
           </NavLink>
-          <NavLink to={PATHS.workbenches} className={navLinkClass}>
-            Workbenches
-          </NavLink>
-          <NavLink to={PATHS.extractors} className={navLinkClass}>
-            Extractors
-          </NavLink>
-          <NavLink to={PATHS.conveyors} className={navLinkClass}>
-            Conveyors
-          </NavLink>
-          <NavLink to={PATHS.pipelines} className={navLinkClass}>
-            Pipelines
-          </NavLink>
-          <NavLink to={PATHS.routing} className={navLinkClass}>
-            Routing
-          </NavLink>
-          <NavLink to={PATHS.materials} className={navLinkClass}>
-            Materials
-          </NavLink>
-          <NavLink to={PATHS.products} className={navLinkClass}>
-            Products
-          </NavLink>
-          <NavLink to={PATHS.recipes} className={navLinkClass}>
-            Recipes
-          </NavLink>
           <NavLink to={PATHS.production} className={navLinkClass}>
             Production
           </NavLink>
-          <span className="mx-1 h-5 w-px bg-edge" aria-hidden />
-          <NavLink to={PATHS.project} className={navLinkClass}>
-            Data
-          </NavLink>
         </nav>
+        <NavLink
+          to={PATHS.settings}
+          title="Settings"
+          aria-label="Settings"
+          className={({ isActive }) =>
+            `ml-auto rounded-md p-1.5 transition ${
+              isActive
+                ? 'bg-ficsit/15 text-ficsit'
+                : 'text-gray-400 hover:bg-surface-2 hover:text-gray-200'
+            }`
+          }
+        >
+          <GearIcon />
+        </NavLink>
       </header>
 
       <main className="min-h-0 flex-1 p-4">
         <Routes>
           <Route path="/" element={<Navigate to={PATHS.floors} replace />} />
           <Route path={PATHS.floors} element={<FloorPlanPage />} />
-          <Route path={PATHS.workbenches} element={<WorkbenchManager />} />
-          <Route path={PATHS.extractors} element={<ExtractorManager />} />
-          <Route path={PATHS.conveyors} element={<ConveyorManager />} />
-          <Route path={PATHS.pipelines} element={<PipelineManager />} />
-          <Route path={PATHS.routing} element={<RoutingManager />} />
-          <Route path={PATHS.materials} element={<MaterialManager />} />
-          <Route path={PATHS.products} element={<ProductManager />} />
-          <Route path={PATHS.recipes} element={<RecipeManager />} />
           <Route path={PATHS.production} element={<ProductionPage />} />
-          <Route path={PATHS.project} element={<ProjectManager />} />
+          <Route path={PATHS.settings} element={<SettingsPage />}>
+            <Route
+              index
+              element={<Navigate to={PATHS.workbenches} replace />}
+            />
+            <Route path={PATHS.workbenches} element={<WorkbenchManager />} />
+            <Route path={PATHS.extractors} element={<ExtractorManager />} />
+            <Route path={PATHS.conveyors} element={<ConveyorManager />} />
+            <Route path={PATHS.pipelines} element={<PipelineManager />} />
+            <Route path={PATHS.routing} element={<RoutingManager />} />
+            <Route path={PATHS.materials} element={<MaterialManager />} />
+            <Route path={PATHS.products} element={<ProductManager />} />
+            <Route path={PATHS.recipes} element={<RecipeManager />} />
+            <Route path={PATHS.project} element={<ProjectManager />} />
+          </Route>
+          {/* Old top-level URLs (pre-settings) land back on the floor plan. */}
+          <Route path="*" element={<Navigate to={PATHS.floors} replace />} />
         </Routes>
       </main>
     </div>
