@@ -1,5 +1,4 @@
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
-import { selectGridSize } from '@/features/floors/selectors'
 import {
   PortGridEditor,
   centerPorts,
@@ -37,7 +36,7 @@ export function ExtractorCard({ extractor, index }: ExtractorCardProps) {
   const dispatch = useAppDispatch()
   const update = (changes: Parameters<typeof extractorUpdated>[0]['changes']) =>
     dispatch(extractorUpdated({ id: extractor.id, changes }))
-  const gridSize = useAppSelector(selectGridSize)
+  const editor = useAppSelector((s) => s.portEditor.extractors)
 
   // Extractors only output — every editable port is an output slot.
   const ports: EditablePort[] = resolvePorts(
@@ -148,7 +147,9 @@ export function ExtractorCard({ extractor, index }: ExtractorCardProps) {
         <PortGridEditor
           width={extractor.width}
           height={extractor.height}
-          gridSize={gridSize}
+          gridSize={editor.gridSize}
+          portScale={editor.portScale}
+          zoom={editor.zoom}
           ports={ports}
           onMove={(_side, portIndex, pos) =>
             dispatch(

@@ -13,8 +13,12 @@ interface PortGridEditorProps {
   /** Machine-face size in metres (width × height — the floor-plan elevation). */
   width: number
   height: number
-  /** Floor-plan grid size (metres per cell) — drives the grid resolution. */
+  /** Grid size in metres per cell — drives the grid resolution. */
   gridSize: number
+  /** Port dot diameter in pixels. */
+  portScale: number
+  /** Editor magnification (1 = the base 150 px box). */
+  zoom: number
   ports: EditablePort[]
   onMove: (side: 'inputs' | 'outputs', index: number, pos: PortPos) => void
 }
@@ -33,6 +37,8 @@ export function PortGridEditor({
   width,
   height,
   gridSize,
+  portScale,
+  zoom,
   ports,
   onMove,
 }: PortGridEditorProps) {
@@ -44,10 +50,11 @@ export function PortGridEditor({
   const cols = cellCount(width, gridSize)
   const rows = cellCount(height, gridSize)
 
-  // Box drawn at the machine's aspect ratio, capped at BOX_MAX on the long side.
+  // Box drawn at the machine's aspect ratio; the long side is BOX_MAX × zoom.
+  const long = Math.round(BOX_MAX * zoom)
   const aspect = width / height
-  const boxW = aspect >= 1 ? BOX_MAX : Math.round(BOX_MAX * aspect)
-  const boxH = aspect >= 1 ? Math.round(BOX_MAX / aspect) : BOX_MAX
+  const boxW = aspect >= 1 ? long : Math.round(long * aspect)
+  const boxH = aspect >= 1 ? Math.round(long / aspect) : long
 
   const fracFromEvent = (e: ReactPointerEvent): PortPos => {
     const r = ref.current?.getBoundingClientRect()
@@ -59,7 +66,8 @@ export function PortGridEditor({
   }
 
   return (
-    <div className="flex flex-col gap-1">
+    // Zoomed editors can outgrow their card — scroll within it, don't overlap.
+    <div className="flex max-w-full flex-col gap-1 overflow-x-auto">
       <div
         ref={ref}
         style={{
@@ -68,7 +76,7 @@ export function PortGridEditor({
           backgroundImage: `linear-gradient(to right, ${EDGE} 1px, transparent 1px), linear-gradient(to bottom, ${EDGE} 1px, transparent 1px)`,
           backgroundSize: `${100 / cols}% ${100 / rows}%`,
         }}
-        className="relative touch-none rounded-sm border-2 border-sky-400/40 bg-surface-0"
+        className="relative shrink-0 touch-none rounded-sm border-2 border-sky-400/40 bg-surface-0"
       >
         {ports.map((p) => {
           const k = keyOf(p)
@@ -96,10 +104,15 @@ export function PortGridEditor({
                 setDrag(null)
                 e.currentTarget.releasePointerCapture(e.pointerId)
               }}
-              style={{ left: `${live.fx * 100}%`, top: `${live.fy * 100}%` }}
+              style={{
+                left: `${live.fx * 100}%`,
+                top: `${live.fy * 100}%`,
+                width: portScale,
+                height: portScale,
+              }}
               title={`${p.side === 'inputs' ? 'In' : 'Out'} ${p.index + 1}`}
               aria-label={`${p.side} ${p.index + 1} position`}
-              className={`absolute size-3 -translate-x-1/2 -translate-y-1/2 cursor-grab touch-none rounded-full ring-2 transition-transform hover:scale-125 active:cursor-grabbing ${tone}`}
+              className={`absolute -translate-x-1/2 -translate-y-1/2 cursor-grab touch-none rounded-full ring-2 transition-transform hover:scale-125 active:cursor-grabbing ${tone}`}
             />
           )
         })}

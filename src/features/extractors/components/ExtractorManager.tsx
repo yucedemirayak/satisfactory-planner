@@ -1,4 +1,5 @@
 import { useAppSelector } from '@/app/hooks'
+import { PortEditorToolbar } from '@/features/ports'
 
 import { selectExtractorCount, selectExtractors } from '../selectors'
 import { ExtractorCard } from './ExtractorCard'
@@ -18,6 +19,7 @@ export function ExtractorManager() {
             Miners / extractors. Base rate = Mk.1 on a Normal node at 100%.
           </p>
         </div>
+        <PortEditorToolbar page="extractors" />
         <dl className="text-right">
           <dt className="text-xs text-gray-500">Defined</dt>
           <dd className="font-mono text-lg text-ficsit">{count}</dd>

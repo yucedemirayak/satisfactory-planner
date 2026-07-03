@@ -1,4 +1,9 @@
 import defaultProject from '@/data/defaultProject.json'
+import {
+  DEFAULT_PORT_EDITOR_SETTINGS,
+  type PortEditorPage,
+  type PortEditorSettings,
+} from '@/features/ports'
 
 import type { RootState } from './store'
 
@@ -36,6 +41,7 @@ export type PersistedState = Pick<
   | 'nodes'
   | 'nodeTypes'
   | 'production'
+  | 'portEditor'
 >
 
 /** Keys of the persisted slices — single source of truth for validation. */
@@ -54,6 +60,7 @@ const PERSISTED_KEYS: ReadonlyArray<keyof PersistedState> = [
   'nodes',
   'nodeTypes',
   'production',
+  'portEditor',
 ]
 
 /** A downloadable project file: persisted state wrapped with metadata. */
@@ -81,6 +88,7 @@ function pickPersisted(state: RootState): PersistedState {
     nodes: state.nodes,
     nodeTypes: state.nodeTypes,
     production: state.production,
+    portEditor: state.portEditor,
   }
 }
 
@@ -104,6 +112,17 @@ function migrate(raw: Record<string, unknown>): void {
     const seed = (defaultProject as { data?: { pipelines?: unknown } }).data
       ?.pipelines
     raw.pipelines = seed ? structuredClone(seed) : { items: [] }
+  }
+
+  // Per-page port-editor settings added later — normalise, filling gaps with
+  // the defaults (also covers saves that predate the slice entirely).
+  const pe = raw.portEditor as
+    | Partial<Record<PortEditorPage, Partial<PortEditorSettings>>>
+    | undefined
+  raw.portEditor = {
+    workbenches: { ...DEFAULT_PORT_EDITOR_SETTINGS, ...pe?.workbenches },
+    extractors: { ...DEFAULT_PORT_EDITOR_SETTINGS, ...pe?.extractors },
+    routing: { ...DEFAULT_PORT_EDITOR_SETTINGS, ...pe?.routing },
   }
 
   // Connections slice added later; always reset transient UI (pendingFrom /

@@ -1,5 +1,4 @@
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
-import { selectGridSize } from '@/features/floors/selectors'
 import {
   PortGridEditor,
   edgePorts,
@@ -38,7 +37,7 @@ export function WorkbenchCard({ workbench, index }: WorkbenchCardProps) {
   const dispatch = useAppDispatch()
   const update = (changes: Parameters<typeof workbenchUpdated>[0]['changes']) =>
     dispatch(workbenchUpdated({ id: workbench.id, changes }))
-  const gridSize = useAppSelector(selectGridSize)
+  const editor = useAppSelector((s) => s.portEditor.workbenches)
 
   const inPorts = resolvePorts(
     workbench.inputPorts,
@@ -168,7 +167,9 @@ export function WorkbenchCard({ workbench, index }: WorkbenchCardProps) {
           <PortGridEditor
             width={workbench.width}
             height={workbench.height}
-            gridSize={gridSize}
+            gridSize={editor.gridSize}
+            portScale={editor.portScale}
+            zoom={editor.zoom}
             ports={ports}
             onMove={(side, index, pos) =>
               dispatch(

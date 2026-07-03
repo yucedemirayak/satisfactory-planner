@@ -9,6 +9,7 @@ import nodesReducer from '@/features/nodes/nodesSlice'
 import nodeTypesReducer from '@/features/nodes/nodeTypesSlice'
 import pipelinesReducer from '@/features/pipelines/pipelinesSlice'
 import placementsReducer from '@/features/placements/placementsSlice'
+import portEditorReducer from '@/features/ports/portEditorSlice'
 import productionReducer from '@/features/production/productionSlice'
 import productsReducer from '@/features/products/productsSlice'
 import recipesReducer from '@/features/recipes/recipesSlice'
@@ -33,6 +34,7 @@ const combinedReducer = combineReducers({
   recipes: recipesReducer,
   placements: placementsReducer,
   production: productionReducer,
+  portEditor: portEditorReducer,
 })
 
 // Derived from the reducer (not the store) so persistence can reference

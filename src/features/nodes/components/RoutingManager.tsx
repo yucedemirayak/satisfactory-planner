@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
-import { selectGridSize } from '@/features/floors/selectors'
 import {
+  PortEditorToolbar,
   PortGridEditor,
   resolvePorts,
   type EditablePort,
@@ -80,7 +80,7 @@ function DimField({
 function RoutingCard({ kind, label }: { kind: NodeKind; label: string }) {
   const dispatch = useAppDispatch()
   const size = useAppSelector((s) => s.nodeTypes[kind])
-  const gridSize = useAppSelector(selectGridSize)
+  const editor = useAppSelector((s) => s.portEditor.routing)
   const { inputs, outputs } = nodePortCounts(kind)
   const set = (changes: { width?: number; height?: number }) =>
     dispatch(nodeSizeChanged({ kind, changes }))
@@ -128,7 +128,9 @@ function RoutingCard({ kind, label }: { kind: NodeKind; label: string }) {
         <PortGridEditor
           width={size.width}
           height={size.height}
-          gridSize={gridSize}
+          gridSize={editor.gridSize}
+          portScale={editor.portScale}
+          zoom={editor.zoom}
           ports={ports}
           onMove={(side, index, pos) =>
             dispatch(nodePortPosChanged({ kind, side, index, pos }))
@@ -143,12 +145,15 @@ function RoutingCard({ kind, label }: { kind: NodeKind; label: string }) {
 export function RoutingManager() {
   return (
     <section className="flex h-full flex-col gap-4">
-      <header>
-        <h1 className="text-lg font-bold text-gray-100">Routing</h1>
-        <p className="text-sm text-gray-500">
-          Splitter and merger footprints in metres — they scale with the
-          floor-plan zoom, like machines.
-        </p>
+      <header className="flex items-center justify-between gap-4">
+        <div>
+          <h1 className="text-lg font-bold text-gray-100">Routing</h1>
+          <p className="text-sm text-gray-500">
+            Splitter and merger footprints in metres — they scale with the
+            floor-plan zoom, like machines.
+          </p>
+        </div>
+        <PortEditorToolbar page="routing" />
       </header>
 
       <div className="grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2">

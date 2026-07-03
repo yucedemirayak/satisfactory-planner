@@ -1,4 +1,5 @@
 import { useAppSelector } from '@/app/hooks'
+import { PortEditorToolbar } from '@/features/ports'
 
 import { selectWorkbenchCount, selectWorkbenches } from '../selectors'
 import { WorkbenchCard } from './WorkbenchCard'
@@ -18,6 +19,7 @@ export function WorkbenchManager() {
             Define your workbenches and their footprint.
           </p>
         </div>
+        <PortEditorToolbar page="workbenches" />
         <dl className="text-right">
           <dt className="text-xs text-gray-500">Defined</dt>
           <dd className="font-mono text-lg text-ficsit">{count}</dd>
