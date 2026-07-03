@@ -2,6 +2,7 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import {
   PortEditorToolbar,
   PortGridEditor,
+  portEditorWidth,
   resolvePorts,
   type EditablePort,
 } from '@/features/ports'
@@ -141,8 +142,19 @@ function RoutingCard({ kind, label }: { kind: NodeKind; label: string }) {
   )
 }
 
+/** Card padding + border around the editor, so a zoomed editor still fits. */
+const CARD_CHROME_PX = 34
+const MIN_CARD_PX = 320 // the base card width
+
 /** Page for editing splitter / merger footprints (metres, like other elements). */
 export function RoutingManager() {
+  // Card columns widen with the editor zoom so it never gets cramped inside.
+  const editor = useAppSelector((s) => s.portEditor.routing)
+  const minCol = Math.max(
+    MIN_CARD_PX,
+    portEditorWidth(editor.zoom, editor.portScale) + CARD_CHROME_PX,
+  )
+
   return (
     <section className="flex h-full flex-col gap-4">
       <header className="flex items-center justify-between gap-4">
@@ -156,7 +168,12 @@ export function RoutingManager() {
         <PortEditorToolbar page="routing" />
       </header>
 
-      <div className="grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2">
+      <div
+        className="grid max-w-4xl gap-4"
+        style={{
+          gridTemplateColumns: `repeat(auto-fill, minmax(${minCol}px, 1fr))`,
+        }}
+      >
         {KINDS.map(({ kind, label }) => (
           <RoutingCard key={kind} kind={kind} label={label} />
         ))}

@@ -1,14 +1,24 @@
 import { useAppSelector } from '@/app/hooks'
-import { PortEditorToolbar } from '@/features/ports'
+import { PortEditorToolbar, portEditorWidth } from '@/features/ports'
 
 import { selectWorkbenchCount, selectWorkbenches } from '../selectors'
 import { WorkbenchCard } from './WorkbenchCard'
 import { WorkbenchForm } from './WorkbenchForm'
 
+/** Card padding + border around the editor, so a zoomed editor still fits. */
+const CARD_CHROME_PX = 28
+const MIN_CARD_PX = 240 // 15rem — the base card width
+
 /** Page for defining the catalogue of workbenches to place onto floors later. */
 export function WorkbenchManager() {
   const workbenches = useAppSelector(selectWorkbenches)
   const count = useAppSelector(selectWorkbenchCount)
+  // Card columns widen with the editor zoom so it never gets cramped inside.
+  const editor = useAppSelector((s) => s.portEditor.workbenches)
+  const minCol = Math.max(
+    MIN_CARD_PX,
+    portEditorWidth(editor.zoom, editor.portScale) + CARD_CHROME_PX,
+  )
 
   return (
     <section className="flex h-full flex-col gap-4">
@@ -37,7 +47,12 @@ export function WorkbenchManager() {
               No workbenches yet. Create one on the left.
             </div>
           ) : (
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-3">
+            <div
+              className="grid gap-3"
+              style={{
+                gridTemplateColumns: `repeat(auto-fill, minmax(${minCol}px, 1fr))`,
+              }}
+            >
               {workbenches.map((wb, i) => (
                 <WorkbenchCard key={wb.id} workbench={wb} index={i} />
               ))}

@@ -1,5 +1,6 @@
 import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 
+import { PORT_EDITOR_BOX_MAX, portDotOverhang } from '../constants'
 import { cellCount, clamp01, snapToGrid } from '../layout'
 import type { PortPos } from '../types'
 
@@ -23,7 +24,6 @@ interface PortGridEditorProps {
   onMove: (side: 'inputs' | 'outputs', index: number, pos: PortPos) => void
 }
 
-const BOX_MAX = 150
 const EDGE = '#30363d'
 
 const keyOf = (p: EditablePort) => `${p.side}-${p.index}`
@@ -51,7 +51,7 @@ export function PortGridEditor({
   const rows = cellCount(height, gridSize)
 
   // Box drawn at the machine's aspect ratio; the long side is BOX_MAX × zoom.
-  const long = Math.round(BOX_MAX * zoom)
+  const long = Math.round(PORT_EDITOR_BOX_MAX * zoom)
   const aspect = width / height
   const boxW = aspect >= 1 ? long : Math.round(long * aspect)
   const boxH = aspect >= 1 ? Math.round(long / aspect) : long
@@ -65,57 +65,78 @@ export function PortGridEditor({
     }
   }
 
+  // Edge/corner dots straddle the box outline; pad the scroll container by the
+  // dot's overhang so they're never clipped.
+  const pad = portDotOverhang(portScale)
+
   return (
     // Zoomed editors can outgrow their card — scroll within it, don't overlap.
     <div className="flex max-w-full flex-col gap-1 overflow-x-auto">
-      <div
-        ref={ref}
-        style={{
-          width: boxW,
-          height: boxH,
-          backgroundImage: `linear-gradient(to right, ${EDGE} 1px, transparent 1px), linear-gradient(to bottom, ${EDGE} 1px, transparent 1px)`,
-          backgroundSize: `${100 / cols}% ${100 / rows}%`,
-        }}
-        className="relative shrink-0 touch-none rounded-sm border-2 border-sky-400/40 bg-surface-0"
-      >
-        {ports.map((p) => {
-          const k = keyOf(p)
-          const live = drag?.key === k ? drag : p.pos
-          const tone =
-            p.side === 'inputs'
-              ? 'bg-sky-400 ring-sky-200/60'
-              : 'bg-ficsit ring-ficsit/60'
-          return (
-            <button
-              key={k}
-              type="button"
-              onPointerDown={(e) => {
-                e.preventDefault()
-                e.currentTarget.setPointerCapture(e.pointerId)
-                setDrag({ key: k, fx: p.pos.fx, fy: p.pos.fy })
-              }}
-              onPointerMove={(e) => {
-                if (drag?.key !== k) return
-                setDrag({ key: k, ...fracFromEvent(e) })
-              }}
-              onPointerUp={(e) => {
-                if (drag?.key !== k) return
-                onMove(p.side, p.index, snapToGrid(drag.fx, drag.fy, cols, rows))
-                setDrag(null)
-                e.currentTarget.releasePointerCapture(e.pointerId)
-              }}
-              style={{
-                left: `${live.fx * 100}%`,
-                top: `${live.fy * 100}%`,
-                width: portScale,
-                height: portScale,
-              }}
-              title={`${p.side === 'inputs' ? 'In' : 'Out'} ${p.index + 1}`}
-              aria-label={`${p.side} ${p.index + 1} position`}
-              className={`absolute -translate-x-1/2 -translate-y-1/2 cursor-grab touch-none rounded-full ring-2 transition-transform hover:scale-125 active:cursor-grabbing ${tone}`}
-            />
-          )
-        })}
+      <div style={{ padding: pad }} className="w-fit shrink-0">
+        <div
+          ref={ref}
+          style={{ width: boxW, height: boxH }}
+          className="relative touch-none rounded-sm border-2 border-sky-400/40 bg-surface-0"
+        >
+          {/* Gridlines as individual SVG lines: a repeating CSS background tile
+              gets rounded to whole pixels, piling the error into one visibly
+              wider column — per-line placement keeps the spacing even. */}
+          <svg
+            className="pointer-events-none absolute inset-0 size-full"
+            aria-hidden
+          >
+            {Array.from({ length: cols - 1 }, (_, i) => {
+              const x = `${((i + 1) * 100) / cols}%`
+              return (
+                <line key={`v${i}`} x1={x} y1="0" x2={x} y2="100%" stroke={EDGE} />
+              )
+            })}
+            {Array.from({ length: rows - 1 }, (_, i) => {
+              const y = `${((i + 1) * 100) / rows}%`
+              return (
+                <line key={`h${i}`} x1="0" y1={y} x2="100%" y2={y} stroke={EDGE} />
+              )
+            })}
+          </svg>
+          {ports.map((p) => {
+            const k = keyOf(p)
+            const live = drag?.key === k ? drag : p.pos
+            const tone =
+              p.side === 'inputs'
+                ? 'bg-sky-400 ring-sky-200/60'
+                : 'bg-ficsit ring-ficsit/60'
+            return (
+              <button
+                key={k}
+                type="button"
+                onPointerDown={(e) => {
+                  e.preventDefault()
+                  e.currentTarget.setPointerCapture(e.pointerId)
+                  setDrag({ key: k, fx: p.pos.fx, fy: p.pos.fy })
+                }}
+                onPointerMove={(e) => {
+                  if (drag?.key !== k) return
+                  setDrag({ key: k, ...fracFromEvent(e) })
+                }}
+                onPointerUp={(e) => {
+                  if (drag?.key !== k) return
+                  onMove(p.side, p.index, snapToGrid(drag.fx, drag.fy, cols, rows))
+                  setDrag(null)
+                  e.currentTarget.releasePointerCapture(e.pointerId)
+                }}
+                style={{
+                  left: `${live.fx * 100}%`,
+                  top: `${live.fy * 100}%`,
+                  width: portScale,
+                  height: portScale,
+                }}
+                title={`${p.side === 'inputs' ? 'In' : 'Out'} ${p.index + 1}`}
+                aria-label={`${p.side} ${p.index + 1} position`}
+                className={`absolute -translate-x-1/2 -translate-y-1/2 cursor-grab touch-none rounded-full ring-2 transition-transform hover:scale-125 active:cursor-grabbing ${tone}`}
+              />
+            )
+          })}
+        </div>
       </div>
       <span className="text-[10px] text-gray-500">
         Drag ports onto the grid ({cols}×{rows})

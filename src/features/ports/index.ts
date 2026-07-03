@@ -1,6 +1,7 @@
 /** Shared port-layout primitives (positions, the grid editor). */
 export { PortEditorToolbar } from './components/PortEditorToolbar'
 export { PortGridEditor, type EditablePort } from './components/PortGridEditor'
+export { portEditorWidth } from './constants'
 export {
   cellCount,
   centerPorts,
