@@ -22,7 +22,7 @@ export function ExtractorManager() {
 
   return (
     <section className="flex h-full flex-col gap-4">
-      <header className="flex items-center justify-between gap-4">
+      <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-lg font-bold text-gray-100">Extractors</h1>
           <p className="text-sm text-gray-500">
@@ -36,7 +36,7 @@ export function ExtractorManager() {
         </dl>
       </header>
 
-      <div className="grid min-h-0 flex-1 grid-cols-[20rem_1fr] gap-4">
+      <div className="grid min-h-0 flex-1 auto-rows-max grid-cols-1 gap-4 overflow-y-auto lg:auto-rows-auto lg:grid-cols-[20rem_1fr] lg:overflow-visible">
         <div className="min-h-0 overflow-y-auto">
           <ExtractorForm />
         </div>

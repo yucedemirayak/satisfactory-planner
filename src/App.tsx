@@ -15,7 +15,7 @@ import { RecipeManager } from '@/features/recipes'
 import { WorkbenchManager } from '@/features/workbenches'
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-  `rounded-md px-3 py-1.5 text-sm font-medium transition ${
+  `rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap transition ${
     isActive
       ? 'bg-ficsit/15 text-ficsit'
       : 'text-gray-400 hover:bg-surface-2 hover:text-gray-200'
@@ -42,13 +42,15 @@ function GearIcon() {
 
 function App() {
   return (
-    <div className="flex h-screen flex-col bg-surface-0 text-gray-200">
-      <header className="flex items-center gap-4 border-b border-edge bg-surface-1 px-4 py-3">
-        <span className="text-lg font-black tracking-tight text-ficsit">
+    <div className="flex h-dvh flex-col bg-surface-0 text-gray-200">
+      <header className="flex items-center gap-2 border-b border-edge bg-surface-1 px-3 py-2.5 sm:gap-4 sm:px-4 sm:py-3">
+        <span className="text-lg font-black tracking-tight whitespace-nowrap text-ficsit">
           ◆ FICSIT
         </span>
-        <span className="text-sm text-gray-400">Megafactory Planner</span>
-        <nav className="ml-6 flex items-center gap-1">
+        <span className="hidden text-sm text-gray-400 md:inline">
+          Megafactory Planner
+        </span>
+        <nav className="ml-1 flex items-center gap-1 sm:ml-6">
           <NavLink to={PATHS.floors} className={navLinkClass}>
             Floor Plan
           </NavLink>
@@ -72,7 +74,7 @@ function App() {
         </NavLink>
       </header>
 
-      <main className="min-h-0 flex-1 p-4">
+      <main className="min-h-0 flex-1 p-3 sm:p-4">
         <Routes>
           <Route path="/" element={<Navigate to={PATHS.floors} replace />} />
           <Route path={PATHS.floors} element={<FloorPlanPage />} />

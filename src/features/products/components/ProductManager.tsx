@@ -22,7 +22,7 @@ export function ProductManager() {
         </dl>
       </header>
 
-      <div className="grid min-h-0 flex-1 grid-cols-[20rem_1fr] gap-4">
+      <div className="grid min-h-0 flex-1 auto-rows-max grid-cols-1 gap-4 overflow-y-auto lg:auto-rows-auto lg:grid-cols-[20rem_1fr] lg:overflow-visible">
         <div className="min-h-0 overflow-y-auto">
           <ProductForm />
         </div>

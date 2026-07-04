@@ -120,6 +120,8 @@ function FloorPlanPage() {
   const gridSize = useAppSelector(selectGridSize)
   const [activeDrag, setActiveDrag] = useState<ActiveDrag | null>(null)
   const [dropTarget, setDropTarget] = useState<DropTarget | null>(null)
+  // Mobile-only: the view controls (Ports/Grid/Zoom + totals) fold away.
+  const [toolsOpen, setToolsOpen] = useState(false)
 
   // Clear every selection (wiring source, connection, placement, node, floor).
   const deselectAll = useCallback(() => {
@@ -142,7 +144,9 @@ function FloorPlanPage() {
   const sensors = useSensors(
     // Mouse: small drag distance starts a drag.
     useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
-    // Touch: long-press so a normal swipe still scrolls the plan.
+    // Touch: long-press so a normal swipe still scrolls the plan. Draggables
+    // must use touch-manipulation (not touch-none), or the browser never
+    // starts a scroll from a touch that lands on them.
     useSensor(TouchSensor, {
       activationConstraint: { delay: 200, tolerance: 8 },
     }),
@@ -254,39 +258,74 @@ function FloorPlanPage() {
       onDragCancel={resetDrag}
     >
       <section className="flex h-full flex-col gap-4">
-        <header className="flex items-center justify-between gap-4">
-          <div>
-            <h1 className="text-lg font-bold text-gray-100">Floor Plan</h1>
-            <p className="text-sm text-gray-500">
-              Design your megafactory floor by floor.
-            </p>
+        <header className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <div className="flex w-full items-center justify-between gap-2 lg:w-auto">
+            <div>
+              <h1 className="text-lg font-bold text-gray-100">Floor Plan</h1>
+              <p className="text-sm text-gray-500">
+                Design your megafactory floor by floor.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setToolsOpen((o) => !o)}
+              aria-expanded={toolsOpen}
+              aria-label="Toggle view controls"
+              className="rounded-md border border-edge bg-surface-1 p-1.5 text-gray-400 transition hover:text-gray-200 lg:hidden"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={`size-4 transition-transform ${toolsOpen ? 'rotate-180' : ''}`}
+                aria-hidden
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
           </div>
-          <div className="flex items-center gap-6">
-            <FloorPortControl />
-            <FloorGridControl />
-            <FloorScaleControl />
-            <dl className="flex gap-6 text-right">
-              <div>
-                <dt className="text-xs text-gray-500">Floors</dt>
-                <dd className="font-mono text-lg text-ficsit">{count}</dd>
+
+          {/* Collapses upward on mobile via the 0fr→1fr grid-row trick; the
+              lg override keeps it permanently expanded on desktop. */}
+          <div
+            className={`grid w-full transition-[grid-template-rows] duration-300 lg:w-auto lg:grid-rows-[1fr] ${
+              toolsOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+            }`}
+          >
+            <div className="min-h-0 overflow-hidden">
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                <FloorPortControl />
+                <FloorGridControl />
+                <FloorScaleControl />
+                <dl className="flex flex-wrap gap-x-6 gap-y-1 text-right">
+                  <div>
+                    <dt className="text-xs text-gray-500">Floors</dt>
+                    <dd className="font-mono text-lg text-ficsit">{count}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs text-gray-500">Total width</dt>
+                    <dd className="font-mono text-lg text-ficsit">
+                      {Math.round(footprint.width * 10) / 10} m
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs text-gray-500">Total depth</dt>
+                    <dd className="font-mono text-lg text-ficsit">
+                      {Math.round(footprint.depth * 10) / 10} m
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs text-gray-500">Total height</dt>
+                    <dd className="font-mono text-lg text-ficsit">
+                      {totalHeight} m
+                    </dd>
+                  </div>
+                </dl>
               </div>
-              <div>
-                <dt className="text-xs text-gray-500">Total width</dt>
-                <dd className="font-mono text-lg text-ficsit">
-                  {Math.round(footprint.width * 10) / 10} m
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs text-gray-500">Total depth</dt>
-                <dd className="font-mono text-lg text-ficsit">
-                  {Math.round(footprint.depth * 10) / 10} m
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs text-gray-500">Total height</dt>
-                <dd className="font-mono text-lg text-ficsit">{totalHeight} m</dd>
-              </div>
-            </dl>
+            </div>
           </div>
         </header>
 
@@ -297,7 +336,9 @@ function FloorPlanPage() {
           </p>
         )}
 
-        <div className="grid min-h-0 flex-1 grid-cols-[13rem_1fr_18rem] gap-4">
+        {/* Desktop: palette | floors | inspectors side by side. Mobile: one
+            scrolling column — palette on top, floor plan below it. */}
+        <div className="grid min-h-0 flex-1 auto-rows-max grid-cols-1 gap-4 overflow-y-auto lg:auto-rows-auto lg:grid-cols-[13rem_1fr_18rem] lg:overflow-visible">
           <Palette />
 
           <div className="min-h-0 overflow-auto rounded-lg border border-edge bg-surface-1 p-4">

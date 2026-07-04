@@ -26,7 +26,9 @@ export function Palette() {
   const extractors = useAppSelector(selectExtractors)
 
   return (
-    <aside className="flex h-full flex-col gap-4 overflow-y-auto rounded-lg border border-edge bg-surface-1 p-3">
+    // max-h caps the palette when the page stacks on mobile (own scroll);
+    // desktop columns give it a real height so max-h-none restores h-full.
+    <aside className="flex h-full max-h-40 flex-col gap-4 overflow-y-auto rounded-lg border border-edge bg-surface-1 p-3 lg:max-h-none">
       <section className="flex flex-col gap-2">
         <div>
           <h2 className="text-sm font-semibold tracking-wide text-gray-300 uppercase">

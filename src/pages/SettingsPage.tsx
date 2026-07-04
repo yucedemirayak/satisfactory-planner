@@ -14,7 +14,7 @@ const TABS = [
 ] as const
 
 const tabClass = ({ isActive }: { isActive: boolean }) =>
-  `rounded-md px-3 py-1.5 text-sm font-medium transition ${
+  `shrink-0 rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap transition ${
     isActive
       ? 'bg-ficsit/15 text-ficsit'
       : 'text-gray-400 hover:bg-surface-2 hover:text-gray-200'
@@ -24,7 +24,8 @@ const tabClass = ({ isActive }: { isActive: boolean }) =>
 export default function SettingsPage() {
   return (
     <div className="flex h-full min-h-0 flex-col gap-4">
-      <nav className="flex items-center gap-1 border-b border-edge pb-3">
+      {/* Horizontally swipeable on narrow screens — tabs never wrap or shrink. */}
+      <nav className="flex items-center gap-1 overflow-x-auto border-b border-edge pb-3">
         {TABS.map((tab) => (
           <NavLink key={tab.to} to={tab.to} className={tabClass}>
             {tab.label}

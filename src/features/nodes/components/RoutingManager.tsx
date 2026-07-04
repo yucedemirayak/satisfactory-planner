@@ -157,7 +157,7 @@ export function RoutingManager() {
 
   return (
     <section className="flex h-full flex-col gap-4">
-      <header className="flex items-center justify-between gap-4">
+      <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-lg font-bold text-gray-100">Routing</h1>
           <p className="text-sm text-gray-500">
