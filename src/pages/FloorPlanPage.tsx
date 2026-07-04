@@ -68,6 +68,7 @@ import {
   PlanDefaultsControl,
   selectDefaultExtractorTier,
 } from '@/features/defaults'
+import { UndoRedoControl, redo, undo } from '@/features/history'
 import { selectSelection, selectionCleared } from '@/features/selection'
 
 interface DropTarget {
@@ -81,6 +82,13 @@ interface DropTarget {
 type ActiveDrag =
   | { type: 'machine'; kind: PlacementKind; refId: string }
   | { type: 'node'; kind: NodeKind }
+
+/** Typing targets where plan shortcuts must yield to the browser/input. */
+const isEditableTarget = (t: EventTarget | null): boolean =>
+  t instanceof HTMLInputElement ||
+  t instanceof HTMLTextAreaElement ||
+  t instanceof HTMLSelectElement ||
+  (t instanceof HTMLElement && t.isContentEditable)
 
 /**
  * Target the plan only when the pointer is actually inside a droppable (a floor
@@ -141,24 +149,24 @@ function FloorPlanPage() {
     dispatch(selectionCleared())
   }, [dispatch])
 
-  // Esc deselects everything; Del removes the selected item — unless the user
-  // is typing in a form field (the inspectors are full of inputs).
+  // Esc deselects everything; Ctrl+Z / Ctrl+Shift+Z (or Ctrl+Y) undo/redo the
+  // plan; Del removes the selected item. Form fields keep their own behaviour
+  // (the inspectors are full of inputs, and text undo belongs to the browser).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         deselectAll()
         return
       }
-      if (e.key !== 'Delete' || !selection) return
-      const t = e.target
-      if (
-        t instanceof HTMLElement &&
-        (t instanceof HTMLInputElement ||
-          t instanceof HTMLTextAreaElement ||
-          t instanceof HTMLSelectElement ||
-          t.isContentEditable)
-      )
+      const key = e.key.toLowerCase()
+      if ((e.ctrlKey || e.metaKey) && (key === 'z' || key === 'y')) {
+        if (isEditableTarget(e.target)) return
+        e.preventDefault()
+        dispatch(key === 'y' || e.shiftKey ? redo() : undo())
         return
+      }
+      if (e.key !== 'Delete' || !selection) return
+      if (isEditableTarget(e.target)) return
       switch (selection.kind) {
         case 'placement':
           dispatch(placementRemoved(selection.id))
@@ -340,26 +348,29 @@ function FloorPlanPage() {
                 Design your megafactory floor by floor.
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => setToolsOpen((o) => !o)}
-              aria-expanded={toolsOpen}
-              aria-label="Toggle view controls"
-              className="rounded-md border border-edge bg-surface-1 p-1.5 text-gray-400 transition hover:text-gray-200 lg:hidden"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={`size-4 transition-transform ${toolsOpen ? 'rotate-180' : ''}`}
-                aria-hidden
+            <div className="flex items-center gap-2">
+              <UndoRedoControl />
+              <button
+                type="button"
+                onClick={() => setToolsOpen((o) => !o)}
+                aria-expanded={toolsOpen}
+                aria-label="Toggle view controls"
+                className="rounded-md border border-edge bg-surface-1 p-1.5 text-gray-400 transition hover:text-gray-200 lg:hidden"
               >
-                <path d="m6 9 6 6 6-6" />
-              </svg>
-            </button>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={`size-4 transition-transform ${toolsOpen ? 'rotate-180' : ''}`}
+                  aria-hidden
+                >
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           {/* Collapses upward on mobile via the 0fr→1fr grid-row trick; the
