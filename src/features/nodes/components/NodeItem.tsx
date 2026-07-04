@@ -7,13 +7,14 @@ import {
   connectionSourceSet,
 } from '@/features/connections/connectionsSlice'
 import { selectConnectionSource } from '@/features/connections/selectors'
+import { selectNewConnectionTransportId } from '@/features/defaults'
 import { selectPortScale, selectPxPerMeter } from '@/features/floors/selectors'
 import type { NodeDragData } from '@/features/placements/dnd'
 import { portPosStyle, resolvePorts } from '@/features/ports'
+import { itemSelected } from '@/features/selection'
 
 import { MIN_NODE_PX } from '../constants'
 import { DEFAULT_NODE_PORTS } from '../nodeTypesSlice'
-import { nodeSelected } from '../nodesSlice'
 import { selectSelectedNodeId } from '../selectors'
 import type { RouteNode } from '../types'
 
@@ -28,9 +29,7 @@ export function NodeItem({ node }: { node: RouteNode }) {
   const cfg = useAppSelector((s) => s.nodeTypes[node.kind])
   const pendingFrom = useAppSelector(selectConnectionSource)
   const selected = useAppSelector(selectSelectedNodeId) === node.id
-  const defaultTransportId = useAppSelector(
-    (s) => s.conveyors.items[0]?.id ?? '',
-  )
+  const defaultTransportId = useAppSelector(selectNewConnectionTransportId)
 
   const data: NodeDragData = {
     type: 'node',
@@ -85,7 +84,7 @@ export function NodeItem({ node }: { node: RouteNode }) {
       ref={setNodeRef}
       onClick={(e) => {
         e.stopPropagation()
-        dispatch(nodeSelected(node.id))
+        dispatch(itemSelected({ kind: 'node', id: node.id }))
       }}
       style={style}
       // No z-index: the box stays below the belt layer (z-10) so belts render

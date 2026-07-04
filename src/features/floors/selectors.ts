@@ -28,7 +28,7 @@ export const selectTotalHeight = (state: RootState) =>
   state.floors.items.reduce((sum, f) => sum + f.height, 0)
 
 export const selectSelectedFloorId = (state: RootState) =>
-  state.floors.selectedId
+  state.selection.current?.kind === 'floor' ? state.selection.current.id : null
 
 export const selectSelectedFloor = (state: RootState) =>
-  state.floors.items.find((f) => f.id === state.floors.selectedId) ?? null
+  state.floors.items.find((f) => f.id === selectSelectedFloorId(state)) ?? null

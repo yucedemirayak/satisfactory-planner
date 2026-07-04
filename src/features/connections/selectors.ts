@@ -11,7 +11,7 @@ import type { Connection, ConnectionEnd } from './types'
 export const selectConnectionSource = (s: RootState) => s.connections.pendingFrom
 
 export const selectSelectedConnectionId = (s: RootState) =>
-  s.connections.selectedId
+  s.selection.current?.kind === 'connection' ? s.selection.current.id : null
 
 /** A connection enriched with the carried item, its flow rate and capacity. */
 export interface ConnectionView {
@@ -104,6 +104,7 @@ export const selectConnectionViews = createSelector(
     (s: RootState) => s.nodes.items,
     (s: RootState) => s.materials.items,
     (s: RootState) => s.products.items,
+    (s: RootState) => s.defaults,
   ],
   (
     items,
@@ -116,6 +117,7 @@ export const selectConnectionViews = createSelector(
     nodes,
     materials,
     products,
+    defaults,
   ) => {
     const placements = new Map<string, Placement>()
     for (const list of Object.values(byFloor)) {
@@ -132,8 +134,15 @@ export const selectConnectionViews = createSelector(
     const itemPhase = new Map<string, ItemPhase>()
     for (const m of materials) itemPhase.set(m.id, m.phase)
     for (const p of products) itemPhase.set(p.id, p.phase)
-    const firstConveyor = conveyors[0]?.id ?? ''
-    const firstPipeline = pipelines[0]?.id ?? ''
+    // Tier a link falls back to per kind: the toolbar default, else the first.
+    const fallbackConveyor =
+      defaults.conveyorId && convRate.has(defaults.conveyorId)
+        ? defaults.conveyorId
+        : (conveyors[0]?.id ?? '')
+    const fallbackPipeline =
+      defaults.pipelineId && pipeRate.has(defaults.pipelineId)
+        ? defaults.pipelineId
+        : (pipelines[0]?.id ?? '')
 
     // Belts grouped by the node they enter / leave (each port carries ≤1 belt).
     const intoNode = new Map<string, Connection[]>()
@@ -249,7 +258,9 @@ export const selectConnectionViews = createSelector(
       if (reqItem === null) continue
       const f = flowOf(c)
       // Pick transport by the carried item's phase. A stored id of the wrong
-      // kind (or a deleted tier) falls back to the first tier that matches.
+      // kind (or a deleted tier) falls back to the default tier of the right
+      // kind (else the first) — this is how a new fluid link lands on the
+      // default pipeline even though creation stores the belt default.
       const phase: ItemPhase = f.item
         ? (itemPhase.get(f.item) ?? 'solid')
         : 'solid'
@@ -259,8 +270,8 @@ export const selectConnectionViews = createSelector(
       const transportId = storedFits
         ? stored
         : phase === 'fluid'
-          ? firstPipeline
-          : firstConveyor
+          ? fallbackPipeline
+          : fallbackConveyor
       const capacity =
         (phase === 'fluid' ? pipeRate.get(transportId) : convRate.get(transportId)) ??
         0

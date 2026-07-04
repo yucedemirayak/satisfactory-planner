@@ -26,7 +26,11 @@ import {
   FloorPortControl,
   FloorScaleControl,
   FloorStack,
-  floorSelected,
+  floorRemoved,
+  MAX_PX_PER_METER,
+  MIN_PX_PER_METER,
+  PX_PER_METER_STEP,
+  pxPerMeterChanged,
   selectFloorCount,
   selectGridSize,
   selectPxPerMeter,
@@ -39,7 +43,7 @@ import {
   PlacementInspector,
   placementAdded,
   placementMoved,
-  placementSelected,
+  placementRemoved,
   selectFactoryFootprint,
   type DragData,
   type DropData,
@@ -48,7 +52,7 @@ import type { PlacementKind } from '@/features/placements/types'
 import {
   ConnectionInspector,
   ConnectionLayer,
-  connectionSelected,
+  connectionRemoved,
   connectionSourceCleared,
   selectConnectionSource,
 } from '@/features/connections'
@@ -57,9 +61,14 @@ import {
   NodePreview,
   nodeAdded,
   nodeMoved,
-  nodeSelected,
+  nodeRemoved,
   type NodeKind,
 } from '@/features/nodes'
+import {
+  PlanDefaultsControl,
+  selectDefaultExtractorTier,
+} from '@/features/defaults'
+import { selectSelection, selectionCleared } from '@/features/selection'
 
 interface DropTarget {
   floorId: string
@@ -115,7 +124,10 @@ function FloorPlanPage() {
   const totalHeight = useAppSelector(selectTotalHeight)
   const footprint = useAppSelector(selectFactoryFootprint)
   const pendingFrom = useAppSelector(selectConnectionSource)
+  const selection = useAppSelector(selectSelection)
+  const defaultExtractorTier = useAppSelector(selectDefaultExtractorTier)
   const contentRef = useRef<HTMLDivElement | null>(null)
+  const planRef = useRef<HTMLDivElement | null>(null)
   const pxPerMeter = useAppSelector(selectPxPerMeter)
   const gridSize = useAppSelector(selectGridSize)
   const [activeDrag, setActiveDrag] = useState<ActiveDrag | null>(null)
@@ -123,23 +135,82 @@ function FloorPlanPage() {
   // Mobile-only: the view controls (Ports/Grid/Zoom + totals) fold away.
   const [toolsOpen, setToolsOpen] = useState(false)
 
-  // Clear every selection (wiring source, connection, placement, node, floor).
+  // Clear the selection and any half-made wiring (pending source port).
   const deselectAll = useCallback(() => {
     dispatch(connectionSourceCleared())
-    dispatch(connectionSelected(null))
-    dispatch(placementSelected(null))
-    dispatch(nodeSelected(null))
-    dispatch(floorSelected(null))
+    dispatch(selectionCleared())
   }, [dispatch])
 
-  // Esc deselects everything.
+  // Esc deselects everything; Del removes the selected item — unless the user
+  // is typing in a form field (the inspectors are full of inputs).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') deselectAll()
+      if (e.key === 'Escape') {
+        deselectAll()
+        return
+      }
+      if (e.key !== 'Delete' || !selection) return
+      const t = e.target
+      if (
+        t instanceof HTMLElement &&
+        (t instanceof HTMLInputElement ||
+          t instanceof HTMLTextAreaElement ||
+          t instanceof HTMLSelectElement ||
+          t.isContentEditable)
+      )
+        return
+      switch (selection.kind) {
+        case 'placement':
+          dispatch(placementRemoved(selection.id))
+          break
+        case 'floor':
+          // Same cascade as the inspector's Delete: contents go with the floor.
+          dispatch(floorRemoved(selection.id))
+          break
+        case 'node':
+          dispatch(nodeRemoved(selection.id))
+          break
+        case 'connection':
+          dispatch(connectionRemoved(selection.id))
+          break
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [deselectAll])
+  }, [deselectAll, dispatch, selection])
+
+  // Alt + wheel zooms the plan, keeping the point under the cursor anchored
+  // (approximate: fixed chrome like paddings and add-floor rows don't scale).
+  // Native non-passive listener — React's synthetic onWheel is passive, so
+  // preventDefault couldn't stop the card from scrolling instead.
+  useEffect(() => {
+    const el = planRef.current
+    if (!el) return
+    const onWheel = (e: WheelEvent) => {
+      if (!e.altKey) return
+      e.preventDefault()
+      const step = e.deltaY < 0 ? PX_PER_METER_STEP : -PX_PER_METER_STEP
+      const next = Math.min(
+        MAX_PX_PER_METER,
+        Math.max(MIN_PX_PER_METER, pxPerMeter + step),
+      )
+      if (next === pxPerMeter) return
+      const rect = el.getBoundingClientRect()
+      const cx = e.clientX - rect.left
+      const cy = e.clientY - rect.top
+      const factor = next / pxPerMeter
+      const { scrollLeft, scrollTop } = el
+      dispatch(pxPerMeterChanged(next))
+      // After the re-render commits, re-aim the scroll so the cursor's point
+      // stays put under the new scale.
+      requestAnimationFrame(() => {
+        el.scrollLeft = (scrollLeft + cx) * factor - cx
+        el.scrollTop = (scrollTop + cy) * factor - cy
+      })
+    }
+    el.addEventListener('wheel', onWheel, { passive: false })
+    return () => el.removeEventListener('wheel', onWheel)
+  }, [dispatch, pxPerMeter])
 
   const sensors = useSensors(
     // Mouse: small drag distance starts a drag.
@@ -231,6 +302,9 @@ function FloorPlanPage() {
           refId: activeData.refId,
           floorId,
           x,
+          // New extractors start at the toolbar's default Mk tier.
+          tier:
+            activeData.kind === 'extractor' ? defaultExtractorTier : undefined,
         }),
       )
     } else if (activeData.type === 'placement') {
@@ -300,6 +374,7 @@ function FloorPlanPage() {
                 <FloorPortControl />
                 <FloorGridControl />
                 <FloorScaleControl />
+                <PlanDefaultsControl />
                 <dl className="flex flex-wrap gap-x-6 gap-y-1 text-right">
                   <div>
                     <dt className="text-xs text-gray-500">Floors</dt>
@@ -341,7 +416,10 @@ function FloorPlanPage() {
         <div className="grid min-h-0 flex-1 auto-rows-max grid-cols-1 gap-4 overflow-y-auto lg:auto-rows-auto lg:grid-cols-[13rem_1fr_18rem] lg:overflow-visible">
           <Palette />
 
-          <div className="min-h-0 overflow-auto rounded-lg border border-edge bg-surface-1 p-4">
+          <div
+            ref={planRef}
+            className="min-h-0 overflow-auto rounded-lg border border-edge bg-surface-1 p-4"
+          >
             <div ref={contentRef} className="relative isolate w-max min-w-full">
               <FloorStack
                 renderFloorContent={(floor) => {
@@ -378,11 +456,23 @@ function FloorPlanPage() {
             </div>
           </div>
 
+          {/* One inspector at a time — whatever kind is selected. */}
           <div className="flex min-h-0 flex-col gap-4 overflow-y-auto">
-            <FloorInspector />
-            <PlacementInspector />
-            <NodeInspector />
-            <ConnectionInspector />
+            {selection?.kind === 'floor' ? (
+              <FloorInspector />
+            ) : selection?.kind === 'node' ? (
+              <NodeInspector />
+            ) : selection?.kind === 'connection' ? (
+              <ConnectionInspector />
+            ) : selection?.kind === 'placement' ? (
+              <PlacementInspector />
+            ) : (
+              <aside className="rounded-lg border border-edge bg-surface-1 p-4">
+                <p className="text-sm text-gray-500">
+                  Select a floor, machine, node or connection to edit it.
+                </p>
+              </aside>
+            )}
           </div>
         </div>
       </section>

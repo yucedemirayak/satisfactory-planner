@@ -7,6 +7,7 @@ import {
   connectionSourceSet,
 } from '@/features/connections/connectionsSlice'
 import { selectConnectionSource } from '@/features/connections/selectors'
+import { selectNewConnectionTransportId } from '@/features/defaults'
 import { selectPortScale, selectPxPerMeter } from '@/features/floors/selectors'
 import {
   centerPorts,
@@ -15,9 +16,9 @@ import {
   resolvePorts,
   type PortPos,
 } from '@/features/ports'
+import { itemSelected } from '@/features/selection'
 
 import type { PlacementDragData } from '../dnd'
-import { placementSelected } from '../placementsSlice'
 import {
   selectOverlappingPlacementIds,
   selectSelectedPlacementId,
@@ -63,11 +64,9 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
   const pxPerMeter = useAppSelector(selectPxPerMeter)
   const portScale = useAppSelector(selectPortScale)
   const pendingFrom = useAppSelector(selectConnectionSource)
-  // New links default to the first conveyor; the flow graph auto-switches a
-  // fluid line to a pipeline based on the carried item's phase.
-  const defaultTransportId = useAppSelector(
-    (s) => s.conveyors.items[0]?.id ?? '',
-  )
+  // New links get the toolbar's default belt tier; the flow graph resolves a
+  // fluid line to the default pipeline based on the carried item's phase.
+  const defaultTransportId = useAppSelector(selectNewConnectionTransportId)
 
   const data: PlacementDragData = {
     type: 'placement',
@@ -189,7 +188,7 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
       ref={setNodeRef}
       onClick={(e) => {
         e.stopPropagation()
-        dispatch(placementSelected(placement.id))
+        dispatch(itemSelected({ kind: 'placement', id: placement.id }))
       }}
       style={
         box

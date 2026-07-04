@@ -1,7 +1,13 @@
-import { combineReducers, configureStore, type Action } from '@reduxjs/toolkit'
+import {
+  combineReducers,
+  configureStore,
+  type Action,
+  type Reducer,
+} from '@reduxjs/toolkit'
 
 import connectionsReducer from '@/features/connections/connectionsSlice'
 import conveyorsReducer from '@/features/conveyors/conveyorsSlice'
+import defaultsReducer from '@/features/defaults/defaultsSlice'
 import extractorsReducer from '@/features/extractors/extractorsSlice'
 import floorsReducer from '@/features/floors/floorsSlice'
 import materialsReducer from '@/features/materials/materialsSlice'
@@ -13,11 +19,12 @@ import portEditorReducer from '@/features/ports/portEditorSlice'
 import productionReducer from '@/features/production/productionSlice'
 import productsReducer from '@/features/products/productsSlice'
 import recipesReducer from '@/features/recipes/recipesSlice'
+import selectionReducer from '@/features/selection/selectionSlice'
 import spacersReducer from '@/features/spacers/spacersSlice'
 import workbenchesReducer from '@/features/workbenches/workbenchesSlice'
 
 import { appStateImported } from './appActions'
-import { loadState, saveState } from './persistence'
+import { loadState, saveState, type PersistedState } from './persistence'
 
 const combinedReducer = combineReducers({
   floors: floorsReducer,
@@ -35,6 +42,8 @@ const combinedReducer = combineReducers({
   placements: placementsReducer,
   production: productionReducer,
   portEditor: portEditorReducer,
+  defaults: defaultsReducer,
+  selection: selectionReducer,
 })
 
 // Derived from the reducer (not the store) so persistence can reference
@@ -43,11 +52,16 @@ export type RootState = ReturnType<typeof combinedReducer>
 
 // Wrap the combined reducer so `appStateImported` can swap the whole tree at
 // once (project import). Slices don't know about this action, so on import they
-// each just receive—and return—their replacement slice.
-const rootReducer = (state: RootState | undefined, action: Action): RootState =>
+// each just receive—and return—their replacement slice. PersistedState lacks
+// the transient slices (selection); combineReducers resets those to their
+// initial state when the key is absent — exactly what an import should do.
+const rootReducer: Reducer<RootState, Action, RootState | PersistedState> = (
+  state,
+  action,
+): RootState =>
   appStateImported.match(action)
-    ? combinedReducer(action.payload, action)
-    : combinedReducer(state, action)
+    ? combinedReducer(action.payload as RootState, action)
+    : combinedReducer(state as RootState | undefined, action)
 
 export const store = configureStore({
   reducer: rootReducer,

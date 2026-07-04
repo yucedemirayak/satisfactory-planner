@@ -2,8 +2,8 @@ import { useEffect, useState, type RefObject } from 'react'
 
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import { selectPxPerMeter } from '@/features/floors/selectors'
+import { itemSelected } from '@/features/selection'
 
-import { connectionSelected } from '../connectionsSlice'
 import { selectConnectionViews, selectSelectedConnectionId } from '../selectors'
 
 interface Segment {
@@ -148,7 +148,7 @@ export function ConnectionLayer({
                 return
               }
               e.stopPropagation()
-              dispatch(connectionSelected(s.id))
+              dispatch(itemSelected({ kind: 'connection', id: s.id }))
             }}
           />
           <path

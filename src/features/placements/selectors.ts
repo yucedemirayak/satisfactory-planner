@@ -16,13 +16,15 @@ export const selectFloorPlacements = (
 ): readonly Placement[] => state.placements.byFloor[floorId] ?? EMPTY
 
 export const selectSelectedPlacementId = (state: RootState) =>
-  state.placements.selectedId
+  state.selection.current?.kind === 'placement'
+    ? state.selection.current.id
+    : null
 
 export const selectSelectedPlacement = (state: RootState): Placement | null => {
-  const { selectedId, byFloor } = state.placements
+  const selectedId = selectSelectedPlacementId(state)
   if (!selectedId) return null
-  for (const floorId of Object.keys(byFloor)) {
-    const found = byFloor[floorId].find((p) => p.id === selectedId)
+  for (const list of Object.values(state.placements.byFloor)) {
+    const found = list.find((p) => p.id === selectedId)
     if (found) return found
   }
   return null

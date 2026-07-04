@@ -19,8 +19,6 @@ import type { Floor, InsertPosition } from './types'
 export interface FloorsState {
   /** Ordered bottom→top: index 0 is the ground floor, last index is the top. */
   items: Floor[]
-  /** Id of the floor currently open in the inspector, or null. */
-  selectedId: string | null
   /** Floor-plan scale in pixels per metre (user-adjustable zoom). */
   pxPerMeter: number
   /** Grid snap resolution in metres for placing items along a floor. */
@@ -32,7 +30,6 @@ export interface FloorsState {
 const initialState: FloorsState = {
   // Start with no floors.
   items: [],
-  selectedId: null,
   pxPerMeter: DEFAULT_PX_PER_METER,
   gridSize: DEFAULT_GRID_SIZE,
   portScale: DEFAULT_PORT_SCALE,
@@ -75,7 +72,7 @@ const floorsSlice = createSlice({
     /**
      * Add a floor at a position. The new floor's id/height are built in the
      * pure `prepare` step; the concrete insert index is resolved in the reducer
-     * against live state. The new floor becomes the selected one.
+     * against live state. (The selection slice picks up the new floor.)
      */
     floorAdded: {
       reducer(
@@ -84,7 +81,6 @@ const floorsSlice = createSlice({
       ) {
         const index = resolveIndex(state.items, action.payload.position)
         state.items.splice(index, 0, action.payload.floor)
-        state.selectedId = action.payload.floor.id
       },
       prepare(position: InsertPosition, height: number = DEFAULT_FLOOR_HEIGHT) {
         return {
@@ -97,10 +93,6 @@ const floorsSlice = createSlice({
     },
     floorRemoved(state, action: PayloadAction<string>) {
       state.items = state.items.filter((f) => f.id !== action.payload)
-      if (state.selectedId === action.payload) state.selectedId = null
-    },
-    floorSelected(state, action: PayloadAction<string | null>) {
-      state.selectedId = action.payload
     },
     floorHeightChanged(
       state,
@@ -128,7 +120,6 @@ const floorsSlice = createSlice({
 export const {
   floorAdded,
   floorRemoved,
-  floorSelected,
   floorHeightChanged,
   floorRenamed,
   pxPerMeterChanged,

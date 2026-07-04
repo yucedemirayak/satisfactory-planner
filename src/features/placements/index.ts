@@ -9,7 +9,6 @@ export {
   placementAdded,
   placementMoved,
   placementRemoved,
-  placementSelected,
   placementQuantityChanged,
   placementRecipeChanged,
   placementMaterialChanged,

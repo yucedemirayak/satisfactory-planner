@@ -9,7 +9,6 @@ export {
   nodeAdded,
   nodeMoved,
   nodeRemoved,
-  nodeSelected,
 } from './nodesSlice'
 export {
   default as nodeTypesReducer,

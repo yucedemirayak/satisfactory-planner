@@ -29,13 +29,10 @@ import type {
 export interface PlacementsState {
   /** Ordered placements per floor id (left→right sequence). */
   byFloor: Record<string, Placement[]>
-  /** Id of the placement currently open in the inspector, or null. */
-  selectedId: string | null
 }
 
 const initialState: PlacementsState = {
   byFloor: {},
-  selectedId: null,
 }
 
 const clampQuantity = (value: number): number =>
@@ -73,14 +70,12 @@ const findPlacement = (
   return undefined
 }
 
-/** Drop the selection if it no longer points at an existing placement. */
-const validateSelection = (state: PlacementsState): void => {
-  if (state.selectedId && !findPlacement(state, state.selectedId)) {
-    state.selectedId = null
-  }
-}
-
 const clampX = (x: number): number => (Number.isFinite(x) ? Math.max(0, x) : 0)
+
+const clampTier = (tier: number): number =>
+  Number.isFinite(tier)
+    ? Math.min(MAX_TIER, Math.max(MIN_TIER, Math.round(tier)))
+    : DEFAULT_TIER
 
 /** Remove a placement by id from anywhere and return it. */
 const extract = (
@@ -106,13 +101,14 @@ const placementsSlice = createSlice({
       ) {
         const { placement, floorId } = action.payload
         ;(state.byFloor[floorId] ??= []).push(placement)
-        state.selectedId = placement.id
       },
       prepare(args: {
         kind: PlacementKind
         refId: string
         floorId: string
         x: number
+        /** Extractor Mk tier; defaults slice supplies the toolbar's pick. */
+        tier?: number
       }) {
         return {
           payload: {
@@ -126,7 +122,7 @@ const placementsSlice = createSlice({
               configs: [],
               materialId: null,
               purity: DEFAULT_PURITY,
-              tier: DEFAULT_TIER,
+              tier: clampTier(args.tier ?? DEFAULT_TIER),
             },
             floorId: args.floorId,
           },
@@ -150,10 +146,6 @@ const placementsSlice = createSlice({
     },
     placementRemoved(state, action: PayloadAction<string>) {
       extract(state, action.payload)
-      if (state.selectedId === action.payload) state.selectedId = null
-    },
-    placementSelected(state, action: PayloadAction<string | null>) {
-      state.selectedId = action.payload
     },
     placementQuantityChanged(
       state,
@@ -190,12 +182,7 @@ const placementsSlice = createSlice({
       action: PayloadAction<{ id: string; tier: number }>,
     ) {
       const placement = findPlacement(state, action.payload.id)
-      if (placement) {
-        placement.tier = Math.min(
-          MAX_TIER,
-          Math.max(MIN_TIER, Math.round(action.payload.tier)),
-        )
-      }
+      if (placement) placement.tier = clampTier(action.payload.tier)
     },
     /** Add an overclock/sloop config group, pulling 1 machine from the base. */
     placementConfigAdded: {
@@ -264,7 +251,6 @@ const placementsSlice = createSlice({
     // Clean up placements when a floor, workbench, or spacer is deleted.
     builder.addCase(floorRemoved, (state, action) => {
       delete state.byFloor[action.payload]
-      validateSelection(state)
     })
     builder.addCase(workbenchRemoved, (state, action) => {
       for (const floorId of Object.keys(state.byFloor)) {
@@ -272,7 +258,6 @@ const placementsSlice = createSlice({
           (p) => !(p.kind === 'workbench' && p.refId === action.payload),
         )
       }
-      validateSelection(state)
     })
     builder.addCase(spacerRemoved, (state, action) => {
       for (const floorId of Object.keys(state.byFloor)) {
@@ -280,7 +265,6 @@ const placementsSlice = createSlice({
           (p) => !(p.kind === 'spacer' && p.refId === action.payload),
         )
       }
-      validateSelection(state)
     })
     // Unassign a recipe from any placement when that recipe is deleted.
     builder.addCase(recipeRemoved, (state, action) => {
@@ -305,7 +289,6 @@ export const {
   placementAdded,
   placementMoved,
   placementRemoved,
-  placementSelected,
   placementQuantityChanged,
   placementRecipeChanged,
   placementMaterialChanged,

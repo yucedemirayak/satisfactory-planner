@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react'
 
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
+import { itemSelected } from '@/features/selection'
 
-import { floorAdded, floorSelected } from '../floorsSlice'
+import { floorAdded } from '../floorsSlice'
 import { floorLabel } from '../helpers'
 import { selectFloors, selectSelectedFloorId } from '../selectors'
 import type { Floor } from '../types'
@@ -65,7 +66,7 @@ export function FloorStack({ renderFloorContent }: FloorStackProps = {}) {
             floor={floor}
             label={floorLabel(floor, indexFromBottom)}
             selected={floor.id === selectedId}
-            onSelect={() => dispatch(floorSelected(floor.id))}
+            onSelect={() => dispatch(itemSelected({ kind: 'floor', id: floor.id }))}
           >
             {renderFloorContent?.(floor)}
           </FloorBand>

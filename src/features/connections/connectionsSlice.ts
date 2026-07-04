@@ -18,14 +18,11 @@ export interface ConnectionsState {
   items: Connection[]
   /** Source output port chosen mid two-click, awaiting an input target. */
   pendingFrom: PendingFrom | null
-  /** Connection open in the inspector, or null. */
-  selectedId: string | null
 }
 
 const initialState: ConnectionsState = {
   items: [],
   pendingFrom: null,
-  selectedId: null,
 }
 
 const sameEnd = (a: ConnectionEnd, b: ConnectionEnd): boolean =>
@@ -52,10 +49,7 @@ const connectionsSlice = createSlice({
         const clash = state.items.some(
           (x) => sameEnd(x.from, c.from) || sameEnd(x.to, c.to),
         )
-        if (!clash) {
-          state.items.push(c)
-          state.selectedId = c.id
-        }
+        if (!clash) state.items.push(c)
         state.pendingFrom = null
       },
       prepare(args: Omit<Connection, 'id'>) {
@@ -64,10 +58,6 @@ const connectionsSlice = createSlice({
     },
     connectionRemoved(state, action: PayloadAction<string>) {
       state.items = state.items.filter((c) => c.id !== action.payload)
-      if (state.selectedId === action.payload) state.selectedId = null
-    },
-    connectionSelected(state, action: PayloadAction<string | null>) {
-      state.selectedId = action.payload
     },
     connectionTransportChanged(
       state,
@@ -116,7 +106,6 @@ export const {
   connectionSourceCleared,
   connectionAdded,
   connectionRemoved,
-  connectionSelected,
   connectionTransportChanged,
 } = connectionsSlice.actions
 

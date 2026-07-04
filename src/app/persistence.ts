@@ -1,4 +1,5 @@
 import defaultProject from '@/data/defaultProject.json'
+import type { DefaultsState } from '@/features/defaults'
 import {
   DEFAULT_PORT_EDITOR_SETTINGS,
   type PortEditorPage,
@@ -42,6 +43,7 @@ export type PersistedState = Pick<
   | 'nodeTypes'
   | 'production'
   | 'portEditor'
+  | 'defaults'
 >
 
 /** Keys of the persisted slices — single source of truth for validation. */
@@ -61,6 +63,7 @@ const PERSISTED_KEYS: ReadonlyArray<keyof PersistedState> = [
   'nodeTypes',
   'production',
   'portEditor',
+  'defaults',
 ]
 
 /** A downloadable project file: persisted state wrapped with metadata. */
@@ -89,6 +92,7 @@ function pickPersisted(state: RootState): PersistedState {
     nodeTypes: state.nodeTypes,
     production: state.production,
     portEditor: state.portEditor,
+    defaults: state.defaults,
   }
 }
 
@@ -101,6 +105,13 @@ function pickPersisted(state: RootState): PersistedState {
  * - Conveyors slice added later — seed older saves with the default belts.
  */
 function migrate(raw: Record<string, unknown>): void {
+  // Per-slice selectedId moved to the transient (unpersisted) selection slice —
+  // strip stale copies so old saves don't carry them forever.
+  for (const key of ['floors', 'placements', 'nodes', 'connections']) {
+    const slice = raw[key] as Record<string, unknown> | undefined
+    if (slice && 'selectedId' in slice) delete slice.selectedId
+  }
+
   if (!raw.conveyors) {
     const seed = (defaultProject as { data?: { conveyors?: unknown } }).data
       ?.conveyors
@@ -125,8 +136,17 @@ function migrate(raw: Record<string, unknown>): void {
     routing: { ...DEFAULT_PORT_EDITOR_SETTINGS, ...pe?.routing },
   }
 
-  // Connections slice added later; always reset transient UI (pendingFrom /
-  // selectedId) on load, keeping any saved links. Endpoints used to be flat
+  // Default tiers for new plan items added later — normalise/seed.
+  const dfl = raw.defaults as Partial<DefaultsState> | undefined
+  raw.defaults = {
+    conveyorId: typeof dfl?.conveyorId === 'string' ? dfl.conveyorId : null,
+    pipelineId: typeof dfl?.pipelineId === 'string' ? dfl.pipelineId : null,
+    extractorTier:
+      typeof dfl?.extractorTier === 'number' ? dfl.extractorTier : 1,
+  }
+
+  // Connections slice added later; always reset transient UI (pendingFrom) on
+  // load, keeping any saved links. Endpoints used to be flat
   // ({ fromPlacementId, fromPort, ... }); upgrade them to the tagged
   // { from: { ref, id, port }, to: {...} } shape (ref defaults to 'placement').
   const conn = raw.connections as { items?: unknown } | undefined
@@ -159,11 +179,10 @@ function migrate(raw: Record<string, unknown>): void {
         typeof c.to === 'object',
     ),
     pendingFrom: null,
-    selectedId: null,
   }
 
   // Route nodes (splitters / mergers) added later — seed empty.
-  if (!raw.nodes) raw.nodes = { items: [], selectedId: null }
+  if (!raw.nodes) raw.nodes = { items: [] }
 
   // Editable splitter/merger footprints + port positions — seed/backfill.
   type Pos = { fx: number; fy: number }
