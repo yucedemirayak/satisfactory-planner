@@ -10,7 +10,6 @@ interface FloorBandProps {
   label: string
   selected: boolean
   onSelect: () => void
-  onRemove: () => void
   /** Optional content layer filling the band (e.g. a placements drop area). */
   children?: ReactNode
 }
@@ -20,16 +19,16 @@ const MIN_BAND_PX = 18
 
 /**
  * One floor drawn as a horizontal band whose pixel height is proportional to
- * the floor's height in metres. Clicking selects it; hovering reveals delete.
- * `children` (a placements drop area) is the in-flow content that drives the
- * band width, so the whole stack can share one horizontal scroll.
+ * the floor's height in metres. Clicking selects it; deleting happens in the
+ * FloorInspector. `children` (a placements drop area) is the in-flow content
+ * that drives the band width, so the whole stack can share one horizontal
+ * scroll.
  */
 export function FloorBand({
   floor,
   label,
   selected,
   onSelect,
-  onRemove,
   children,
 }: FloorBandProps) {
   const pxPerMeter = useAppSelector(selectPxPerMeter)
@@ -47,7 +46,7 @@ export function FloorBand({
         }
       }}
       style={{ height: pxHeight }}
-      className={`group/band relative flex min-w-full cursor-pointer overflow-hidden
+      className={`relative flex min-w-full cursor-pointer overflow-hidden
         rounded-sm border text-left transition-colors focus-visible:outline-none ${
           selected
             ? 'border-ficsit bg-ficsit/10 ring-1 ring-ficsit'
@@ -72,27 +71,9 @@ export function FloorBand({
         {label}
       </span>
 
-      {/* height + delete */}
-      <span className="absolute right-2 top-1 z-20 flex items-center gap-2">
-        <span className="pointer-events-none rounded bg-surface-0/60 px-1.5 py-0.5 font-mono text-xs text-ficsit">
-          {floor.height} m
-        </span>
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation()
-            onRemove()
-          }}
-          title={`Delete ${label}`}
-          aria-label={`Delete ${label}`}
-          className={`flex size-6 items-center justify-center rounded bg-surface-0/60
-            text-gray-400 transition hover:bg-red-500/20 hover:text-red-400
-            group-hover/band:opacity-100 focus-visible:opacity-100 ${
-              selected ? 'opacity-100' : 'opacity-0'
-            }`}
-        >
-          ✕
-        </button>
+      {/* floor height badge */}
+      <span className="pointer-events-none absolute right-2 top-1 z-20 rounded bg-surface-0/60 px-1.5 py-0.5 font-mono text-xs text-ficsit">
+        {floor.height} m
       </span>
     </div>
   )

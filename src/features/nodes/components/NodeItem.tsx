@@ -13,7 +13,7 @@ import { portPosStyle, resolvePorts } from '@/features/ports'
 
 import { MIN_NODE_PX } from '../constants'
 import { DEFAULT_NODE_PORTS } from '../nodeTypesSlice'
-import { nodeRemoved, nodeSelected } from '../nodesSlice'
+import { nodeSelected } from '../nodesSlice'
 import { selectSelectedNodeId } from '../selectors'
 import type { RouteNode } from '../types'
 
@@ -91,7 +91,7 @@ export function NodeItem({ node }: { node: RouteNode }) {
       // No z-index: the box stays below the belt layer (z-10) so belts render
       // over it, while its ports (z-30) escape this non-stacking-context box and
       // sit above the belts — same layering as machines.
-      className={`group/node flex cursor-grab touch-none items-center justify-center rounded-sm border-2 bg-surface-2 text-[9px] font-bold tracking-wide text-gray-200 active:cursor-grabbing ${
+      className={`flex cursor-grab touch-none items-center justify-center rounded-sm border-2 bg-surface-2 text-[9px] font-bold tracking-wide text-gray-200 active:cursor-grabbing ${
         selected ? 'border-ficsit ring-2 ring-ficsit' : 'border-sky-400/70'
       }`}
       title={node.kind === 'splitter' ? 'Splitter (1 → 3)' : 'Merger (3 → 1)'}
@@ -144,19 +144,6 @@ export function NodeItem({ node }: { node: RouteNode }) {
         )
       })}
 
-      <button
-        type="button"
-        onPointerDown={(e) => e.stopPropagation()}
-        onClick={(e) => {
-          e.stopPropagation()
-          dispatch(nodeRemoved(node.id))
-        }}
-        title="Remove"
-        aria-label="Remove"
-        className="absolute -right-1.5 -top-1.5 z-30 flex size-4 items-center justify-center rounded bg-surface-0/80 text-[10px] text-gray-300 opacity-0 transition hover:bg-red-500/40 hover:text-red-200 group-hover/node:opacity-100"
-      >
-        ✕
-      </button>
     </div>
   )
 }

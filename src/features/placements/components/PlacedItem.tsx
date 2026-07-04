@@ -17,7 +17,7 @@ import {
 } from '@/features/ports'
 
 import type { PlacementDragData } from '../dnd'
-import { placementRemoved, placementSelected } from '../placementsSlice'
+import { placementSelected } from '../placementsSlice'
 import {
   selectOverlappingPlacementIds,
   selectSelectedPlacementId,
@@ -176,7 +176,7 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
   // No overflow-hidden: ports straddle the box edge and must not be clipped
   // (the rounded corners still clip the background fill via border-radius).
   const sharedClass =
-    'group/wb absolute cursor-grab touch-none active:cursor-grabbing'
+    'absolute cursor-grab touch-none active:cursor-grabbing'
   // Overlap warning (red) takes priority over the selection ring (ficsit).
   const ring = overlapping
     ? ' ring-2 ring-red-500'
@@ -299,21 +299,6 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
           ×{placement.quantity}
         </span>
       )}
-      <button
-        type="button"
-        onPointerDown={(e) => e.stopPropagation()}
-        onClick={(e) => {
-          e.stopPropagation()
-          dispatch(placementRemoved(placement.id))
-        }}
-        title="Remove"
-        aria-label="Remove"
-        className="absolute right-0.5 top-0.5 flex size-4 items-center justify-center
-          rounded bg-surface-0/70 text-[10px] text-gray-300 opacity-0 transition
-          hover:bg-red-500/40 hover:text-red-200 group-hover/wb:opacity-100"
-      >
-        ✕
-      </button>
     </div>
   )
 }
