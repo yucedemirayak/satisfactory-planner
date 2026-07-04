@@ -1,0 +1,8 @@
+
+Todo:
+  ☐ Kt planında Alt + scroll ile zoom ayarı değiştirilebilmesi
+  ☐ Connectionlar yapılırken sadece mk1 oluyor default olarak diğer seçenekler olabilmeli, aynı şekilde miner/extractors içinde geçerli ama öncelik conneciton'lar
+  ☐ 4 adet seçili öğre yerine sadece tek adet seçili detay olması daha iyi olur
+  ☐ del tuşuna basıldığı zaman seçili öğre silinebilir
+  ☐ öncelik kat planı olmak üzere undo/redo mekanizması çok iyi olur
+
