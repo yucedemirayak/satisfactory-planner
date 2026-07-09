@@ -35,6 +35,7 @@ export function FloorDropArea({
   const gridSize = useAppSelector(selectGridSize)
   const workbenches = useAppSelector((s) => s.workbenches.items)
   const extractors = useAppSelector((s) => s.extractors.items)
+  const generators = useAppSelector((s) => s.generators.items)
   const spacers = useAppSelector((s) => s.spacers.items)
   const data: FloorDropData = { type: 'floor', floorId }
   const { setNodeRef, isOver } = useDroppable({ id: `floor-${floorId}`, data })
@@ -44,6 +45,8 @@ export function FloorDropArea({
       return workbenches.find((w) => w.id === p.refId)?.width ?? 0
     if (p.kind === 'extractor')
       return extractors.find((e) => e.id === p.refId)?.width ?? 0
+    if (p.kind === 'generator')
+      return generators.find((g) => g.id === p.refId)?.width ?? 0
     return spacers.find((s) => s.id === p.refId)?.width ?? 0
   }
 

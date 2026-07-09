@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAppSelector } from '@/app/hooks'
 import { PATHS } from '@/app/paths'
 import { extractorLabel, selectExtractors } from '@/features/extractors'
+import { generatorLabel, selectGenerators } from '@/features/generators'
 import { workbenchLabel } from '@/features/workbenches/helpers'
 import { selectWorkbenches } from '@/features/workbenches/selectors'
 
@@ -20,10 +21,11 @@ function EmptyHint({ to, label }: { to: string; label: string }) {
   )
 }
 
-/** Sidebar of draggable workbenches and extractors to drop onto floors. */
+/** Sidebar of draggable workbenches, extractors and generators to drop onto floors. */
 export function Palette() {
   const workbenches = useAppSelector(selectWorkbenches)
   const extractors = useAppSelector(selectExtractors)
+  const generators = useAppSelector(selectGenerators)
 
   return (
     // max-h caps the palette when the page stacks on mobile (own scroll);
@@ -91,6 +93,40 @@ export function Palette() {
               </span>
               <span className="shrink-0 font-mono text-xs text-gray-500">
                 {ex.width}×{ex.height}
+              </span>
+            </PaletteItem>
+          ))
+        )}
+      </section>
+
+      <section className="flex flex-col gap-2">
+        <div>
+          <h2 className="text-sm font-semibold tracking-wide text-gray-300 uppercase">
+            Generators
+          </h2>
+          <p className="text-xs text-gray-500">Drag onto a floor.</p>
+        </div>
+        {generators.length === 0 ? (
+          <EmptyHint to={PATHS.generators} label="Create some" />
+        ) : (
+          generators.map((g, i) => (
+            <PaletteItem
+              key={g.id}
+              dndId={`palette-gen-${g.id}`}
+              data={{ type: 'palette', kind: 'generator', refId: g.id }}
+            >
+              <span
+                className="size-4 shrink-0 rounded-sm border"
+                style={{
+                  borderColor: g.color,
+                  backgroundColor: `${g.color}33`,
+                }}
+              />
+              <span className="min-w-0 flex-1 truncate text-sm text-gray-200">
+                {generatorLabel(g, i)}
+              </span>
+              <span className="shrink-0 font-mono text-xs text-gray-500">
+                {g.powerOutput} MW
               </span>
             </PaletteItem>
           ))

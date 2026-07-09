@@ -44,6 +44,9 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
   const extractor = useAppSelector((s) =>
     s.extractors.items.find((e) => e.id === placement.refId),
   )
+  const generator = useAppSelector((s) =>
+    s.generators.items.find((g) => g.id === placement.refId),
+  )
   const spacer = useAppSelector((s) =>
     s.spacers.items.find((sp) => sp.id === placement.refId),
   )
@@ -55,6 +58,12 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
   const material = useAppSelector((s) =>
     placement.materialId
       ? s.materials.items.find((m) => m.id === placement.materialId)
+      : undefined,
+  )
+  const fuelName = useAppSelector((s) =>
+    placement.fuelId
+      ? (s.products.items.find((p) => p.id === placement.fuelId)?.name ??
+        s.materials.items.find((m) => m.id === placement.fuelId)?.name)
       : undefined,
   )
   const selected = useAppSelector(selectSelectedPlacementId) === placement.id
@@ -82,32 +91,39 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
   })
 
   const isExtractor = placement.kind === 'extractor'
+  const isGenerator = placement.kind === 'generator'
   const isSpacer = placement.kind === 'spacer'
-  // Workbenches and extractors are coloured boxes; spacers are dashed gaps.
-  const box = isExtractor ? extractor : workbench
+  // Workbenches, extractors and generators are coloured boxes; spacers are
+  // dashed gaps.
+  const box = isExtractor ? extractor : isGenerator ? generator : workbench
   const def = isSpacer ? spacer : box
   if (!def) return null
 
   const width = Math.max(MIN_BLOCK_PX, def.width * pxPerMeter)
-  // Secondary line: recipe (workbench) or material (extractor).
+  // Secondary line: recipe (workbench), material (extractor) or fuel (generator).
   const subLabel = isExtractor
     ? material?.name || (placement.materialId ? 'Material' : null)
-    : recipe
-      ? recipe.name.trim() || 'Recipe'
-      : null
+    : isGenerator
+      ? fuelName || (generator && generator.fuels.length === 0 ? 'Geothermal' : null)
+      : recipe
+        ? recipe.name.trim() || 'Recipe'
+        : null
 
   // Port slots come from the building definition (fixed count). On a workbench
   // the assigned recipe fills them in order; on an extractor every output slot
-  // carries the assigned material. A slot with no item is empty (faded, not
-  // wireable). Value = the carried item's refId, or null when empty. Each
-  // port sits on its configured edge; ports sharing an edge are spread evenly.
+  // carries the assigned material; on a generator the picked fuel fills the
+  // fuel/water inputs and the waste output. A slot with no item is empty
+  // (faded, not wireable). Value = the carried item's refId, or null when
+  // empty. Each port sits on its configured edge; ports sharing an edge are
+  // spread evenly.
+  const pickedFuel = generator?.fuels.find((f) => f.refId === placement.fuelId)
   const portDescs: {
     type: 'in' | 'out'
     index: number
     refId: string | null
     pos: PortPos
   }[] =
-    !isExtractor && workbench
+    placement.kind === 'workbench' && workbench
       ? [
           ...resolvePorts(
             workbench.inputPorts,
@@ -138,7 +154,43 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
             refId: placement.materialId || null,
             pos,
           }))
-        : []
+        : isGenerator && generator
+          ? (() => {
+              // Ports only carry items while the generator can run (fuel
+              // picked) — same rule the flow graph applies.
+              const inputs = [
+                ...(generator.fuels.length > 0
+                  ? [pickedFuel?.refId ?? null]
+                  : []),
+                ...(generator.water
+                  ? [pickedFuel ? generator.water.refId : null]
+                  : []),
+              ]
+              const outputs = generator.fuels.some((f) => f.byproduct)
+                ? [pickedFuel?.byproduct?.refId ?? null]
+                : []
+              return [
+                ...resolvePorts(
+                  generator.inputPorts,
+                  edgePorts(inputs.length, 'left'),
+                ).map((pos, i) => ({
+                  type: 'in' as const,
+                  index: i,
+                  refId: inputs[i],
+                  pos,
+                })),
+                ...resolvePorts(
+                  generator.outputPorts,
+                  edgePorts(outputs.length, 'right'),
+                ).map((pos, i) => ({
+                  type: 'out' as const,
+                  index: i,
+                  refId: outputs[i],
+                  pos,
+                })),
+              ]
+            })()
+          : []
   const showPorts = portDescs.length > 0
 
   // Two-click wiring: click an output (source), then a matching input (target).
@@ -209,7 +261,7 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
       }
       title={
         box
-          ? `${box.name || (isExtractor ? 'Extractor' : 'Workbench')} — ${box.width}×${box.height} m ·×${placement.quantity}${subLabel ? ` · ${subLabel}` : ''}`
+          ? `${box.name || (isExtractor ? 'Extractor' : isGenerator ? 'Generator' : 'Workbench')} — ${box.width}×${box.height} m ·×${placement.quantity}${subLabel ? ` · ${subLabel}` : ''}`
           : `${spacer?.name || 'Spacer'} — ${def.width} m gap`
       }
       {...attributes}

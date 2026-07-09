@@ -34,10 +34,12 @@ const widthOf = (
   p: Placement,
   wb: Map<string, { width: number }>,
   ex: Map<string, { width: number }>,
+  gen: Map<string, { width: number }>,
   sp: Map<string, { width: number }>,
 ): number => {
   if (p.kind === 'workbench') return wb.get(p.refId)?.width ?? 0
   if (p.kind === 'extractor') return ex.get(p.refId)?.width ?? 0
+  if (p.kind === 'generator') return gen.get(p.refId)?.width ?? 0
   return sp.get(p.refId)?.width ?? 0
 }
 
@@ -50,20 +52,22 @@ export const selectOverlappingPlacementIds = createSelector(
     selectPlacementsByFloor,
     (s: RootState) => s.workbenches.items,
     (s: RootState) => s.extractors.items,
+    (s: RootState) => s.generators.items,
     (s: RootState) => s.spacers.items,
   ],
-  (byFloor, workbenches, extractors, spacers) => {
+  (byFloor, workbenches, extractors, generators, spacers) => {
     const wb = new Map(workbenches.map((w) => [w.id, w]))
     const ex = new Map(extractors.map((e) => [e.id, e]))
+    const gen = new Map(generators.map((g) => [g.id, g]))
     const sp = new Map(spacers.map((s) => [s.id, s]))
     const overlapping = new Set<string>()
     for (const list of Object.values(byFloor)) {
       for (let i = 0; i < list.length; i++) {
         const a = list[i]
-        const aEnd = a.x + widthOf(a, wb, ex, sp)
+        const aEnd = a.x + widthOf(a, wb, ex, gen, sp)
         for (let j = i + 1; j < list.length; j++) {
           const b = list[j]
-          const bEnd = b.x + widthOf(b, wb, ex, sp)
+          const bEnd = b.x + widthOf(b, wb, ex, gen, sp)
           if (a.x < bEnd - 1e-6 && b.x < aEnd - 1e-6) {
             overlapping.add(a.id)
             overlapping.add(b.id)

@@ -6,6 +6,7 @@ import { MAX_BY_SIDE } from '../constants'
 import { recipeLabel } from '../helpers'
 import {
   recipeLineAdded,
+  recipePowerChanged,
   recipeRemoved,
   recipeRenamed,
   recipeWorkbenchChanged,
@@ -140,6 +141,33 @@ export function RecipeCard({ recipe, index }: RecipeCardProps) {
             </option>
           ))}
         </select>
+      </label>
+
+      <label className="flex items-center gap-2">
+        <span className="shrink-0 text-xs font-medium text-gray-400">
+          Power (MW)
+        </span>
+        <input
+          type="number"
+          min={0}
+          step="any"
+          value={recipe.power ?? ''}
+          placeholder={
+            boundWorkbench ? `${boundWorkbench.powerUsage} (workbench)` : 'workbench'
+          }
+          onChange={(e) =>
+            dispatch(
+              recipePowerChanged({
+                id: recipe.id,
+                power: e.target.value === '' ? null : Number(e.target.value),
+              }),
+            )
+          }
+          className="w-32 rounded-md border border-edge bg-surface-0 px-2 py-1.5 text-right font-mono text-sm text-gray-100 outline-none focus:border-ficsit"
+        />
+        <span className="text-xs text-gray-500">
+          empty = use the workbench's draw
+        </span>
       </label>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

@@ -10,6 +10,7 @@ import conveyorsReducer from '@/features/conveyors/conveyorsSlice'
 import defaultsReducer from '@/features/defaults/defaultsSlice'
 import extractorsReducer from '@/features/extractors/extractorsSlice'
 import floorsReducer from '@/features/floors/floorsSlice'
+import generatorsReducer from '@/features/generators/generatorsSlice'
 import {
   applyPlanSnapshot,
   historyGroupKey,
@@ -41,6 +42,7 @@ const combinedReducer = combineReducers({
   floors: floorsReducer,
   workbenches: workbenchesReducer,
   extractors: extractorsReducer,
+  generators: generatorsReducer,
   spacers: spacersReducer,
   conveyors: conveyorsReducer,
   pipelines: pipelinesReducer,

@@ -20,7 +20,7 @@ import type { RootState } from './store'
 const STORAGE_KEY = 'satisfactory-planner:v1'
 
 /** Bumped when the on-disk export shape changes (independent of STORAGE_KEY). */
-export const EXPORT_VERSION = 1
+export const EXPORT_VERSION = 2
 
 /** Marker so we can recognise our own files on import. */
 const PROJECT_FILE_APP = 'satisfactory-planner'
@@ -31,6 +31,7 @@ export type PersistedState = Pick<
   | 'floors'
   | 'workbenches'
   | 'extractors'
+  | 'generators'
   | 'spacers'
   | 'conveyors'
   | 'pipelines'
@@ -51,6 +52,7 @@ const PERSISTED_KEYS: ReadonlyArray<keyof PersistedState> = [
   'floors',
   'workbenches',
   'extractors',
+  'generators',
   'spacers',
   'conveyors',
   'pipelines',
@@ -80,6 +82,7 @@ function pickPersisted(state: RootState): PersistedState {
     floors: state.floors,
     workbenches: state.workbenches,
     extractors: state.extractors,
+    generators: state.generators,
     spacers: state.spacers,
     conveyors: state.conveyors,
     pipelines: state.pipelines,
@@ -125,6 +128,14 @@ function migrate(raw: Record<string, unknown>): void {
     raw.pipelines = seed ? structuredClone(seed) : { items: [] }
   }
 
+  // Generators slice added later (power stopped being a pseudo-item) — seed
+  // older saves with the bundled generator catalogue.
+  if (!raw.generators) {
+    const seed = (defaultProject as { data?: { generators?: unknown } }).data
+      ?.generators
+    raw.generators = seed ? structuredClone(seed) : { items: [] }
+  }
+
   // Per-page port-editor settings added later — normalise, filling gaps with
   // the defaults (also covers saves that predate the slice entirely).
   const pe = raw.portEditor as
@@ -133,6 +144,7 @@ function migrate(raw: Record<string, unknown>): void {
   raw.portEditor = {
     workbenches: { ...DEFAULT_PORT_EDITOR_SETTINGS, ...pe?.workbenches },
     extractors: { ...DEFAULT_PORT_EDITOR_SETTINGS, ...pe?.extractors },
+    generators: { ...DEFAULT_PORT_EDITOR_SETTINGS, ...pe?.generators },
     routing: { ...DEFAULT_PORT_EDITOR_SETTINGS, ...pe?.routing },
   }
 
@@ -224,6 +236,113 @@ function migrate(raw: Record<string, unknown>): void {
   const floors = raw.floors as { gridSize?: unknown } | undefined
   if (floors && typeof floors.gridSize !== 'number') floors.gridSize = 1
 
+  // ---- power model migration ----------------------------------------------
+  // Power used to be modelled as a pseudo-product (prod__power) emitted by
+  // generator-shaped workbenches through "Burn *" recipes. Power now lives
+  // outside the item balance (generators slice + MW fields) — strip the old
+  // artefacts, and everything placed or wired against them, from older saves.
+  {
+    const powerId = 'prod__power'
+    const products = raw.products as
+      | { items?: Array<{ id?: unknown }> }
+      | undefined
+    if (products?.items) {
+      products.items = products.items.filter((p) => p.id !== powerId)
+    }
+
+    const recipes = raw.recipes as
+      | {
+          items?: Array<{
+            id?: unknown
+            inputs?: Array<{ refId?: unknown }>
+            outputs?: Array<{ refId?: unknown }>
+          }>
+        }
+      | undefined
+    const removedRecipes = new Set<string>()
+    if (recipes?.items) {
+      recipes.items = recipes.items.filter((r) => {
+        const refsPower = [...(r.inputs ?? []), ...(r.outputs ?? [])].some(
+          (line) => line.refId === powerId,
+        )
+        const legacy =
+          refsPower || (typeof r.id === 'string' && r.id.startsWith('rec__gen-'))
+        if (legacy && typeof r.id === 'string') removedRecipes.add(r.id)
+        return !legacy
+      })
+    }
+
+    const workbenches = raw.workbenches as
+      | { items?: Array<{ id?: unknown }> }
+      | undefined
+    const removedWorkbenches = new Set<string>()
+    if (workbenches?.items) {
+      workbenches.items = workbenches.items.filter((w) => {
+        const legacy =
+          typeof w.id === 'string' && w.id.startsWith('wb__desc-generator')
+        if (legacy) removedWorkbenches.add(w.id as string)
+        return !legacy
+      })
+    }
+
+    const removedPlacements = new Set<string>()
+    const placements = raw.placements as
+      | { byFloor?: Record<string, Array<Record<string, unknown>>> }
+      | undefined
+    if (placements?.byFloor) {
+      for (const floorId of Object.keys(placements.byFloor)) {
+        placements.byFloor[floorId] = placements.byFloor[floorId].filter((p) => {
+          const refId = (p.refId ?? p.workbenchId) as string
+          const gone = removedWorkbenches.has(refId)
+          if (gone && typeof p.id === 'string') removedPlacements.add(p.id)
+          return !gone
+        })
+        for (const p of placements.byFloor[floorId]) {
+          if (typeof p.recipeId === 'string' && removedRecipes.has(p.recipeId)) {
+            p.recipeId = null
+          }
+        }
+      }
+    }
+
+    const connections = raw.connections as {
+      items?: Array<{ from?: { id?: unknown }; to?: { id?: unknown } }>
+    }
+    if (connections?.items) {
+      connections.items = connections.items.filter(
+        (c) =>
+          !removedPlacements.has(c.from?.id as string) &&
+          !removedPlacements.has(c.to?.id as string),
+      )
+    }
+
+    const production = raw.production as { order?: unknown } | undefined
+    if (production && Array.isArray(production.order)) {
+      production.order = production.order.filter((id) => id !== powerId)
+    }
+  }
+
+  // Catalogue power data added later — backfill missing MW values by id from
+  // the bundled catalogue so existing saves get real numbers, not zeros.
+  const seedCatalogue = (
+    defaultProject as {
+      data?: {
+        workbenches?: { items?: Array<{ id: string; powerUsage?: number }> }
+        extractors?: { items?: Array<{ id: string; powerUsage?: unknown }> }
+        recipes?: { items?: Array<{ id: string; power?: number }> }
+      }
+    }
+  ).data
+  const seedWbPower = new Map(
+    (seedCatalogue?.workbenches?.items ?? []).map((w) => [w.id, w.powerUsage]),
+  )
+  const seedExtPower = new Map(
+    (seedCatalogue?.extractors?.items ?? []).map((e) => [e.id, e.powerUsage]),
+  )
+  const seedRecipePower = new Map(
+    (seedCatalogue?.recipes?.items ?? []).map((r) => [r.id, r.power]),
+  )
+
   const workbenches = raw.workbenches as
     | { items?: Array<Record<string, unknown>> }
     | undefined
@@ -234,6 +353,9 @@ function migrate(raw: Record<string, unknown>): void {
       // Port counts added later — default to a single in/out (Constructor-like).
       if (typeof wb.inputs !== 'number') wb.inputs = 1
       if (typeof wb.outputs !== 'number') wb.outputs = 1
+      if (typeof wb.powerUsage !== 'number') {
+        wb.powerUsage = seedWbPower.get(wb.id as string) ?? 0
+      }
     }
   }
 
@@ -254,6 +376,13 @@ function migrate(raw: Record<string, unknown>): void {
       if (typeof e.depth !== 'number') e.depth = 8
       // Output port count added later — extractors used to have a single output.
       if (typeof e.outputs !== 'number') e.outputs = 1
+      if (!e.powerUsage || typeof e.powerUsage !== 'object') {
+        const seed = seedExtPower.get(e.id as string)
+        e.powerUsage =
+          seed && typeof seed === 'object'
+            ? structuredClone(seed)
+            : { 1: 0, 2: 0, 3: 0 }
+      }
     }
   }
 
@@ -275,6 +404,12 @@ function migrate(raw: Record<string, unknown>): void {
           line.refId = line.productId
           delete line.productId
         }
+      }
+      // Per-recipe MW override added later (variable-power machines).
+      const recipe = r as Record<string, unknown>
+      if (typeof recipe.power !== 'number') {
+        const seed = seedRecipePower.get(recipe.id as string)
+        if (typeof seed === 'number') recipe.power = seed
       }
     }
   }
@@ -315,6 +450,10 @@ function migrate(raw: Record<string, unknown>): void {
     )
   const wbWidth = widthMap(workbenches?.items)
   const exWidth = widthMap(extractors?.items)
+  const genWidth = widthMap(
+    (raw.generators as { items?: Array<Record<string, unknown>> } | undefined)
+      ?.items,
+  )
   const spWidth = widthMap(
     (raw.spacers as { items?: Array<Record<string, unknown>> } | undefined)?.items,
   )
@@ -322,6 +461,7 @@ function migrate(raw: Record<string, unknown>): void {
     const refId = p.refId as string
     if (p.kind === 'workbench') return wbWidth.get(refId) ?? 0
     if (p.kind === 'extractor') return exWidth.get(refId) ?? 0
+    if (p.kind === 'generator') return genWidth.get(refId) ?? 0
     return spWidth.get(refId) ?? 0
   }
 
@@ -342,6 +482,7 @@ function migrate(raw: Record<string, unknown>): void {
       if (norm.materialId === undefined) norm.materialId = null
       if (norm.purity === undefined) norm.purity = 'normal'
       if (typeof norm.tier !== 'number') norm.tier = 1
+      if (norm.fuelId === undefined) norm.fuelId = null
 
       const w = widthOf(norm)
       if (norm.kind === 'spacer') {

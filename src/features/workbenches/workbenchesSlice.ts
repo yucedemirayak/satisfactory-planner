@@ -6,9 +6,11 @@ import {
   MAX_WORKBENCH_DIM,
   MAX_WORKBENCH_INPUTS,
   MAX_WORKBENCH_OUTPUTS,
+  MAX_WORKBENCH_POWER,
   MAX_WORKBENCH_SLOOP_SLOTS,
   MIN_WORKBENCH_DIM,
   MIN_WORKBENCH_PORTS,
+  MIN_WORKBENCH_POWER,
   MIN_WORKBENCH_SLOOP_SLOTS,
 } from './constants'
 import type { Workbench, WorkbenchDraft } from './types'
@@ -38,6 +40,11 @@ const clampPorts = (value: number, max: number): number =>
     ? Math.min(max, Math.max(MIN_WORKBENCH_PORTS, Math.round(value)))
     : MIN_WORKBENCH_PORTS
 
+const clampPower = (value: number): number =>
+  Number.isFinite(value)
+    ? Math.min(MAX_WORKBENCH_POWER, Math.max(MIN_WORKBENCH_POWER, value))
+    : 0
+
 const workbenchesSlice = createSlice({
   name: 'workbenches',
   initialState,
@@ -51,6 +58,7 @@ const workbenchesSlice = createSlice({
           depth: clampDim(wb.depth),
           height: clampDim(wb.height),
           sloopSlots: clampSloopSlots(wb.sloopSlots),
+          powerUsage: clampPower(wb.powerUsage),
           inputs: clampPorts(wb.inputs, MAX_WORKBENCH_INPUTS),
           outputs: clampPorts(wb.outputs, MAX_WORKBENCH_OUTPUTS),
         })
@@ -73,6 +81,8 @@ const workbenchesSlice = createSlice({
       if (changes.height !== undefined) wb.height = clampDim(changes.height)
       if (changes.sloopSlots !== undefined)
         wb.sloopSlots = clampSloopSlots(changes.sloopSlots)
+      if (changes.powerUsage !== undefined)
+        wb.powerUsage = clampPower(changes.powerUsage)
       if (changes.inputs !== undefined)
         wb.inputs = clampPorts(changes.inputs, MAX_WORKBENCH_INPUTS)
       if (changes.outputs !== undefined)

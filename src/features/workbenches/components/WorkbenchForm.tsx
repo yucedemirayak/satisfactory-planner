@@ -7,14 +7,17 @@ import {
   DEFAULT_WORKBENCH_HEIGHT,
   DEFAULT_WORKBENCH_INPUTS,
   DEFAULT_WORKBENCH_OUTPUTS,
+  DEFAULT_WORKBENCH_POWER,
   DEFAULT_WORKBENCH_SLOOP_SLOTS,
   DEFAULT_WORKBENCH_WIDTH,
   MAX_WORKBENCH_DIM,
   MAX_WORKBENCH_INPUTS,
   MAX_WORKBENCH_OUTPUTS,
+  MAX_WORKBENCH_POWER,
   MAX_WORKBENCH_SLOOP_SLOTS,
   MIN_WORKBENCH_DIM,
   MIN_WORKBENCH_PORTS,
+  MIN_WORKBENCH_POWER,
   MIN_WORKBENCH_SLOOP_SLOTS,
   WORKBENCH_PALETTE,
 } from '../constants'
@@ -35,6 +38,7 @@ export function WorkbenchForm() {
   const [depth, setDepth] = useState(DEFAULT_WORKBENCH_DEPTH)
   const [height, setHeight] = useState(DEFAULT_WORKBENCH_HEIGHT)
   const [sloopSlots, setSloopSlots] = useState(DEFAULT_WORKBENCH_SLOOP_SLOTS)
+  const [powerUsage, setPowerUsage] = useState(DEFAULT_WORKBENCH_POWER)
   const [inputs, setInputs] = useState(DEFAULT_WORKBENCH_INPUTS)
   const [outputs, setOutputs] = useState(DEFAULT_WORKBENCH_OUTPUTS)
   const [color, setColor] = useState<string>(nextColor)
@@ -48,6 +52,7 @@ export function WorkbenchForm() {
         depth,
         height,
         sloopSlots,
+        powerUsage,
         inputs,
         outputs,
         color,
@@ -58,6 +63,7 @@ export function WorkbenchForm() {
     setDepth(DEFAULT_WORKBENCH_DEPTH)
     setHeight(DEFAULT_WORKBENCH_HEIGHT)
     setSloopSlots(DEFAULT_WORKBENCH_SLOOP_SLOTS)
+    setPowerUsage(DEFAULT_WORKBENCH_POWER)
     setInputs(DEFAULT_WORKBENCH_INPUTS)
     setOutputs(DEFAULT_WORKBENCH_OUTPUTS)
     const next =
@@ -137,6 +143,18 @@ export function WorkbenchForm() {
             max={MAX_WORKBENCH_SLOOP_SLOTS}
             value={sloopSlots}
             onChange={(e) => setSloopSlots(Number(e.target.value))}
+            className={`${inputClass} font-mono`}
+          />
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="text-xs font-medium text-gray-400">Power (MW)</span>
+          <input
+            type="number"
+            min={MIN_WORKBENCH_POWER}
+            max={MAX_WORKBENCH_POWER}
+            step="any"
+            value={powerUsage}
+            onChange={(e) => setPowerUsage(Number(e.target.value))}
             className={`${inputClass} font-mono`}
           />
         </label>

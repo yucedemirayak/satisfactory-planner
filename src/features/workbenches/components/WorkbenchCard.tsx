@@ -10,9 +10,11 @@ import {
   MAX_WORKBENCH_DIM,
   MAX_WORKBENCH_INPUTS,
   MAX_WORKBENCH_OUTPUTS,
+  MAX_WORKBENCH_POWER,
   MAX_WORKBENCH_SLOOP_SLOTS,
   MIN_WORKBENCH_DIM,
   MIN_WORKBENCH_PORTS,
+  MIN_WORKBENCH_POWER,
   MIN_WORKBENCH_SLOOP_SLOTS,
 } from '../constants'
 import { workbenchLabel } from '../helpers'
@@ -134,6 +136,18 @@ export function WorkbenchCard({ workbench, index }: WorkbenchCardProps) {
             max={MAX_WORKBENCH_SLOOP_SLOTS}
             value={workbench.sloopSlots}
             onChange={(e) => update({ sloopSlots: Number(e.target.value) })}
+            className={dimInputClass}
+          />
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="text-xs font-medium text-gray-400">Power (MW)</span>
+          <input
+            type="number"
+            min={MIN_WORKBENCH_POWER}
+            max={MAX_WORKBENCH_POWER}
+            step="any"
+            value={workbench.powerUsage}
+            onChange={(e) => update({ powerUsage: Number(e.target.value) })}
             className={dimInputClass}
           />
         </label>

@@ -19,6 +19,13 @@ export interface Recipe {
   workbenchId: string | null
   inputs: RecipeItem[]
   outputs: RecipeItem[]
+  /**
+   * MW drawn per machine at 100% clock while running this recipe, overriding
+   * the workbench's powerUsage — for variable-power machines (Particle
+   * Accelerator & co.), as their draw depends on the recipe. Omitted = use
+   * the workbench value.
+   */
+  power?: number
 }
 
 /** Which side of a recipe a line belongs to. */

@@ -1,11 +1,13 @@
 import { NavLink, Navigate, Route, Routes } from 'react-router-dom'
 
 import { PATHS } from '@/app/paths'
+import EnergyPage from '@/pages/EnergyPage'
 import FloorPlanPage from '@/pages/FloorPlanPage'
 import ProductionPage from '@/pages/ProductionPage'
 import SettingsPage from '@/pages/SettingsPage'
 import { ConveyorManager } from '@/features/conveyors'
 import { ExtractorManager } from '@/features/extractors'
+import { GeneratorManager } from '@/features/generators'
 import { MaterialManager } from '@/features/materials'
 import { RoutingManager } from '@/features/nodes'
 import { PipelineManager } from '@/features/pipelines'
@@ -57,6 +59,9 @@ function App() {
           <NavLink to={PATHS.production} className={navLinkClass}>
             Production
           </NavLink>
+          <NavLink to={PATHS.energy} className={navLinkClass}>
+            Energy
+          </NavLink>
         </nav>
         <NavLink
           to={PATHS.settings}
@@ -79,6 +84,7 @@ function App() {
           <Route path="/" element={<Navigate to={PATHS.floors} replace />} />
           <Route path={PATHS.floors} element={<FloorPlanPage />} />
           <Route path={PATHS.production} element={<ProductionPage />} />
+          <Route path={PATHS.energy} element={<EnergyPage />} />
           <Route path={PATHS.settings} element={<SettingsPage />}>
             <Route
               index
@@ -86,6 +92,7 @@ function App() {
             />
             <Route path={PATHS.workbenches} element={<WorkbenchManager />} />
             <Route path={PATHS.extractors} element={<ExtractorManager />} />
+            <Route path={PATHS.generators} element={<GeneratorManager />} />
             <Route path={PATHS.conveyors} element={<ConveyorManager />} />
             <Route path={PATHS.pipelines} element={<PipelineManager />} />
             <Route path={PATHS.routing} element={<RoutingManager />} />

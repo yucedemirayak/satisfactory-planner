@@ -12,7 +12,14 @@ import {
 } from '@/features/recipes'
 import type { RecipeItem } from '@/features/recipes'
 
-import { extractorRate, placementFactors } from '../calc'
+import {
+  extractorPowerUsage,
+  extractorRate,
+  generatorClockFactor,
+  generatorPower,
+  placementFactors,
+  placementPowerFactor,
+} from '../calc'
 import {
   MAX_CLOCK,
   MAX_PLACEMENT_QUANTITY,
@@ -23,6 +30,7 @@ import {
   placementConfigAdded,
   placementConfigChanged,
   placementConfigRemoved,
+  placementFuelChanged,
   placementMaterialChanged,
   placementPurityChanged,
   placementQuantityChanged,
@@ -192,6 +200,11 @@ export function PlacementInspector() {
       ? s.extractors.items.find((e) => e.id === placement.refId)
       : undefined,
   )
+  const generator = useAppSelector((s) =>
+    placement?.kind === 'generator'
+      ? s.generators.items.find((g) => g.id === placement.refId)
+      : undefined,
+  )
   const spacer = useAppSelector((s) =>
     placement?.kind === 'spacer'
       ? s.spacers.items.find((sp) => sp.id === placement.refId)
@@ -208,7 +221,7 @@ export function PlacementInspector() {
       </aside>
     )
 
-  const box = workbench ?? extractor
+  const box = workbench ?? extractor ?? generator
   const title = box?.name || spacer?.name || 'Placed item'
   const setQuantity = (quantity: number) =>
     dispatch(placementQuantityChanged({ id: placement.id, quantity }))
@@ -365,6 +378,18 @@ export function PlacementInspector() {
                 <span className="font-medium text-gray-500 uppercase">Out</span>
                 {renderSide(assignedRecipe.outputs, factors.output)}
               </div>
+              <div className="flex flex-col gap-0.5">
+                <span className="font-medium text-gray-500 uppercase">Power</span>
+                <div>
+                  <span className="text-amber-300">
+                    {fmt(
+                      (assignedRecipe.power ?? workbench?.powerUsage ?? 0) *
+                        placementPowerFactor(placement, workbench?.sloopSlots ?? 0),
+                    )}{' '}
+                    MW
+                  </span>
+                </div>
+              </div>
             </div>
           )}
         </>
@@ -469,16 +494,135 @@ export function PlacementInspector() {
           <MachineConfigs placement={placement} sloopSlots={0} />
 
           {extractor && placement.materialId && (
-            <div className="rounded-md border border-edge bg-surface-0 p-2 text-xs text-gray-400">
-              <span className="font-medium text-gray-500 uppercase">Out</span>
-              <div className="truncate">
-                {itemName(placement.materialId)}{' '}
-                <span className="text-gray-300">
-                  {fmt(extractorRate(placement, extractor.baseRate))}/min
-                </span>
+            <div className="flex flex-col gap-2 rounded-md border border-edge bg-surface-0 p-2 text-xs text-gray-400">
+              <div className="flex flex-col gap-0.5">
+                <span className="font-medium text-gray-500 uppercase">Out</span>
+                <div className="truncate">
+                  {itemName(placement.materialId)}{' '}
+                  <span className="text-gray-300">
+                    {fmt(extractorRate(placement, extractor.baseRate))}/min
+                  </span>
+                </div>
+              </div>
+              <div className="flex flex-col gap-0.5">
+                <span className="font-medium text-gray-500 uppercase">Power</span>
+                <div>
+                  <span className="text-amber-300">
+                    {fmt(
+                      extractorPowerUsage(extractor.powerUsage, placement.tier) *
+                        placementPowerFactor(placement, 0),
+                    )}{' '}
+                    MW
+                  </span>
+                </div>
               </div>
             </div>
           )}
+        </>
+      )}
+
+      {/* Generator: fuel (or purity for fuel-less) + power/flows */}
+      {placement.kind === 'generator' && generator && (
+        <>
+          {generator.fuels.length > 0 ? (
+            <label className="flex flex-col gap-1">
+              <span className="text-xs font-medium text-gray-400">Fuel</span>
+              <select
+                value={placement.fuelId ?? ''}
+                onChange={(e) =>
+                  dispatch(
+                    placementFuelChanged({
+                      id: placement.id,
+                      fuelId: e.target.value || null,
+                    }),
+                  )
+                }
+                className="rounded-md border border-edge bg-surface-0 px-2 py-1.5 text-sm text-gray-100 outline-none focus:border-ficsit"
+              >
+                <option value="">None (off)</option>
+                {generator.fuels.map((f) => (
+                  <option key={f.refId} value={f.refId}>
+                    {itemName(f.refId)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : (
+            <label className="flex flex-col gap-1">
+              <span className="text-xs font-medium text-gray-400">Purity</span>
+              <select
+                value={placement.purity}
+                onChange={(e) =>
+                  dispatch(
+                    placementPurityChanged({
+                      id: placement.id,
+                      purity: e.target.value as Purity,
+                    }),
+                  )
+                }
+                className="rounded-md border border-edge bg-surface-0 px-2 py-1.5 text-sm text-gray-100 capitalize outline-none focus:border-ficsit"
+              >
+                {PURITIES.map((p) => (
+                  <option key={p} value={p}>
+                    {p}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+
+          <MachineConfigs placement={placement} sloopSlots={0} />
+
+          {(() => {
+            const fuel = generator.fuels.find((f) => f.refId === placement.fuelId)
+            const factor = generatorClockFactor(placement)
+            const mw = generatorPower(placement, generator)
+            const running = generator.fuels.length === 0 || fuel
+            return (
+              <div className="flex flex-col gap-2 rounded-md border border-edge bg-surface-0 p-2 text-xs text-gray-400">
+                {fuel && (
+                  <div className="flex flex-col gap-0.5">
+                    <span className="font-medium text-gray-500 uppercase">In</span>
+                    <div className="truncate">
+                      {itemName(fuel.refId)}{' '}
+                      <span className="text-gray-300">
+                        {fmt(fuel.rate * factor)}/min
+                      </span>
+                    </div>
+                    {generator.water && (
+                      <div className="truncate">
+                        {itemName(generator.water.refId)}{' '}
+                        <span className="text-gray-300">
+                          {fmt(generator.water.rate * factor)}/min
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {fuel?.byproduct && (
+                  <div className="flex flex-col gap-0.5">
+                    <span className="font-medium text-gray-500 uppercase">Out</span>
+                    <div className="truncate">
+                      {itemName(fuel.byproduct.refId)}{' '}
+                      <span className="text-gray-300">
+                        {fmt(fuel.byproduct.rate * factor)}/min
+                      </span>
+                    </div>
+                  </div>
+                )}
+                <div className="flex flex-col gap-0.5">
+                  <span className="font-medium text-gray-500 uppercase">Power</span>
+                  <div>
+                    {running ? (
+                      <span className="text-emerald-400">+{fmt(mw)} MW</span>
+                    ) : (
+                      <span className="text-gray-500">Off — pick a fuel</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )
+          })()}
         </>
       )}
 

@@ -4,70 +4,61 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import { WorkbenchPreview } from '@/features/workbenches'
 
 import {
-  DEFAULT_EXTRACTOR_BASE_RATE,
-  DEFAULT_EXTRACTOR_DEPTH,
-  DEFAULT_EXTRACTOR_HEIGHT,
-  DEFAULT_EXTRACTOR_OUTPUTS,
-  DEFAULT_EXTRACTOR_POWER,
-  DEFAULT_EXTRACTOR_WIDTH,
-  EXTRACTOR_PALETTE,
-  MAX_EXTRACTOR_BASE_RATE,
-  MAX_EXTRACTOR_DIM,
-  MAX_EXTRACTOR_OUTPUTS,
-  MAX_EXTRACTOR_POWER,
-  MIN_EXTRACTOR_BASE_RATE,
-  MIN_EXTRACTOR_DIM,
-  MIN_EXTRACTOR_OUTPUTS,
-  MIN_EXTRACTOR_POWER,
+  DEFAULT_GENERATOR_DEPTH,
+  DEFAULT_GENERATOR_HEIGHT,
+  DEFAULT_GENERATOR_POWER,
+  DEFAULT_GENERATOR_WIDTH,
+  GENERATOR_PALETTE,
+  MAX_GENERATOR_DIM,
+  MAX_GENERATOR_POWER,
+  MIN_GENERATOR_DIM,
+  MIN_GENERATOR_POWER,
 } from '../constants'
-import { extractorAdded } from '../extractorsSlice'
-import { selectNextExtractorColor } from '../selectors'
+import { generatorAdded } from '../generatorsSlice'
+import { selectNextGeneratorColor } from '../selectors'
 
 const inputClass =
   'rounded-md border border-edge bg-surface-0 px-2.5 py-1.5 text-sm text-gray-100 outline-none focus:border-ficsit'
 
-/** Form to create a new extractor (footprint, base rate, colour). */
-export function ExtractorForm() {
+/**
+ * Form to create a new generator (footprint, MW output, colour). Fuels and
+ * water intake are edited afterwards on the generator's card.
+ */
+export function GeneratorForm() {
   const dispatch = useAppDispatch()
-  const nextColor = useAppSelector(selectNextExtractorColor)
+  const nextColor = useAppSelector(selectNextGeneratorColor)
 
   const [name, setName] = useState('')
-  const [width, setWidth] = useState(DEFAULT_EXTRACTOR_WIDTH)
-  const [depth, setDepth] = useState(DEFAULT_EXTRACTOR_DEPTH)
-  const [height, setHeight] = useState(DEFAULT_EXTRACTOR_HEIGHT)
-  const [baseRate, setBaseRate] = useState(DEFAULT_EXTRACTOR_BASE_RATE)
-  const [powerUsage, setPowerUsage] = useState<{ 1: number; 2: number; 3: number }>(
-    { ...DEFAULT_EXTRACTOR_POWER },
-  )
-  const [outputs, setOutputs] = useState(DEFAULT_EXTRACTOR_OUTPUTS)
+  const [width, setWidth] = useState(DEFAULT_GENERATOR_WIDTH)
+  const [depth, setDepth] = useState(DEFAULT_GENERATOR_DEPTH)
+  const [height, setHeight] = useState(DEFAULT_GENERATOR_HEIGHT)
+  const [powerOutput, setPowerOutput] = useState(DEFAULT_GENERATOR_POWER)
   const [color, setColor] = useState<string>(nextColor)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     dispatch(
-      extractorAdded({
+      generatorAdded({
         name,
         width,
         depth,
         height,
-        baseRate,
-        powerUsage,
-        outputs,
+        powerOutput,
+        water: null,
+        fuels: [],
         color,
       }),
     )
     setName('')
-    setWidth(DEFAULT_EXTRACTOR_WIDTH)
-    setDepth(DEFAULT_EXTRACTOR_DEPTH)
-    setHeight(DEFAULT_EXTRACTOR_HEIGHT)
-    setBaseRate(DEFAULT_EXTRACTOR_BASE_RATE)
-    setPowerUsage({ ...DEFAULT_EXTRACTOR_POWER })
-    setOutputs(DEFAULT_EXTRACTOR_OUTPUTS)
+    setWidth(DEFAULT_GENERATOR_WIDTH)
+    setDepth(DEFAULT_GENERATOR_DEPTH)
+    setHeight(DEFAULT_GENERATOR_HEIGHT)
+    setPowerOutput(DEFAULT_GENERATOR_POWER)
     const next =
-      EXTRACTOR_PALETTE[
-        (EXTRACTOR_PALETTE.indexOf(color as (typeof EXTRACTOR_PALETTE)[number]) +
+      GENERATOR_PALETTE[
+        (GENERATOR_PALETTE.indexOf(color as (typeof GENERATOR_PALETTE)[number]) +
           1) %
-          EXTRACTOR_PALETTE.length
+          GENERATOR_PALETTE.length
       ]
     setColor(next)
   }
@@ -78,7 +69,7 @@ export function ExtractorForm() {
       className="flex flex-col gap-4 rounded-lg border border-edge bg-surface-1 p-4"
     >
       <h2 className="text-sm font-semibold tracking-wide text-gray-300 uppercase">
-        New Extractor
+        New Generator
       </h2>
 
       <div className="flex items-center gap-4">
@@ -88,7 +79,7 @@ export function ExtractorForm() {
           <input
             type="text"
             value={name}
-            placeholder="e.g. Miner"
+            placeholder="e.g. Coal Generator"
             onChange={(e) => setName(e.target.value)}
             className={inputClass}
           />
@@ -100,8 +91,8 @@ export function ExtractorForm() {
           <span className="text-xs font-medium text-gray-400">Width (m)</span>
           <input
             type="number"
-            min={MIN_EXTRACTOR_DIM}
-            max={MAX_EXTRACTOR_DIM}
+            min={MIN_GENERATOR_DIM}
+            max={MAX_GENERATOR_DIM}
             step="any"
             value={width}
             onChange={(e) => setWidth(Number(e.target.value))}
@@ -112,8 +103,8 @@ export function ExtractorForm() {
           <span className="text-xs font-medium text-gray-400">Depth (m)</span>
           <input
             type="number"
-            min={MIN_EXTRACTOR_DIM}
-            max={MAX_EXTRACTOR_DIM}
+            min={MIN_GENERATOR_DIM}
+            max={MAX_GENERATOR_DIM}
             step="any"
             value={depth}
             onChange={(e) => setDepth(Number(e.target.value))}
@@ -124,8 +115,8 @@ export function ExtractorForm() {
           <span className="text-xs font-medium text-gray-400">Height (m)</span>
           <input
             type="number"
-            min={MIN_EXTRACTOR_DIM}
-            max={MAX_EXTRACTOR_DIM}
+            min={MIN_GENERATOR_DIM}
+            max={MAX_GENERATOR_DIM}
             step="any"
             value={height}
             onChange={(e) => setHeight(Number(e.target.value))}
@@ -133,52 +124,23 @@ export function ExtractorForm() {
           />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-gray-400">Rate /min</span>
+          <span className="text-xs font-medium text-gray-400">Power (MW)</span>
           <input
             type="number"
-            min={MIN_EXTRACTOR_BASE_RATE}
-            max={MAX_EXTRACTOR_BASE_RATE}
+            min={MIN_GENERATOR_POWER}
+            max={MAX_GENERATOR_POWER}
             step="any"
-            value={baseRate}
-            onChange={(e) => setBaseRate(Number(e.target.value))}
-            className={`${inputClass} font-mono`}
-          />
-        </label>
-        <label className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-gray-400">Outputs</span>
-          <input
-            type="number"
-            min={MIN_EXTRACTOR_OUTPUTS}
-            max={MAX_EXTRACTOR_OUTPUTS}
-            value={outputs}
-            onChange={(e) => setOutputs(Number(e.target.value))}
+            value={powerOutput}
+            onChange={(e) => setPowerOutput(Number(e.target.value))}
             className={`${inputClass} font-mono`}
           />
         </label>
       </div>
 
-      <div className="flex flex-col gap-1">
-        <span className="text-xs font-medium text-gray-400">
-          Power (MW) — Mk.1 / Mk.2 / Mk.3
-        </span>
-        <div className="grid grid-cols-3 gap-3">
-          {([1, 2, 3] as const).map((mk) => (
-            <input
-              key={mk}
-              type="number"
-              min={MIN_EXTRACTOR_POWER}
-              max={MAX_EXTRACTOR_POWER}
-              step="any"
-              value={powerUsage[mk]}
-              aria-label={`Power Mk.${mk} (MW)`}
-              onChange={(e) =>
-                setPowerUsage({ ...powerUsage, [mk]: Number(e.target.value) })
-              }
-              className={`${inputClass} font-mono`}
-            />
-          ))}
-        </div>
-      </div>
+      <p className="text-xs text-gray-500">
+        Add fuels (and water intake) on the card after creating. No fuels =
+        geothermal-style: always on, output scaled by node purity.
+      </p>
 
       <div className="flex items-center justify-between gap-3">
         <label className="flex items-center gap-2">
@@ -194,7 +156,7 @@ export function ExtractorForm() {
           type="submit"
           className="rounded-md bg-ficsit px-4 py-2 text-sm font-semibold text-surface-0 transition hover:bg-ficsit-dark"
         >
-          + Add Extractor
+          + Add Generator
         </button>
       </div>
     </form>

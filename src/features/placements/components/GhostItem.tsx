@@ -25,9 +25,19 @@ export function GhostItem({ kind, refId, x }: GhostItemProps) {
   const extractor = useAppSelector((s) =>
     s.extractors.items.find((e) => e.id === refId),
   )
+  const generator = useAppSelector((s) =>
+    s.generators.items.find((g) => g.id === refId),
+  )
   const spacer = useAppSelector((s) => s.spacers.items.find((sp) => sp.id === refId))
 
-  const box = kind === 'extractor' ? extractor : kind === 'workbench' ? workbench : undefined
+  const box =
+    kind === 'extractor'
+      ? extractor
+      : kind === 'generator'
+        ? generator
+        : kind === 'workbench'
+          ? workbench
+          : undefined
   const def = kind === 'spacer' ? spacer : box
   if (!def) return null
 

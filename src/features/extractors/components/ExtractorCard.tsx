@@ -11,9 +11,11 @@ import {
   MAX_EXTRACTOR_BASE_RATE,
   MAX_EXTRACTOR_DIM,
   MAX_EXTRACTOR_OUTPUTS,
+  MAX_EXTRACTOR_POWER,
   MIN_EXTRACTOR_BASE_RATE,
   MIN_EXTRACTOR_DIM,
   MIN_EXTRACTOR_OUTPUTS,
+  MIN_EXTRACTOR_POWER,
 } from '../constants'
 import {
   extractorPortPosChanged,
@@ -140,6 +142,34 @@ export function ExtractorCard({ extractor, index }: ExtractorCardProps) {
             className={dimInput}
           />
         </label>
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <span className="text-xs font-medium text-gray-400">
+          Power (MW) — Mk.1 / Mk.2 / Mk.3
+        </span>
+        <div className="grid grid-cols-3 gap-2">
+          {([1, 2, 3] as const).map((mk) => (
+            <input
+              key={mk}
+              type="number"
+              min={MIN_EXTRACTOR_POWER}
+              max={MAX_EXTRACTOR_POWER}
+              step="any"
+              value={extractor.powerUsage[mk]}
+              aria-label={`Power Mk.${mk} (MW)`}
+              onChange={(e) =>
+                update({
+                  powerUsage: {
+                    ...extractor.powerUsage,
+                    [mk]: Number(e.target.value),
+                  },
+                })
+              }
+              className={dimInput}
+            />
+          ))}
+        </div>
       </div>
 
       <div className="flex flex-col gap-2">

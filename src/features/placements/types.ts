@@ -1,5 +1,5 @@
-/** What a placement points at: a workbench, an extractor, or a spacer. */
-export type PlacementKind = 'workbench' | 'spacer' | 'extractor'
+/** What a placement points at: a workbench, extractor, generator, or spacer. */
+export type PlacementKind = 'workbench' | 'spacer' | 'extractor' | 'generator'
 
 /** Resource node purity (extractor-only). */
 export type Purity = 'impure' | 'normal' | 'pure'
@@ -46,8 +46,13 @@ export interface Placement {
   configs: MachineConfig[]
   /** Extractor-only: which material it extracts (Material id), or null. */
   materialId: string | null
-  /** Extractor-only: node purity. */
+  /**
+   * Node purity. Extractors scale their extraction rate by it; fuel-less
+   * generators (geothermal) scale their power output by it.
+   */
   purity: Purity
   /** Extractor-only: miner tier (1 = Mk.1, 2 = Mk.2, 3 = Mk.3). */
   tier: number
+  /** Generator-only: which of its fuels this placement burns, or null. */
+  fuelId: string | null
 }

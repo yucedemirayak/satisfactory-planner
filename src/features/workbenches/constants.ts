@@ -12,6 +12,11 @@ export const DEFAULT_WORKBENCH_SLOOP_SLOTS = 1
 export const MIN_WORKBENCH_SLOOP_SLOTS = 0
 export const MAX_WORKBENCH_SLOOP_SLOTS = 4
 
+/** MW drawn per machine at 100% clock (Constructor-like default). */
+export const DEFAULT_WORKBENCH_POWER = 4
+export const MIN_WORKBENCH_POWER = 0
+export const MAX_WORKBENCH_POWER = 100000
+
 /**
  * Port counts. A recipe assigned to a workbench may use at most this many
  * input/output lines. Ranges mirror the recipe limits (≤4 inputs, ≤2 outputs).

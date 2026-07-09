@@ -1,7 +1,9 @@
 import { createSlice, nanoid, type PayloadAction } from '@reduxjs/toolkit'
 
 import { floorRemoved } from '@/features/floors/floorsSlice'
+import { generatorRemoved } from '@/features/generators/generatorsSlice'
 import { materialRemoved } from '@/features/materials/materialsSlice'
+import { productRemoved } from '@/features/products/productsSlice'
 import { recipeRemoved } from '@/features/recipes/recipesSlice'
 import { spacerRemoved } from '@/features/spacers/spacersSlice'
 import { workbenchRemoved } from '@/features/workbenches/workbenchesSlice'
@@ -123,6 +125,7 @@ const placementsSlice = createSlice({
               materialId: null,
               purity: DEFAULT_PURITY,
               tier: clampTier(args.tier ?? DEFAULT_TIER),
+              fuelId: null,
             },
             floorId: args.floorId,
           },
@@ -183,6 +186,13 @@ const placementsSlice = createSlice({
     ) {
       const placement = findPlacement(state, action.payload.id)
       if (placement) placement.tier = clampTier(action.payload.tier)
+    },
+    placementFuelChanged(
+      state,
+      action: PayloadAction<{ id: string; fuelId: string | null }>,
+    ) {
+      const placement = findPlacement(state, action.payload.id)
+      if (placement) placement.fuelId = action.payload.fuelId
     },
     /** Add an overclock/sloop config group, pulling 1 machine from the base. */
     placementConfigAdded: {
@@ -266,6 +276,13 @@ const placementsSlice = createSlice({
         )
       }
     })
+    builder.addCase(generatorRemoved, (state, action) => {
+      for (const floorId of Object.keys(state.byFloor)) {
+        state.byFloor[floorId] = state.byFloor[floorId].filter(
+          (p) => !(p.kind === 'generator' && p.refId === action.payload),
+        )
+      }
+    })
     // Unassign a recipe from any placement when that recipe is deleted.
     builder.addCase(recipeRemoved, (state, action) => {
       for (const floorId of Object.keys(state.byFloor)) {
@@ -275,10 +292,19 @@ const placementsSlice = createSlice({
       }
     })
     // Unassign a material from any extractor placement when it's deleted.
+    // Fuels may be materials (Coal) or products (fuel rods) — clear both ways.
     builder.addCase(materialRemoved, (state, action) => {
       for (const floorId of Object.keys(state.byFloor)) {
         for (const p of state.byFloor[floorId]) {
           if (p.materialId === action.payload) p.materialId = null
+          if (p.fuelId === action.payload) p.fuelId = null
+        }
+      }
+    })
+    builder.addCase(productRemoved, (state, action) => {
+      for (const floorId of Object.keys(state.byFloor)) {
+        for (const p of state.byFloor[floorId]) {
+          if (p.fuelId === action.payload) p.fuelId = null
         }
       }
     })
@@ -294,6 +320,7 @@ export const {
   placementMaterialChanged,
   placementPurityChanged,
   placementTierChanged,
+  placementFuelChanged,
   placementConfigAdded,
   placementConfigChanged,
   placementConfigRemoved,

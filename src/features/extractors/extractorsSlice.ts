@@ -6,9 +6,11 @@ import {
   MAX_EXTRACTOR_BASE_RATE,
   MAX_EXTRACTOR_DIM,
   MAX_EXTRACTOR_OUTPUTS,
+  MAX_EXTRACTOR_POWER,
   MIN_EXTRACTOR_BASE_RATE,
   MIN_EXTRACTOR_DIM,
   MIN_EXTRACTOR_OUTPUTS,
+  MIN_EXTRACTOR_POWER,
 } from './constants'
 import type { Extractor, ExtractorDraft } from './types'
 
@@ -36,6 +38,21 @@ const clampOutputs = (v: number): number =>
     ? Math.min(MAX_EXTRACTOR_OUTPUTS, Math.max(MIN_EXTRACTOR_OUTPUTS, Math.round(v)))
     : MIN_EXTRACTOR_OUTPUTS
 
+const clampPower = (v: number): number =>
+  Number.isFinite(v)
+    ? Math.min(MAX_EXTRACTOR_POWER, Math.max(MIN_EXTRACTOR_POWER, v))
+    : 0
+
+const clampPowerUsage = (p: {
+  1: number
+  2: number
+  3: number
+}): { 1: number; 2: number; 3: number } => ({
+  1: clampPower(p[1]),
+  2: clampPower(p[2]),
+  3: clampPower(p[3]),
+})
+
 const extractorsSlice = createSlice({
   name: 'extractors',
   initialState,
@@ -49,6 +66,7 @@ const extractorsSlice = createSlice({
           depth: clampDim(e.depth),
           height: clampDim(e.height),
           baseRate: clampRate(e.baseRate),
+          powerUsage: clampPowerUsage(e.powerUsage),
           outputs: clampOutputs(e.outputs),
         })
       },
@@ -69,6 +87,8 @@ const extractorsSlice = createSlice({
       if (changes.depth !== undefined) e.depth = clampDim(changes.depth)
       if (changes.height !== undefined) e.height = clampDim(changes.height)
       if (changes.baseRate !== undefined) e.baseRate = clampRate(changes.baseRate)
+      if (changes.powerUsage !== undefined)
+        e.powerUsage = clampPowerUsage(changes.powerUsage)
       if (changes.outputs !== undefined) e.outputs = clampOutputs(changes.outputs)
     },
     extractorRemoved(state, action: PayloadAction<string>) {

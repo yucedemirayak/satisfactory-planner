@@ -11,6 +11,11 @@ export const DEFAULT_EXTRACTOR_BASE_RATE = 60
 export const MIN_EXTRACTOR_BASE_RATE = 0
 export const MAX_EXTRACTOR_BASE_RATE = 100000
 
+/** MW drawn per machine at 100% clock, per Mk tier (miner-like defaults). */
+export const DEFAULT_EXTRACTOR_POWER = { 1: 5, 2: 15, 3: 45 } as const
+export const MIN_EXTRACTOR_POWER = 0
+export const MAX_EXTRACTOR_POWER = 100000
+
 /** Extractors only output (no inputs); most buildings have a single port. */
 export const DEFAULT_EXTRACTOR_OUTPUTS = 1
 export const MIN_EXTRACTOR_OUTPUTS = 1

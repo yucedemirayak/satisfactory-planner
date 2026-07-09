@@ -2,10 +2,12 @@
 export const PATHS = {
   floors: '/floors',
   production: '/production',
+  energy: '/energy',
   // Everything below lives under the Settings layout (gear icon in the header).
   settings: '/settings',
   workbenches: '/settings/workbenches',
   extractors: '/settings/extractors',
+  generators: '/settings/generators',
   spacers: '/settings/spacers',
   conveyors: '/settings/conveyors',
   pipelines: '/settings/pipelines',

@@ -52,6 +52,17 @@ const recipesSlice = createSlice({
       const recipe = state.items.find((r) => r.id === action.payload.id)
       if (recipe) recipe.workbenchId = action.payload.workbenchId
     },
+    /** Set/clear the per-recipe MW override (variable-power machines). */
+    recipePowerChanged(
+      state,
+      action: PayloadAction<{ id: string; power: number | null }>,
+    ) {
+      const recipe = state.items.find((r) => r.id === action.payload.id)
+      if (!recipe) return
+      const { power } = action.payload
+      if (power === null || !Number.isFinite(power)) delete recipe.power
+      else recipe.power = Math.max(0, power)
+    },
     recipeLineAdded(
       state,
       action: PayloadAction<{ id: string; side: RecipeSide }>,
@@ -114,6 +125,7 @@ export const {
   recipeRemoved,
   recipeRenamed,
   recipeWorkbenchChanged,
+  recipePowerChanged,
   recipeLineAdded,
   recipeLineRemoved,
   recipeLineChanged,

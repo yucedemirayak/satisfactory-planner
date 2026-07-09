@@ -5,6 +5,7 @@ import { PATHS } from '@/app/paths'
 const TABS = [
   { to: PATHS.workbenches, label: 'Workbenches' },
   { to: PATHS.extractors, label: 'Extractors' },
+  { to: PATHS.generators, label: 'Generators' },
   { to: PATHS.conveyors, label: 'Conveyors' },
   { to: PATHS.pipelines, label: 'Pipelines' },
   { to: PATHS.routing, label: 'Routing' },

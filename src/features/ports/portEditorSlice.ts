@@ -16,7 +16,7 @@ import {
 } from './constants'
 
 /** Pages that host a port-layout editor, each with its own display settings. */
-export type PortEditorPage = 'workbenches' | 'extractors' | 'routing'
+export type PortEditorPage = 'workbenches' | 'extractors' | 'generators' | 'routing'
 
 /** Display settings for one page's editors — scoped, not shared across pages. */
 export interface PortEditorSettings {
@@ -39,6 +39,7 @@ export const DEFAULT_PORT_EDITOR_SETTINGS: PortEditorSettings = {
 const initialState: PortEditorState = {
   workbenches: DEFAULT_PORT_EDITOR_SETTINGS,
   extractors: DEFAULT_PORT_EDITOR_SETTINGS,
+  generators: DEFAULT_PORT_EDITOR_SETTINGS,
   routing: DEFAULT_PORT_EDITOR_SETTINGS,
 }
 

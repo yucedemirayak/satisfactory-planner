@@ -1,6 +1,6 @@
 {
   "app": "satisfactory-planner",
-  "version": 1,
+  "version": 2,
   "exportedAt": "2026-07-09T00:00:00.000Z",
   "data": {
     "floors": {
@@ -52,12 +52,12 @@
         },
         {
           "id": "floor__09",
-          "name": "Stage 9 — Blenders",
+          "name": "Stage 9 — Assemblers",
           "height": 21
         },
         {
           "id": "floor__10",
-          "name": "Stage 10 — Particle Accelerators",
+          "name": "Stage 10 — Assemblers",
           "height": 35
         },
         {
@@ -83,7 +83,7 @@
         {
           "id": "floor__15",
           "name": "Power Plant",
-          "height": 52
+          "height": 42
         }
       ],
       "pxPerMeter": 11
@@ -97,6 +97,7 @@
           "depth": 5,
           "height": 8.5,
           "sloopSlots": 1,
+          "powerUsage": 4,
           "inputs": 1,
           "outputs": 1,
           "color": "#fa9549"
@@ -108,6 +109,7 @@
           "depth": 9,
           "height": 9,
           "sloopSlots": 2,
+          "powerUsage": 16,
           "inputs": 2,
           "outputs": 1,
           "color": "#e85d4e"
@@ -119,6 +121,7 @@
           "depth": 7.9,
           "height": 8,
           "sloopSlots": 1,
+          "powerUsage": 4,
           "inputs": 1,
           "outputs": 1,
           "color": "#4ea8de"
@@ -130,6 +133,7 @@
           "depth": 9,
           "height": 11,
           "sloopSlots": 2,
+          "powerUsage": 15,
           "inputs": 2,
           "outputs": 1,
           "color": "#5e9cff"
@@ -141,6 +145,7 @@
           "depth": 18,
           "height": 12,
           "sloopSlots": 4,
+          "powerUsage": 55,
           "inputs": 4,
           "outputs": 1,
           "color": "#9b5de5"
@@ -152,6 +157,7 @@
           "depth": 10,
           "height": 30,
           "sloopSlots": 2,
+          "powerUsage": 30,
           "inputs": 2,
           "outputs": 2,
           "color": "#f4a261"
@@ -163,6 +169,7 @@
           "depth": 8,
           "height": 12,
           "sloopSlots": 2,
+          "powerUsage": 10,
           "inputs": 2,
           "outputs": 2,
           "color": "#2a9d8f"
@@ -174,6 +181,7 @@
           "depth": 16,
           "height": 15,
           "sloopSlots": 4,
+          "powerUsage": 75,
           "inputs": 4,
           "outputs": 2,
           "color": "#e76f51"
@@ -185,6 +193,7 @@
           "depth": 24,
           "height": 32,
           "sloopSlots": 4,
+          "powerUsage": 500,
           "inputs": 3,
           "outputs": 1,
           "color": "#c77dff"
@@ -196,6 +205,7 @@
           "depth": 16,
           "height": 18,
           "sloopSlots": 1,
+          "powerUsage": 250,
           "inputs": 2,
           "outputs": 2,
           "color": "#80ed99"
@@ -207,53 +217,10 @@
           "depth": 22,
           "height": 18,
           "sloopSlots": 4,
+          "powerUsage": 1000,
           "inputs": 4,
           "outputs": 2,
           "color": "#ffd6a5"
-        },
-        {
-          "id": "wb__desc-generatorbiomass-c",
-          "name": "Biomass Burner",
-          "width": 8,
-          "depth": 8,
-          "height": 7,
-          "sloopSlots": 0,
-          "inputs": 1,
-          "outputs": 0,
-          "color": "#a3b18a"
-        },
-        {
-          "id": "wb__desc-generatorcoal-c",
-          "name": "Coal Generator",
-          "width": 10,
-          "depth": 26,
-          "height": 36,
-          "sloopSlots": 0,
-          "inputs": 2,
-          "outputs": 0,
-          "color": "#6c757d"
-        },
-        {
-          "id": "wb__desc-generatorfuel-c",
-          "name": "Fuel Generator",
-          "width": 20,
-          "depth": 20,
-          "height": 27,
-          "sloopSlots": 0,
-          "inputs": 1,
-          "outputs": 0,
-          "color": "#ffb703"
-        },
-        {
-          "id": "wb__desc-generatornuclear-c",
-          "name": "Nuclear Power Plant",
-          "width": 36,
-          "depth": 43,
-          "height": 49,
-          "sloopSlots": 0,
-          "inputs": 2,
-          "outputs": 1,
-          "color": "#90be6d"
         }
       ]
     },
@@ -266,6 +233,11 @@
           "depth": 6,
           "height": 18,
           "baseRate": 60,
+          "powerUsage": {
+            "1": 5,
+            "2": 15,
+            "3": 45
+          },
           "outputs": 1,
           "color": "#8ecae6"
         },
@@ -276,6 +248,11 @@
           "depth": 19.5,
           "height": 26,
           "baseRate": 120,
+          "powerUsage": {
+            "1": 20,
+            "2": 20,
+            "3": 20
+          },
           "outputs": 1,
           "color": "#48cae4"
         },
@@ -286,6 +263,11 @@
           "depth": 8,
           "height": 20,
           "baseRate": 120,
+          "powerUsage": {
+            "1": 40,
+            "2": 40,
+            "3": 40
+          },
           "outputs": 1,
           "color": "#adb5bd"
         },
@@ -296,8 +278,163 @@
           "depth": 12,
           "height": 8,
           "baseRate": 60,
+          "powerUsage": {
+            "1": 150,
+            "2": 150,
+            "3": 150
+          },
           "outputs": 1,
           "color": "#95d5b2"
+        }
+      ]
+    },
+    "generators": {
+      "items": [
+        {
+          "id": "gen__biomass-burner",
+          "name": "Biomass Burner",
+          "width": 8,
+          "depth": 8,
+          "height": 10,
+          "powerOutput": 30,
+          "water": null,
+          "fuels": [
+            {
+              "refId": "prod__desc-leaves-c",
+              "rate": 120,
+              "byproduct": null
+            },
+            {
+              "refId": "prod__desc-wood-c",
+              "rate": 18,
+              "byproduct": null
+            },
+            {
+              "refId": "prod__desc-genericbiomass-c",
+              "rate": 10,
+              "byproduct": null
+            },
+            {
+              "refId": "prod__desc-biofuel-c",
+              "rate": 4,
+              "byproduct": null
+            }
+          ],
+          "color": "#a7c957"
+        },
+        {
+          "id": "gen__coal-generator",
+          "name": "Coal Generator",
+          "width": 10,
+          "depth": 26,
+          "height": 36,
+          "powerOutput": 75,
+          "water": {
+            "refId": "mat__desc-water-c",
+            "rate": 45
+          },
+          "fuels": [
+            {
+              "refId": "mat__desc-coal-c",
+              "rate": 15,
+              "byproduct": null
+            },
+            {
+              "refId": "prod__desc-compactedcoal-c",
+              "rate": 7.142857142857143,
+              "byproduct": null
+            },
+            {
+              "refId": "prod__desc-petroleumcoke-c",
+              "rate": 25,
+              "byproduct": null
+            }
+          ],
+          "color": "#f4a261"
+        },
+        {
+          "id": "gen__fuel-generator",
+          "name": "Fuel Generator",
+          "width": 20,
+          "depth": 20,
+          "height": 27,
+          "powerOutput": 250,
+          "water": null,
+          "fuels": [
+            {
+              "refId": "prod__desc-liquidfuel-c",
+              "rate": 20,
+              "byproduct": null
+            },
+            {
+              "refId": "prod__desc-liquidbiofuel-c",
+              "rate": 20,
+              "byproduct": null
+            },
+            {
+              "refId": "prod__desc-liquidturbofuel-c",
+              "rate": 7.5,
+              "byproduct": null
+            },
+            {
+              "refId": "prod__desc-rocketfuel-c",
+              "rate": 4.166666666666667,
+              "byproduct": null
+            },
+            {
+              "refId": "prod__desc-ionizedfuel-c",
+              "rate": 3,
+              "byproduct": null
+            }
+          ],
+          "color": "#e63946"
+        },
+        {
+          "id": "gen__geothermal-generator",
+          "name": "Geothermal Generator",
+          "width": 19,
+          "depth": 20,
+          "height": 34,
+          "powerOutput": 200,
+          "water": null,
+          "fuels": [],
+          "color": "#00b4d8"
+        },
+        {
+          "id": "gen__nuclear-plant",
+          "name": "Nuclear Power Plant",
+          "width": 36,
+          "depth": 43,
+          "height": 39,
+          "powerOutput": 2500,
+          "water": {
+            "refId": "mat__desc-water-c",
+            "rate": 240
+          },
+          "fuels": [
+            {
+              "refId": "prod__desc-nuclearfuelrod-c",
+              "rate": 0.2,
+              "byproduct": {
+                "refId": "prod__desc-nuclearwaste-c",
+                "rate": 10
+              }
+            },
+            {
+              "refId": "prod__desc-plutoniumfuelrod-c",
+              "rate": 0.1,
+              "byproduct": {
+                "refId": "prod__desc-plutoniumwaste-c",
+                "rate": 1
+              }
+            },
+            {
+              "refId": "prod__desc-ficsoniumfuelrod-c",
+              "rate": 1,
+              "byproduct": null
+            }
+          ],
+          "color": "#90be6d"
         }
       ]
     },
@@ -834,10 +971,6 @@
         {
           "id": "prod__bp-itemdescriptorportableminer-c",
           "name": "Portable Miner"
-        },
-        {
-          "id": "prod__power",
-          "name": "Power"
         },
         {
           "id": "prod__desc-crystalshard-c",
@@ -1602,7 +1735,8 @@
               "refId": "prod__desc-diamond-c",
               "rate": 20
             }
-          ]
+          ],
+          "power": 500
         },
         {
           "id": "rec__recipe-alternate-coatedcable-c",
@@ -1833,7 +1967,8 @@
               "refId": "prod__desc-darkmatter-c",
               "rate": 20
             }
-          ]
+          ],
+          "power": 1000
         },
         {
           "id": "rec__recipe-alternate-darkmatter-trap-c",
@@ -1854,7 +1989,8 @@
               "refId": "prod__desc-darkmatter-c",
               "rate": 60
             }
-          ]
+          ],
+          "power": 1000
         },
         {
           "id": "rec__recipe-alternate-ionizedfuel-dark-c",
@@ -2389,7 +2525,8 @@
               "refId": "prod__desc-plutoniumcell-c",
               "rate": 10
             }
-          ]
+          ],
+          "power": 500
         },
         {
           "id": "rec__recipe-alternate-instantscrap-c",
@@ -2695,7 +2832,8 @@
               "refId": "prod__desc-diamond-c",
               "rate": 40
             }
-          ]
+          ],
+          "power": 500
         },
         {
           "id": "rec__recipe-alternate-diamond-petroleum-c",
@@ -2712,7 +2850,8 @@
               "refId": "prod__desc-diamond-c",
               "rate": 30
             }
-          ]
+          ],
+          "power": 500
         },
         {
           "id": "rec__recipe-alternate-diamond-pink-c",
@@ -3517,7 +3656,8 @@
               "refId": "prod__desc-diamond-c",
               "rate": 60
             }
-          ]
+          ],
+          "power": 500
         },
         {
           "id": "rec__recipe-alternate-turbomotor-1-c",
@@ -4184,7 +4324,8 @@
               "refId": "prod__desc-darkmatter-c",
               "rate": 30
             }
-          ]
+          ],
+          "power": 1000
         },
         {
           "id": "rec__recipe-darkenergy-c",
@@ -4218,7 +4359,8 @@
               "refId": "prod__desc-diamond-c",
               "rate": 30
             }
-          ]
+          ],
+          "power": 500
         },
         {
           "id": "rec__recipe-electromagneticcontrolrod-c",
@@ -4507,7 +4649,8 @@
               "refId": "prod__desc-ficsonium-c",
               "rate": 10
             }
-          ]
+          ],
+          "power": 1000
         },
         {
           "id": "rec__recipe-ficsoniumfuelrod-c",
@@ -5118,7 +5261,8 @@
               "refId": "prod__desc-spaceelevatorpart-9-c",
               "rate": 0.5
             }
-          ]
+          ],
+          "power": 1000
         },
         {
           "id": "rec__recipe-nobelisknuke-c",
@@ -5487,7 +5631,8 @@
               "refId": "prod__desc-plutoniumpellet-c",
               "rate": 30
             }
-          ]
+          ],
+          "power": 500
         },
         {
           "id": "rec__recipe-powercrystalshard-1-c",
@@ -6689,183 +6834,6 @@
               "rate": 30
             }
           ]
-        },
-        {
-          "id": "rec__gen-biofuel-c",
-          "name": "Burn Solid Biofuel",
-          "workbenchId": "wb__desc-generatorbiomass-c",
-          "inputs": [
-            {
-              "refId": "prod__desc-biofuel-c",
-              "rate": 4
-            }
-          ],
-          "outputs": [
-            {
-              "refId": "prod__power",
-              "rate": 30
-            }
-          ]
-        },
-        {
-          "id": "rec__gen-coal-c",
-          "name": "Burn Coal",
-          "workbenchId": "wb__desc-generatorcoal-c",
-          "inputs": [
-            {
-              "refId": "mat__desc-coal-c",
-              "rate": 15
-            },
-            {
-              "refId": "mat__desc-water-c",
-              "rate": 45
-            }
-          ],
-          "outputs": [
-            {
-              "refId": "prod__power",
-              "rate": 75
-            }
-          ]
-        },
-        {
-          "id": "rec__gen-fuel-c",
-          "name": "Burn Fuel",
-          "workbenchId": "wb__desc-generatorfuel-c",
-          "inputs": [
-            {
-              "refId": "prod__desc-liquidfuel-c",
-              "rate": 20
-            }
-          ],
-          "outputs": [
-            {
-              "refId": "prod__power",
-              "rate": 250
-            }
-          ]
-        },
-        {
-          "id": "rec__gen-turbofuel-c",
-          "name": "Burn Turbofuel",
-          "workbenchId": "wb__desc-generatorfuel-c",
-          "inputs": [
-            {
-              "refId": "prod__desc-liquidturbofuel-c",
-              "rate": 7.5
-            }
-          ],
-          "outputs": [
-            {
-              "refId": "prod__power",
-              "rate": 250
-            }
-          ]
-        },
-        {
-          "id": "rec__gen-rocketfuel-c",
-          "name": "Burn Rocket Fuel",
-          "workbenchId": "wb__desc-generatorfuel-c",
-          "inputs": [
-            {
-              "refId": "prod__desc-rocketfuel-c",
-              "rate": 4.1667
-            }
-          ],
-          "outputs": [
-            {
-              "refId": "prod__power",
-              "rate": 250
-            }
-          ]
-        },
-        {
-          "id": "rec__gen-ionizedfuel-c",
-          "name": "Burn Ionized Fuel",
-          "workbenchId": "wb__desc-generatorfuel-c",
-          "inputs": [
-            {
-              "refId": "prod__desc-ionizedfuel-c",
-              "rate": 3
-            }
-          ],
-          "outputs": [
-            {
-              "refId": "prod__power",
-              "rate": 250
-            }
-          ]
-        },
-        {
-          "id": "rec__gen-uraniumrod-c",
-          "name": "Burn Uranium Fuel Rod",
-          "workbenchId": "wb__desc-generatornuclear-c",
-          "inputs": [
-            {
-              "refId": "prod__desc-nuclearfuelrod-c",
-              "rate": 0.2
-            },
-            {
-              "refId": "mat__desc-water-c",
-              "rate": 240
-            }
-          ],
-          "outputs": [
-            {
-              "refId": "prod__desc-nuclearwaste-c",
-              "rate": 10
-            },
-            {
-              "refId": "prod__power",
-              "rate": 2500
-            }
-          ]
-        },
-        {
-          "id": "rec__gen-plutoniumrod-c",
-          "name": "Burn Plutonium Fuel Rod",
-          "workbenchId": "wb__desc-generatornuclear-c",
-          "inputs": [
-            {
-              "refId": "prod__desc-plutoniumfuelrod-c",
-              "rate": 0.1
-            },
-            {
-              "refId": "mat__desc-water-c",
-              "rate": 240
-            }
-          ],
-          "outputs": [
-            {
-              "refId": "prod__desc-plutoniumwaste-c",
-              "rate": 1
-            },
-            {
-              "refId": "prod__power",
-              "rate": 2500
-            }
-          ]
-        },
-        {
-          "id": "rec__gen-ficsoniumrod-c",
-          "name": "Burn Ficsonium Fuel Rod",
-          "workbenchId": "wb__desc-generatornuclear-c",
-          "inputs": [
-            {
-              "refId": "prod__desc-ficsoniumfuelrod-c",
-              "rate": 1
-            },
-            {
-              "refId": "mat__desc-water-c",
-              "rate": 240
-            }
-          ],
-          "outputs": [
-            {
-              "refId": "prod__power",
-              "rate": 2500
-            }
-          ]
         }
       ]
     },
@@ -6882,7 +6850,8 @@
             "configs": [],
             "materialId": "mat__desc-orebauxite-c",
             "purity": "pure",
-            "tier": 3
+            "tier": 3,
+            "fuelId": null
           },
           {
             "id": "pl-ext__desc-oregold-c",
@@ -6894,7 +6863,8 @@
             "configs": [],
             "materialId": "mat__desc-oregold-c",
             "purity": "pure",
-            "tier": 3
+            "tier": 3,
+            "fuelId": null
           },
           {
             "id": "pl-ext__desc-coal-c",
@@ -6906,19 +6876,21 @@
             "configs": [],
             "materialId": "mat__desc-coal-c",
             "purity": "pure",
-            "tier": 3
+            "tier": 3,
+            "fuelId": null
           },
           {
             "id": "pl-ext__desc-orecopper-c",
             "kind": "extractor",
             "refId": "ext__miner",
             "x": 50,
-            "quantity": 5,
+            "quantity": 6,
             "recipeId": null,
             "configs": [],
             "materialId": "mat__desc-orecopper-c",
             "purity": "pure",
-            "tier": 3
+            "tier": 3,
+            "fuelId": null
           },
           {
             "id": "pl-ext__desc-liquidoil-c",
@@ -6930,7 +6902,8 @@
             "configs": [],
             "materialId": "mat__desc-liquidoil-c",
             "purity": "pure",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl-ext__desc-oreiron-c",
@@ -6942,43 +6915,47 @@
             "configs": [],
             "materialId": "mat__desc-oreiron-c",
             "purity": "pure",
-            "tier": 3
+            "tier": 3,
+            "fuelId": null
           },
           {
             "id": "pl-ext__desc-stone-c",
             "kind": "extractor",
             "refId": "ext__miner",
             "x": 98,
-            "quantity": 3,
+            "quantity": 4,
             "recipeId": null,
             "configs": [],
             "materialId": "mat__desc-stone-c",
             "purity": "pure",
-            "tier": 3
+            "tier": 3,
+            "fuelId": null
           },
           {
             "id": "pl-ext__desc-nitrogengas-c",
             "kind": "extractor",
             "refId": "ext__resource-well",
             "x": 114,
-            "quantity": 23,
+            "quantity": 25,
             "recipeId": null,
             "configs": [],
             "materialId": "mat__desc-nitrogengas-c",
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl-ext__desc-rawquartz-c",
             "kind": "extractor",
             "refId": "ext__miner",
             "x": 128,
-            "quantity": 2,
+            "quantity": 3,
             "recipeId": null,
             "configs": [],
             "materialId": "mat__desc-rawquartz-c",
             "purity": "pure",
-            "tier": 3
+            "tier": 3,
+            "fuelId": null
           },
           {
             "id": "pl-ext__desc-sam-c",
@@ -6990,19 +6967,21 @@
             "configs": [],
             "materialId": "mat__desc-sam-c",
             "purity": "pure",
-            "tier": 3
+            "tier": 3,
+            "fuelId": null
           },
           {
             "id": "pl-ext__desc-sulfur-c",
             "kind": "extractor",
             "refId": "ext__miner",
             "x": 160,
-            "quantity": 2,
+            "quantity": 3,
             "recipeId": null,
             "configs": [],
             "materialId": "mat__desc-sulfur-c",
             "purity": "pure",
-            "tier": 3
+            "tier": 3,
+            "fuelId": null
           },
           {
             "id": "pl-ext__desc-oreuranium-c",
@@ -7014,19 +6993,21 @@
             "configs": [],
             "materialId": "mat__desc-oreuranium-c",
             "purity": "pure",
-            "tier": 3
+            "tier": 3,
+            "fuelId": null
           },
           {
             "id": "pl-ext__desc-water-c",
             "kind": "extractor",
             "refId": "ext__water-extractor",
             "x": 192,
-            "quantity": 149,
+            "quantity": 190,
             "recipeId": null,
             "configs": [],
             "materialId": "mat__desc-water-c",
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           }
         ],
         "floor__01": [
@@ -7035,12 +7016,13 @@
             "kind": "workbench",
             "refId": "wb__desc-assemblermk1-c",
             "x": 2,
-            "quantity": 3,
+            "quantity": 8,
             "recipeId": "rec__recipe-alternate-silica-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-enrichedcoal-c",
@@ -7052,19 +7034,21 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-heavyoilresidue-c",
             "kind": "workbench",
             "refId": "wb__desc-oilrefinery-c",
             "x": 38,
-            "quantity": 49,
+            "quantity": 50,
             "recipeId": "rec__recipe-alternate-heavyoilresidue-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-polymerresin-c",
@@ -7076,43 +7060,47 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-purecateriumingot-c",
             "kind": "workbench",
             "refId": "wb__desc-oilrefinery-c",
             "x": 86,
-            "quantity": 29,
+            "quantity": 34,
             "recipeId": "rec__recipe-alternate-purecateriumingot-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-purecopperingot-c",
             "kind": "workbench",
             "refId": "wb__desc-oilrefinery-c",
             "x": 110,
-            "quantity": 159,
+            "quantity": 165,
             "recipeId": "rec__recipe-alternate-purecopperingot-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-pureironingot-c",
             "kind": "workbench",
             "refId": "wb__desc-oilrefinery-c",
             "x": 134,
-            "quantity": 103,
+            "quantity": 108,
             "recipeId": "rec__recipe-alternate-pureironingot-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-purequartzcrystal-c",
@@ -7124,7 +7112,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-sloppyalumina-c",
@@ -7136,19 +7125,21 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-wetconcrete-c",
             "kind": "workbench",
             "refId": "wb__desc-oilrefinery-c",
             "x": 206,
-            "quantity": 10,
+            "quantity": 12,
             "recipeId": "rec__recipe-alternate-wetconcrete-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-quantumenergy-c",
@@ -7160,7 +7151,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-ingotsam-c",
@@ -7172,19 +7164,21 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-sulfuricacid-c",
             "kind": "workbench",
             "refId": "wb__desc-oilrefinery-c",
             "x": 259.9,
-            "quantity": 4,
+            "quantity": 3,
             "recipeId": "rec__recipe-sulfuricacid-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           }
         ],
         "floor__02": [
@@ -7193,12 +7187,13 @@
             "kind": "workbench",
             "refId": "wb__desc-blender-c",
             "x": 2,
-            "quantity": 22,
+            "quantity": 23,
             "recipeId": "rec__recipe-alternate-dilutedfuel-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-gunpowder-1-c",
@@ -7210,43 +7205,47 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-quickwire-c",
             "kind": "workbench",
             "refId": "wb__desc-assemblermk1-c",
             "x": 40,
-            "quantity": 46,
+            "quantity": 54,
             "recipeId": "rec__recipe-alternate-quickwire-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-steelpipe-iron-c",
             "kind": "workbench",
             "refId": "wb__desc-constructormk1-c",
             "x": 58,
-            "quantity": 40,
+            "quantity": 42,
             "recipeId": "rec__recipe-alternate-steelpipe-iron-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-wire-1-c",
             "kind": "workbench",
             "refId": "wb__desc-constructormk1-c",
             "x": 69.9,
-            "quantity": 150,
+            "quantity": 157,
             "recipeId": "rec__recipe-alternate-wire-1-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-polyesterfabric-c",
@@ -7258,7 +7257,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-ingotsteel-1-c",
@@ -7270,19 +7270,21 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-steamedcoppersheet-c",
             "kind": "workbench",
             "refId": "wb__desc-oilrefinery-c",
             "x": 117.80000000000001,
-            "quantity": 18,
+            "quantity": 19,
             "recipeId": "rec__recipe-alternate-steamedcoppersheet-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-copperdust-c",
@@ -7294,7 +7296,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-darkenergy-c",
@@ -7306,7 +7309,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-petroleumcoke-c",
@@ -7318,7 +7322,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           }
         ],
         "floor__03": [
@@ -7327,12 +7332,13 @@
             "kind": "workbench",
             "refId": "wb__desc-oilrefinery-c",
             "x": 2,
-            "quantity": 15,
+            "quantity": 14,
             "recipeId": "rec__recipe-alternate-electroaluminumscrap-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-encasedindustrialbeam-c",
@@ -7344,31 +7350,34 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-uraniumcell-1-c",
             "kind": "workbench",
             "refId": "wb__desc-manufacturermk1-c",
             "x": 44,
-            "quantity": 8,
+            "quantity": 14,
             "recipeId": "rec__recipe-alternate-uraniumcell-1-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-recycledrubber-c",
             "kind": "workbench",
             "refId": "wb__desc-oilrefinery-c",
             "x": 66,
-            "quantity": 30,
+            "quantity": 31,
             "recipeId": "rec__recipe-alternate-recycledrubber-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-steelrod-c",
@@ -7380,7 +7389,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-turboblendfuel-c",
@@ -7392,7 +7402,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-cable-c",
@@ -7404,7 +7415,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-nobelisk-c",
@@ -7416,7 +7428,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-samfluctuator-c",
@@ -7428,7 +7441,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-gunpowdermk2-c",
@@ -7440,19 +7454,21 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-stator-c",
             "kind": "workbench",
             "refId": "wb__desc-assemblermk1-c",
             "x": 197.8,
-            "quantity": 27,
+            "quantity": 31,
             "recipeId": "rec__recipe-stator-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-steelbeam-c",
@@ -7464,7 +7480,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           }
         ],
         "floor__04": [
@@ -7473,24 +7490,26 @@
             "kind": "workbench",
             "refId": "wb__desc-smeltermk1-c",
             "x": 2,
-            "quantity": 73,
+            "quantity": 68,
             "recipeId": "rec__recipe-purealuminumingot-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-plastic-1-c",
             "kind": "workbench",
             "refId": "wb__desc-oilrefinery-c",
             "x": 14,
-            "quantity": 32,
+            "quantity": 34,
             "recipeId": "rec__recipe-alternate-plastic-1-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-spaceelevatorpart-3-c",
@@ -7502,7 +7521,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-nobeliskcluster-c",
@@ -7514,7 +7534,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-spikedrebar-c",
@@ -7526,7 +7547,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-cartridge-c",
@@ -7538,19 +7560,21 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-screw-c",
             "kind": "workbench",
             "refId": "wb__desc-constructormk1-c",
             "x": 103.9,
-            "quantity": 40,
+            "quantity": 44,
             "recipeId": "rec__recipe-screw-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           }
         ],
         "floor__05": [
@@ -7564,19 +7588,21 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-alcladcasing-c",
             "kind": "workbench",
             "refId": "wb__desc-assemblermk1-c",
             "x": 20,
-            "quantity": 5,
+            "quantity": 4,
             "recipeId": "rec__recipe-alternate-alcladcasing-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-circuitboard-2-c",
@@ -7588,7 +7614,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-coatedironplate-c",
@@ -7600,31 +7627,34 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-copperrotor-c",
             "kind": "workbench",
             "refId": "wb__desc-assemblermk1-c",
             "x": 74,
-            "quantity": 8,
+            "quantity": 9,
             "recipeId": "rec__recipe-alternate-copperrotor-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-ailimiter-plastic-c",
             "kind": "workbench",
             "refId": "wb__desc-assemblermk1-c",
             "x": 92,
-            "quantity": 10,
+            "quantity": 12,
             "recipeId": "rec__recipe-alternate-ailimiter-plastic-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-gastank-c",
@@ -7636,7 +7666,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-rebar-explosive-c",
@@ -7648,7 +7679,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-ficsiteingot-al-c",
@@ -7660,7 +7692,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-rebar-spreadshot-c",
@@ -7672,7 +7705,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-rebar-stunshot-c",
@@ -7684,7 +7718,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           }
         ],
         "floor__06": [
@@ -7698,7 +7733,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-computer-1-c",
@@ -7710,7 +7746,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-classicbattery-c",
@@ -7722,7 +7759,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-coatedironcanister-c",
@@ -7734,7 +7772,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-heatsink-1-c",
@@ -7746,19 +7785,21 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-crystaloscillator-c",
             "kind": "workbench",
             "refId": "wb__desc-manufacturermk1-c",
             "x": 100,
-            "quantity": 16,
+            "quantity": 18,
             "recipeId": "rec__recipe-alternate-crystaloscillator-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-reinforcedironplate-2-c",
@@ -7770,19 +7811,21 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-electromagneticcontrolrod-c",
             "kind": "workbench",
             "refId": "wb__desc-assemblermk1-c",
             "x": 140,
-            "quantity": 10,
+            "quantity": 13,
             "recipeId": "rec__recipe-electromagneticcontrolrod-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-ficsitemesh-c",
@@ -7794,7 +7837,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-filtergasmask-c",
@@ -7806,7 +7850,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-highspeedconnector-c",
@@ -7818,7 +7863,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-motor-c",
@@ -7830,19 +7876,21 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-nitricacid-c",
             "kind": "workbench",
             "refId": "wb__desc-blender-c",
             "x": 231.9,
-            "quantity": 8,
+            "quantity": 9,
             "recipeId": "rec__recipe-nitricacid-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-nobelisknuke-c",
@@ -7854,7 +7902,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-packagednitrogen-c",
@@ -7866,7 +7915,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-cartridgechaos-c",
@@ -7878,7 +7928,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           }
         ],
         "floor__07": [
@@ -7892,7 +7943,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-quartz-purified-c",
@@ -7904,7 +7956,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-superstatecomputer-c",
@@ -7916,19 +7969,21 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-nuclearfuelrod-1-c",
             "kind": "workbench",
             "refId": "wb__desc-manufacturermk1-c",
             "x": 68,
-            "quantity": 6,
+            "quantity": 12,
             "recipeId": "rec__recipe-alternate-nuclearfuelrod-1-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-cartridgesmart-c",
@@ -7940,7 +7995,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-filterhazmat-c",
@@ -7952,7 +8008,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-modularframe-c",
@@ -7964,139 +8021,164 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
+          },
+          {
+            "id": "pl__recipe-nonfissileuranium-c",
+            "kind": "workbench",
+            "refId": "wb__desc-blender-c",
+            "x": 148,
+            "quantity": 7,
+            "recipeId": "rec__recipe-nonfissileuranium-c",
+            "configs": [],
+            "materialId": null,
+            "purity": "normal",
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-packagedalumina-c",
             "kind": "workbench",
             "refId": "wb__desc-packager-c",
-            "x": 148,
+            "x": 168,
             "quantity": 1,
             "recipeId": "rec__recipe-packagedalumina-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-packagedoilresidue-c",
             "kind": "workbench",
             "refId": "wb__desc-packager-c",
-            "x": 158,
+            "x": 178,
             "quantity": 1,
             "recipeId": "rec__recipe-packagedoilresidue-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-packagednitricacid-c",
             "kind": "workbench",
             "refId": "wb__desc-packager-c",
-            "x": 168,
+            "x": 188,
             "quantity": 1,
             "recipeId": "rec__recipe-packagednitricacid-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-packagedcrudeoil-c",
             "kind": "workbench",
             "refId": "wb__desc-packager-c",
-            "x": 178,
+            "x": 198,
             "quantity": 1,
             "recipeId": "rec__recipe-packagedcrudeoil-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-packagedsulfuricacid-c",
             "kind": "workbench",
             "refId": "wb__desc-packager-c",
-            "x": 188,
+            "x": 208,
             "quantity": 1,
             "recipeId": "rec__recipe-packagedsulfuricacid-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-packagedturbofuel-c",
             "kind": "workbench",
             "refId": "wb__desc-packager-c",
-            "x": 198,
+            "x": 218,
             "quantity": 15,
             "recipeId": "rec__recipe-packagedturbofuel-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-packagedwater-c",
             "kind": "workbench",
             "refId": "wb__desc-packager-c",
-            "x": 208,
+            "x": 228,
             "quantity": 2,
             "recipeId": "rec__recipe-packagedwater-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-nobeliskshockwave-c",
             "kind": "workbench",
             "refId": "wb__desc-assemblermk1-c",
-            "x": 218,
+            "x": 238,
             "quantity": 1,
             "recipeId": "rec__recipe-nobeliskshockwave-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-radiocontrolunit-c",
             "kind": "workbench",
             "refId": "wb__desc-manufacturermk1-c",
-            "x": 236,
+            "x": 256,
             "quantity": 8,
             "recipeId": "rec__recipe-radiocontrolunit-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-rocketfuel-c",
             "kind": "workbench",
             "refId": "wb__desc-blender-c",
-            "x": 258,
+            "x": 278,
             "quantity": 3,
             "recipeId": "rec__recipe-rocketfuel-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-spaceelevatorpart-1-c",
             "kind": "workbench",
             "refId": "wb__desc-assemblermk1-c",
-            "x": 278,
+            "x": 298,
             "quantity": 7,
             "recipeId": "rec__recipe-spaceelevatorpart-1-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           }
         ],
         "floor__08": [
@@ -8110,7 +8192,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-flexibleframework-c",
@@ -8122,7 +8205,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-modularframeheavy-c",
@@ -8134,7 +8218,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-diamond-turbo-c",
@@ -8146,7 +8231,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-turbomotor-1-c",
@@ -8158,7 +8244,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-spaceelevatorpart-4-c",
@@ -8170,7 +8257,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-packagedrocketfuel-c",
@@ -8182,7 +8270,21 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
+          },
+          {
+            "id": "pl__recipe-plutonium-c",
+            "kind": "workbench",
+            "refId": "wb__desc-hadroncollider-c",
+            "x": 164,
+            "quantity": 3,
+            "recipeId": "rec__recipe-plutonium-c",
+            "configs": [],
+            "materialId": null,
+            "purity": "normal",
+            "tier": 1,
+            "fuelId": null
           }
         ],
         "floor__09": [
@@ -8196,55 +8298,60 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
-          },
-          {
-            "id": "pl__recipe-alternate-fertileuranium-c",
-            "kind": "workbench",
-            "refId": "wb__desc-blender-c",
-            "x": 24,
-            "quantity": 5,
-            "recipeId": "rec__recipe-alternate-fertileuranium-c",
-            "configs": [],
-            "materialId": null,
-            "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alternate-heatfusedframe-c",
             "kind": "workbench",
             "refId": "wb__desc-blender-c",
-            "x": 44,
+            "x": 24,
             "quantity": 3,
             "recipeId": "rec__recipe-alternate-heatfusedframe-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
+          },
+          {
+            "id": "pl__recipe-plutoniumcell-c",
+            "kind": "workbench",
+            "refId": "wb__desc-assemblermk1-c",
+            "x": 44,
+            "quantity": 7,
+            "recipeId": "rec__recipe-plutoniumcell-c",
+            "configs": [],
+            "materialId": null,
+            "purity": "normal",
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-spaceelevatorpart-6-c",
             "kind": "workbench",
             "refId": "wb__desc-assemblermk1-c",
-            "x": 64,
+            "x": 62,
             "quantity": 5,
             "recipeId": "rec__recipe-spaceelevatorpart-6-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-timecrystal-c",
             "kind": "workbench",
             "refId": "wb__desc-converter-c",
-            "x": 82,
+            "x": 80,
             "quantity": 32,
             "recipeId": "rec__recipe-timecrystal-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           }
         ],
         "floor__10": [
@@ -8258,79 +8365,60 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
-          },
-          {
-            "id": "pl__recipe-alternate-instantplutoniumcell-c",
-            "kind": "workbench",
-            "refId": "wb__desc-hadroncollider-c",
-            "x": 42,
-            "quantity": 4,
-            "recipeId": "rec__recipe-alternate-instantplutoniumcell-c",
-            "configs": [],
-            "materialId": null,
-            "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-spaceelevatorpart-7-c",
             "kind": "workbench",
             "refId": "wb__desc-assemblermk1-c",
-            "x": 82,
+            "x": 42,
             "quantity": 2,
             "recipeId": "rec__recipe-spaceelevatorpart-7-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-temporalprocessor-c",
             "kind": "workbench",
             "refId": "wb__desc-quantumencoder-c",
-            "x": 100,
+            "x": 60,
             "quantity": 2,
             "recipeId": "rec__recipe-temporalprocessor-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
-          },
-          {
-            "id": "pl__recipe-plutonium-c",
-            "kind": "workbench",
-            "refId": "wb__desc-hadroncollider-c",
-            "x": 152,
-            "quantity": 1,
-            "recipeId": "rec__recipe-plutonium-c",
-            "configs": [],
-            "materialId": null,
-            "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-pressureconversioncube-c",
             "kind": "workbench",
             "refId": "wb__desc-assemblermk1-c",
-            "x": 192,
+            "x": 112,
             "quantity": 5,
             "recipeId": "rec__recipe-pressureconversioncube-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-spaceelevatorpart-8-c",
             "kind": "workbench",
             "refId": "wb__desc-manufacturermk1-c",
-            "x": 210,
+            "x": 130,
             "quantity": 2,
             "recipeId": "rec__recipe-spaceelevatorpart-8-c",
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           }
         ],
         "floor__11": [
@@ -8344,7 +8432,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-spaceelevatorpart-10-c",
@@ -8356,7 +8445,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-spaceelevatorpart-9-c",
@@ -8368,7 +8458,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-superpositionoscillator-c",
@@ -8380,7 +8471,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-syntheticpowershard-c",
@@ -8392,7 +8484,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           }
         ],
         "floor__12": [
@@ -8406,7 +8499,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-alienpowerfuel-c",
@@ -8418,7 +8512,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-ionizedfuel-c",
@@ -8430,7 +8525,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-singularitycell-c",
@@ -8442,7 +8538,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           }
         ],
         "floor__13": [
@@ -8456,7 +8553,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-ficsonium-c",
@@ -8468,7 +8566,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           },
           {
             "id": "pl__recipe-packagedionizedfuel-c",
@@ -8480,7 +8579,8 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           }
         ],
         "floor__14": [
@@ -8494,40 +8594,42 @@
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": null
           }
         ],
         "floor__15": [
           {
-            "id": "pl__gen-plutoniumrod-c",
-            "kind": "workbench",
-            "refId": "wb__desc-generatornuclear-c",
+            "id": "pl-gen__uranium",
+            "kind": "generator",
+            "refId": "gen__nuclear-plant",
             "x": 2,
-            "quantity": 11,
-            "recipeId": "rec__gen-plutoniumrod-c",
+            "quantity": 34,
+            "recipeId": null,
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": "prod__desc-nuclearfuelrod-c"
           },
           {
-            "id": "pl__gen-uraniumrod-c",
-            "kind": "workbench",
-            "refId": "wb__desc-generatornuclear-c",
+            "id": "pl-gen__plutonium",
+            "kind": "generator",
+            "refId": "gen__nuclear-plant",
             "x": 40,
-            "quantity": 16,
-            "recipeId": "rec__gen-uraniumrod-c",
+            "quantity": 11,
+            "recipeId": null,
             "configs": [],
             "materialId": null,
             "purity": "normal",
-            "tier": 1
+            "tier": 1,
+            "fuelId": "prod__desc-plutoniumfuelrod-c"
           }
         ]
       }
     },
     "production": {
       "order": [
-        "prod__power",
         "mat__desc-orebauxite-c",
         "mat__desc-oregold-c",
         "mat__desc-coal-c",
@@ -8616,6 +8718,7 @@
         "prod__desc-cartridgesmartprojectile-c",
         "prod__desc-hazmatfilter-c",
         "prod__desc-modularframe-c",
+        "prod__desc-nonfissibleuranium-c",
         "prod__desc-packagedalumina-c",
         "prod__desc-packagedoilresidue-c",
         "prod__desc-packagednitricacid-c",
@@ -8634,19 +8737,17 @@
         "prod__desc-spaceelevatorpart-4-c",
         "prod__desc-fuel-c",
         "prod__desc-packagedrocketfuel-c",
+        "prod__desc-plutoniumpellet-c",
         "prod__desc-motorlightweight-c",
-        "prod__desc-nuclearwaste-c",
         "prod__desc-spaceelevatorpart-2-c",
         "prod__desc-spaceelevatorpart-5-c",
+        "prod__desc-plutoniumcell-c",
         "prod__desc-modularframefused-c",
         "prod__desc-spaceelevatorpart-6-c",
-        "prod__desc-nonfissibleuranium-c",
         "prod__desc-timecrystal-c",
         "prod__desc-spaceelevatorpart-7-c",
         "prod__desc-darkmatter-c",
-        "prod__desc-plutoniumcell-c",
         "prod__desc-temporalprocessor-c",
-        "prod__desc-plutoniumpellet-c",
         "prod__desc-pressureconversioncube-c",
         "prod__desc-spaceelevatorpart-8-c",
         "prod__desc-spaceelevatorpart-10-c",
@@ -8657,12 +8758,13 @@
         "prod__desc-spaceelevatorpart-12-c",
         "prod__desc-alienpowerfuel-c",
         "prod__desc-ionizedfuel-c",
-        "prod__desc-plutoniumwaste-c",
         "prod__desc-singularitycell-c",
         "prod__desc-spaceelevatorpart-11-c",
         "prod__desc-ficsonium-c",
         "prod__desc-packagedionizedfuel-c",
-        "prod__desc-ficsoniumfuelrod-c"
+        "prod__desc-ficsoniumfuelrod-c",
+        "prod__desc-nuclearwaste-c",
+        "prod__desc-plutoniumwaste-c"
       ]
     },
     "nodes": {
@@ -8873,449 +8975,449 @@
         {
           "id": "node__029",
           "kind": "splitter",
-          "floorId": "floor__00",
-          "x": 178,
-          "y": 2
+          "floorId": "floor__01",
+          "x": 211,
+          "y": 5
         },
         {
           "id": "node__030",
           "kind": "splitter",
-          "floorId": "floor__02",
-          "x": 42,
+          "floorId": "floor__01",
+          "x": 4,
           "y": 2
         },
         {
           "id": "node__031",
           "kind": "splitter",
           "floorId": "floor__02",
+          "x": 42,
+          "y": 2
+        },
+        {
+          "id": "node__032",
+          "kind": "splitter",
+          "floorId": "floor__02",
           "x": 45,
           "y": 5
         },
         {
-          "id": "node__032",
+          "id": "node__033",
           "kind": "splitter",
           "floorId": "floor__02",
           "x": 48,
           "y": 8
         },
         {
-          "id": "node__033",
+          "id": "node__034",
           "kind": "splitter",
           "floorId": "floor__04",
           "x": 16,
           "y": 2
         },
         {
-          "id": "node__034",
+          "id": "node__035",
           "kind": "splitter",
           "floorId": "floor__04",
           "x": 19,
           "y": 5
         },
         {
-          "id": "node__035",
+          "id": "node__036",
           "kind": "splitter",
           "floorId": "floor__02",
           "x": 4,
           "y": 2
         },
         {
-          "id": "node__036",
+          "id": "node__037",
           "kind": "splitter",
           "floorId": "floor__02",
           "x": 7,
           "y": 5
         },
         {
-          "id": "node__037",
+          "id": "node__038",
           "kind": "splitter",
           "floorId": "floor__02",
           "x": 108,
           "y": 2
         },
         {
-          "id": "node__038",
+          "id": "node__039",
           "kind": "splitter",
           "floorId": "floor__02",
           "x": 72,
           "y": 2
         },
         {
-          "id": "node__039",
+          "id": "node__040",
           "kind": "splitter",
           "floorId": "floor__02",
           "x": 75,
           "y": 5
         },
         {
-          "id": "node__040",
+          "id": "node__041",
           "kind": "splitter",
           "floorId": "floor__02",
           "x": 78,
           "y": 8
         },
         {
-          "id": "node__041",
+          "id": "node__042",
           "kind": "splitter",
           "floorId": "floor__02",
           "x": 24,
           "y": 2
         },
         {
-          "id": "node__042",
+          "id": "node__043",
           "kind": "splitter",
           "floorId": "floor__03",
           "x": 68,
           "y": 2
         },
         {
-          "id": "node__043",
+          "id": "node__044",
           "kind": "splitter",
           "floorId": "floor__03",
           "x": 71,
           "y": 5
         },
         {
-          "id": "node__044",
+          "id": "node__045",
           "kind": "splitter",
           "floorId": "floor__03",
           "x": 74,
           "y": 8
         },
         {
-          "id": "node__045",
+          "id": "node__046",
           "kind": "splitter",
           "floorId": "floor__03",
           "x": 200,
           "y": 2
         },
         {
-          "id": "node__046",
-          "kind": "splitter",
-          "floorId": "floor__03",
-          "x": 124,
-          "y": 2
-        },
-        {
           "id": "node__047",
           "kind": "splitter",
           "floorId": "floor__03",
-          "x": 136,
+          "x": 124,
           "y": 2
         },
         {
           "id": "node__048",
           "kind": "splitter",
           "floorId": "floor__03",
-          "x": 176,
+          "x": 136,
           "y": 2
         },
         {
           "id": "node__049",
           "kind": "splitter",
           "floorId": "floor__03",
+          "x": 176,
+          "y": 2
+        },
+        {
+          "id": "node__050",
+          "kind": "splitter",
+          "floorId": "floor__03",
           "x": 179,
           "y": 5
         },
         {
-          "id": "node__050",
+          "id": "node__051",
           "kind": "splitter",
           "floorId": "floor__03",
           "x": 92,
           "y": 2
         },
         {
-          "id": "node__051",
+          "id": "node__052",
           "kind": "splitter",
           "floorId": "floor__02",
           "x": 120,
           "y": 2
         },
         {
-          "id": "node__052",
+          "id": "node__053",
           "kind": "splitter",
           "floorId": "floor__04",
           "x": 4,
           "y": 2
         },
         {
-          "id": "node__053",
+          "id": "node__054",
           "kind": "splitter",
           "floorId": "floor__04",
           "x": 7,
           "y": 5
         },
         {
-          "id": "node__054",
+          "id": "node__055",
           "kind": "splitter",
           "floorId": "floor__04",
           "x": 76,
           "y": 2
         },
         {
-          "id": "node__055",
+          "id": "node__056",
           "kind": "splitter",
           "floorId": "floor__01",
           "x": 160,
           "y": 2
         },
         {
-          "id": "node__056",
+          "id": "node__057",
           "kind": "splitter",
           "floorId": "floor__05",
           "x": 58,
           "y": 2
         },
         {
-          "id": "node__057",
+          "id": "node__058",
           "kind": "splitter",
           "floorId": "floor__05",
           "x": 61,
           "y": 5
         },
         {
-          "id": "node__058",
+          "id": "node__059",
           "kind": "splitter",
           "floorId": "floor__05",
           "x": 64,
           "y": 8
         },
         {
-          "id": "node__059",
+          "id": "node__060",
           "kind": "splitter",
           "floorId": "floor__05",
           "x": 40,
           "y": 2
         },
         {
-          "id": "node__060",
+          "id": "node__061",
           "kind": "splitter",
           "floorId": "floor__05",
           "x": 4,
           "y": 2
         },
         {
-          "id": "node__061",
+          "id": "node__062",
           "kind": "splitter",
           "floorId": "floor__05",
           "x": 22,
           "y": 2
         },
         {
-          "id": "node__062",
+          "id": "node__063",
           "kind": "splitter",
           "floorId": "floor__05",
           "x": 25,
           "y": 5
         },
         {
-          "id": "node__063",
+          "id": "node__064",
           "kind": "splitter",
           "floorId": "floor__05",
           "x": 94,
           "y": 2
         },
         {
-          "id": "node__064",
+          "id": "node__065",
           "kind": "splitter",
           "floorId": "floor__05",
           "x": 76,
           "y": 2
         },
         {
-          "id": "node__065",
+          "id": "node__066",
           "kind": "splitter",
           "floorId": "floor__05",
           "x": 79,
           "y": 5
         },
         {
-          "id": "node__066",
+          "id": "node__067",
           "kind": "splitter",
           "floorId": "floor__00",
           "x": 116,
           "y": 2
         },
         {
-          "id": "node__067",
+          "id": "node__068",
           "kind": "splitter",
           "floorId": "floor__03",
           "x": 46,
           "y": 2
         },
         {
-          "id": "node__068",
+          "id": "node__069",
           "kind": "splitter",
           "floorId": "floor__05",
           "x": 112,
           "y": 2
         },
         {
-          "id": "node__069",
+          "id": "node__070",
           "kind": "splitter",
           "floorId": "floor__05",
           "x": 115,
           "y": 5
         },
         {
-          "id": "node__070",
+          "id": "node__071",
           "kind": "splitter",
           "floorId": "floor__04",
           "x": 88,
           "y": 2
         },
         {
-          "id": "node__071",
+          "id": "node__072",
           "kind": "splitter",
           "floorId": "floor__03",
           "x": 104,
           "y": 2
         },
         {
-          "id": "node__072",
+          "id": "node__073",
           "kind": "splitter",
           "floorId": "floor__06",
           "x": 216,
           "y": 2
         },
         {
-          "id": "node__073",
+          "id": "node__074",
           "kind": "splitter",
           "floorId": "floor__06",
           "x": 234,
           "y": 2
         },
         {
-          "id": "node__074",
+          "id": "node__075",
           "kind": "splitter",
           "floorId": "floor__06",
           "x": 237,
           "y": 5
         },
         {
-          "id": "node__075",
+          "id": "node__076",
           "kind": "splitter",
           "floorId": "floor__06",
           "x": 22,
           "y": 2
         },
         {
-          "id": "node__076",
+          "id": "node__077",
           "kind": "splitter",
           "floorId": "floor__06",
           "x": 142,
           "y": 2
         },
         {
-          "id": "node__077",
+          "id": "node__078",
           "kind": "splitter",
           "floorId": "floor__06",
           "x": 145,
           "y": 5
         },
         {
-          "id": "node__078",
+          "id": "node__079",
           "kind": "splitter",
           "floorId": "floor__06",
           "x": 102,
           "y": 2
         },
         {
-          "id": "node__079",
+          "id": "node__080",
           "kind": "splitter",
           "floorId": "floor__06",
           "x": 105,
           "y": 5
         },
         {
-          "id": "node__080",
+          "id": "node__081",
           "kind": "splitter",
           "floorId": "floor__06",
           "x": 124,
           "y": 2
         },
         {
-          "id": "node__081",
+          "id": "node__082",
           "kind": "splitter",
-          "floorId": "floor__06",
-          "x": 66,
+          "floorId": "floor__15",
+          "x": 4,
           "y": 2
         },
         {
-          "id": "node__082",
-          "kind": "splitter",
-          "floorId": "floor__06",
-          "x": 69,
-          "y": 5
-        },
-        {
           "id": "node__083",
-          "kind": "splitter",
-          "floorId": "floor__06",
-          "x": 72,
-          "y": 8
-        },
-        {
-          "id": "node__084",
           "kind": "splitter",
           "floorId": "floor__01",
           "x": 262,
           "y": 2
         },
         {
+          "id": "node__084",
+          "kind": "splitter",
+          "floorId": "floor__06",
+          "x": 66,
+          "y": 2
+        },
+        {
           "id": "node__085",
+          "kind": "splitter",
+          "floorId": "floor__06",
+          "x": 69,
+          "y": 5
+        },
+        {
+          "id": "node__086",
+          "kind": "splitter",
+          "floorId": "floor__06",
+          "x": 72,
+          "y": 8
+        },
+        {
+          "id": "node__087",
           "kind": "splitter",
           "floorId": "floor__07",
           "x": 132,
           "y": 2
         },
         {
-          "id": "node__086",
-          "kind": "splitter",
-          "floorId": "floor__07",
-          "x": 238,
-          "y": 2
-        },
-        {
-          "id": "node__087",
-          "kind": "splitter",
-          "floorId": "floor__07",
-          "x": 260,
-          "y": 2
-        },
-        {
           "id": "node__088",
+          "kind": "splitter",
+          "floorId": "floor__07",
+          "x": 258,
+          "y": 2
+        },
+        {
+          "id": "node__089",
+          "kind": "splitter",
+          "floorId": "floor__07",
+          "x": 280,
+          "y": 2
+        },
+        {
+          "id": "node__090",
           "kind": "splitter",
           "floorId": "floor__08",
           "x": 50,
           "y": 2
         },
         {
-          "id": "node__089",
-          "kind": "splitter",
-          "floorId": "floor__15",
-          "x": 42,
-          "y": 2
-        },
-        {
-          "id": "node__090",
-          "kind": "splitter",
-          "floorId": "floor__09",
-          "x": 84,
-          "y": 2
-        },
-        {
           "id": "node__091",
           "kind": "splitter",
-          "floorId": "floor__02",
-          "x": 156,
+          "floorId": "floor__09",
+          "x": 82,
           "y": 2
         },
         {
           "id": "node__092",
           "kind": "splitter",
-          "floorId": "floor__09",
-          "x": 26,
+          "floorId": "floor__02",
+          "x": 156,
           "y": 2
         },
         {
@@ -9357,14 +9459,14 @@
           "id": "node__098",
           "kind": "splitter",
           "floorId": "floor__09",
-          "x": 46,
+          "x": 26,
           "y": 2
         },
         {
           "id": "node__099",
           "kind": "splitter",
           "floorId": "floor__10",
-          "x": 194,
+          "x": 114,
           "y": 2
         },
         {
@@ -10073,7 +10175,7 @@
           },
           "to": {
             "ref": "placement",
-            "id": "pl__gen-plutoniumrod-c",
+            "id": "pl-gen__uranium",
             "port": 1
           },
           "transportId": "pipe__mk2"
@@ -10087,7 +10189,7 @@
           },
           "to": {
             "ref": "placement",
-            "id": "pl__gen-uraniumrod-c",
+            "id": "pl-gen__plutonium",
             "port": 1
           },
           "transportId": "pipe__mk2"
@@ -10828,23 +10930,23 @@
             "port": 2
           },
           "to": {
-            "ref": "placement",
-            "id": "pl__recipe-singularitycell-c",
-            "port": 3
+            "ref": "node",
+            "id": "node__029",
+            "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
           "id": "conn__102",
           "from": {
-            "ref": "placement",
-            "id": "pl-ext__desc-oreuranium-c",
-            "port": 0
-          },
-          "to": {
             "ref": "node",
             "id": "node__029",
             "port": 0
+          },
+          "to": {
+            "ref": "placement",
+            "id": "pl__recipe-plutoniumcell-c",
+            "port": 1
           },
           "transportId": "conv__mk6"
         },
@@ -10853,25 +10955,25 @@
           "from": {
             "ref": "node",
             "id": "node__029",
-            "port": 0
+            "port": 1
           },
           "to": {
             "ref": "placement",
-            "id": "pl__recipe-alternate-uraniumcell-1-c",
-            "port": 0
+            "id": "pl__recipe-singularitycell-c",
+            "port": 3
           },
           "transportId": "conv__mk6"
         },
         {
           "id": "conn__104",
           "from": {
-            "ref": "node",
-            "id": "node__029",
-            "port": 1
+            "ref": "placement",
+            "id": "pl-ext__desc-oreuranium-c",
+            "port": 0
           },
           "to": {
             "ref": "placement",
-            "id": "pl__recipe-alternate-fertileuranium-c",
+            "id": "pl__recipe-alternate-uraniumcell-1-c",
             "port": 0
           },
           "transportId": "conv__mk6"
@@ -10884,23 +10986,23 @@
             "port": 0
           },
           "to": {
-            "ref": "placement",
-            "id": "pl__recipe-alternate-uraniumcell-1-c",
-            "port": 1
+            "ref": "node",
+            "id": "node__030",
+            "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
           "id": "conn__106",
           "from": {
-            "ref": "placement",
-            "id": "pl__recipe-alternate-quickwire-c",
-            "port": 0
-          },
-          "to": {
             "ref": "node",
             "id": "node__030",
             "port": 0
+          },
+          "to": {
+            "ref": "placement",
+            "id": "pl__recipe-alternate-uraniumcell-1-c",
+            "port": 1
           },
           "transportId": "conv__mk6"
         },
@@ -10909,6 +11011,34 @@
           "from": {
             "ref": "node",
             "id": "node__030",
+            "port": 1
+          },
+          "to": {
+            "ref": "placement",
+            "id": "pl__recipe-nonfissileuranium-c",
+            "port": 1
+          },
+          "transportId": "conv__mk6"
+        },
+        {
+          "id": "conn__108",
+          "from": {
+            "ref": "placement",
+            "id": "pl__recipe-alternate-quickwire-c",
+            "port": 0
+          },
+          "to": {
+            "ref": "node",
+            "id": "node__031",
+            "port": 0
+          },
+          "transportId": "conv__mk6"
+        },
+        {
+          "id": "conn__109",
+          "from": {
+            "ref": "node",
+            "id": "node__031",
             "port": 0
           },
           "to": {
@@ -10919,10 +11049,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__108",
+          "id": "conn__110",
           "from": {
             "ref": "node",
-            "id": "node__030",
+            "id": "node__031",
             "port": 1
           },
           "to": {
@@ -10933,24 +11063,24 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__109",
+          "id": "conn__111",
           "from": {
             "ref": "node",
-            "id": "node__030",
+            "id": "node__031",
             "port": 2
           },
           "to": {
             "ref": "node",
-            "id": "node__031",
+            "id": "node__032",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__110",
+          "id": "conn__112",
           "from": {
             "ref": "node",
-            "id": "node__031",
+            "id": "node__032",
             "port": 0
           },
           "to": {
@@ -10961,10 +11091,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__111",
+          "id": "conn__113",
           "from": {
             "ref": "node",
-            "id": "node__031",
+            "id": "node__032",
             "port": 1
           },
           "to": {
@@ -10975,24 +11105,24 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__112",
+          "id": "conn__114",
           "from": {
             "ref": "node",
-            "id": "node__031",
+            "id": "node__032",
             "port": 2
           },
           "to": {
             "ref": "node",
-            "id": "node__032",
+            "id": "node__033",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__113",
+          "id": "conn__115",
           "from": {
             "ref": "node",
-            "id": "node__032",
+            "id": "node__033",
             "port": 0
           },
           "to": {
@@ -11003,10 +11133,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__114",
+          "id": "conn__116",
           "from": {
             "ref": "node",
-            "id": "node__032",
+            "id": "node__033",
             "port": 1
           },
           "to": {
@@ -11017,10 +11147,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__115",
+          "id": "conn__117",
           "from": {
             "ref": "node",
-            "id": "node__032",
+            "id": "node__033",
             "port": 2
           },
           "to": {
@@ -11031,7 +11161,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__116",
+          "id": "conn__118",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-plastic-1-c",
@@ -11039,16 +11169,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__033",
+            "id": "node__034",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__117",
+          "id": "conn__119",
           "from": {
             "ref": "node",
-            "id": "node__033",
+            "id": "node__034",
             "port": 0
           },
           "to": {
@@ -11059,10 +11189,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__118",
+          "id": "conn__120",
           "from": {
             "ref": "node",
-            "id": "node__033",
+            "id": "node__034",
             "port": 1
           },
           "to": {
@@ -11073,24 +11203,24 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__119",
+          "id": "conn__121",
           "from": {
             "ref": "node",
-            "id": "node__033",
+            "id": "node__034",
             "port": 2
           },
           "to": {
             "ref": "node",
-            "id": "node__034",
+            "id": "node__035",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__120",
+          "id": "conn__122",
           "from": {
             "ref": "node",
-            "id": "node__034",
+            "id": "node__035",
             "port": 0
           },
           "to": {
@@ -11101,10 +11231,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__121",
+          "id": "conn__123",
           "from": {
             "ref": "node",
-            "id": "node__034",
+            "id": "node__035",
             "port": 1
           },
           "to": {
@@ -11115,10 +11245,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__122",
+          "id": "conn__124",
           "from": {
             "ref": "node",
-            "id": "node__034",
+            "id": "node__035",
             "port": 2
           },
           "to": {
@@ -11129,7 +11259,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__123",
+          "id": "conn__125",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-dilutedfuel-c",
@@ -11137,16 +11267,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__035",
+            "id": "node__036",
             "port": 0
           },
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__124",
+          "id": "conn__126",
           "from": {
             "ref": "node",
-            "id": "node__035",
+            "id": "node__036",
             "port": 0
           },
           "to": {
@@ -11157,10 +11287,10 @@
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__125",
+          "id": "conn__127",
           "from": {
             "ref": "node",
-            "id": "node__035",
+            "id": "node__036",
             "port": 1
           },
           "to": {
@@ -11171,24 +11301,24 @@
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__126",
+          "id": "conn__128",
           "from": {
             "ref": "node",
-            "id": "node__035",
+            "id": "node__036",
             "port": 2
           },
           "to": {
             "ref": "node",
-            "id": "node__036",
+            "id": "node__037",
             "port": 0
           },
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__127",
+          "id": "conn__129",
           "from": {
             "ref": "node",
-            "id": "node__036",
+            "id": "node__037",
             "port": 0
           },
           "to": {
@@ -11199,10 +11329,10 @@
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__128",
+          "id": "conn__130",
           "from": {
             "ref": "node",
-            "id": "node__036",
+            "id": "node__037",
             "port": 1
           },
           "to": {
@@ -11213,7 +11343,7 @@
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__129",
+          "id": "conn__131",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-ingotsteel-1-c",
@@ -11221,16 +11351,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__037",
+            "id": "node__038",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__130",
+          "id": "conn__132",
           "from": {
             "ref": "node",
-            "id": "node__037",
+            "id": "node__038",
             "port": 0
           },
           "to": {
@@ -11241,10 +11371,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__131",
+          "id": "conn__133",
           "from": {
             "ref": "node",
-            "id": "node__037",
+            "id": "node__038",
             "port": 1
           },
           "to": {
@@ -11255,7 +11385,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__132",
+          "id": "conn__134",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-wire-1-c",
@@ -11263,16 +11393,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__038",
+            "id": "node__039",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__133",
+          "id": "conn__135",
           "from": {
             "ref": "node",
-            "id": "node__038",
+            "id": "node__039",
             "port": 0
           },
           "to": {
@@ -11283,10 +11413,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__134",
+          "id": "conn__136",
           "from": {
             "ref": "node",
-            "id": "node__038",
+            "id": "node__039",
             "port": 1
           },
           "to": {
@@ -11297,24 +11427,24 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__135",
+          "id": "conn__137",
           "from": {
             "ref": "node",
-            "id": "node__038",
+            "id": "node__039",
             "port": 2
           },
           "to": {
             "ref": "node",
-            "id": "node__039",
+            "id": "node__040",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__136",
+          "id": "conn__138",
           "from": {
             "ref": "node",
-            "id": "node__039",
+            "id": "node__040",
             "port": 0
           },
           "to": {
@@ -11325,10 +11455,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__137",
+          "id": "conn__139",
           "from": {
             "ref": "node",
-            "id": "node__039",
+            "id": "node__040",
             "port": 1
           },
           "to": {
@@ -11339,24 +11469,24 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__138",
+          "id": "conn__140",
           "from": {
             "ref": "node",
-            "id": "node__039",
+            "id": "node__040",
             "port": 2
           },
           "to": {
             "ref": "node",
-            "id": "node__040",
+            "id": "node__041",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__139",
+          "id": "conn__141",
           "from": {
             "ref": "node",
-            "id": "node__040",
+            "id": "node__041",
             "port": 0
           },
           "to": {
@@ -11367,10 +11497,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__140",
+          "id": "conn__142",
           "from": {
             "ref": "node",
-            "id": "node__040",
+            "id": "node__041",
             "port": 1
           },
           "to": {
@@ -11381,7 +11511,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__141",
+          "id": "conn__143",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-gunpowder-1-c",
@@ -11389,16 +11519,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__041",
+            "id": "node__042",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__142",
+          "id": "conn__144",
           "from": {
             "ref": "node",
-            "id": "node__041",
+            "id": "node__042",
             "port": 0
           },
           "to": {
@@ -11409,10 +11539,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__143",
+          "id": "conn__145",
           "from": {
             "ref": "node",
-            "id": "node__041",
+            "id": "node__042",
             "port": 1
           },
           "to": {
@@ -11423,7 +11553,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__144",
+          "id": "conn__146",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-electroaluminumscrap-c",
@@ -11437,7 +11567,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__145",
+          "id": "conn__147",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-recycledrubber-c",
@@ -11445,16 +11575,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__042",
+            "id": "node__043",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__146",
+          "id": "conn__148",
           "from": {
             "ref": "node",
-            "id": "node__042",
+            "id": "node__043",
             "port": 0
           },
           "to": {
@@ -11465,10 +11595,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__147",
+          "id": "conn__149",
           "from": {
             "ref": "node",
-            "id": "node__042",
+            "id": "node__043",
             "port": 1
           },
           "to": {
@@ -11479,24 +11609,24 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__148",
+          "id": "conn__150",
           "from": {
             "ref": "node",
-            "id": "node__042",
+            "id": "node__043",
             "port": 2
           },
           "to": {
             "ref": "node",
-            "id": "node__043",
+            "id": "node__044",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__149",
+          "id": "conn__151",
           "from": {
             "ref": "node",
-            "id": "node__043",
+            "id": "node__044",
             "port": 0
           },
           "to": {
@@ -11507,10 +11637,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__150",
+          "id": "conn__152",
           "from": {
             "ref": "node",
-            "id": "node__043",
+            "id": "node__044",
             "port": 1
           },
           "to": {
@@ -11521,24 +11651,24 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__151",
+          "id": "conn__153",
           "from": {
             "ref": "node",
-            "id": "node__043",
+            "id": "node__044",
             "port": 2
           },
           "to": {
             "ref": "node",
-            "id": "node__044",
+            "id": "node__045",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__152",
+          "id": "conn__154",
           "from": {
             "ref": "node",
-            "id": "node__044",
+            "id": "node__045",
             "port": 0
           },
           "to": {
@@ -11549,10 +11679,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__153",
+          "id": "conn__155",
           "from": {
             "ref": "node",
-            "id": "node__044",
+            "id": "node__045",
             "port": 1
           },
           "to": {
@@ -11563,7 +11693,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__154",
+          "id": "conn__156",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-stator-c",
@@ -11571,16 +11701,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__045",
+            "id": "node__046",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__155",
+          "id": "conn__157",
           "from": {
             "ref": "node",
-            "id": "node__045",
+            "id": "node__046",
             "port": 0
           },
           "to": {
@@ -11591,10 +11721,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__156",
+          "id": "conn__158",
           "from": {
             "ref": "node",
-            "id": "node__045",
+            "id": "node__046",
             "port": 1
           },
           "to": {
@@ -11605,10 +11735,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__157",
+          "id": "conn__159",
           "from": {
             "ref": "node",
-            "id": "node__045",
+            "id": "node__046",
             "port": 2
           },
           "to": {
@@ -11619,7 +11749,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__158",
+          "id": "conn__160",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-cable-c",
@@ -11627,16 +11757,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__046",
+            "id": "node__047",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__159",
+          "id": "conn__161",
           "from": {
             "ref": "node",
-            "id": "node__046",
+            "id": "node__047",
             "port": 0
           },
           "to": {
@@ -11647,10 +11777,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__160",
+          "id": "conn__162",
           "from": {
             "ref": "node",
-            "id": "node__046",
+            "id": "node__047",
             "port": 1
           },
           "to": {
@@ -11661,7 +11791,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__161",
+          "id": "conn__163",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-nobelisk-c",
@@ -11669,16 +11799,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__047",
+            "id": "node__048",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__162",
+          "id": "conn__164",
           "from": {
             "ref": "node",
-            "id": "node__047",
+            "id": "node__048",
             "port": 0
           },
           "to": {
@@ -11689,10 +11819,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__163",
+          "id": "conn__165",
           "from": {
             "ref": "node",
-            "id": "node__047",
+            "id": "node__048",
             "port": 1
           },
           "to": {
@@ -11703,10 +11833,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__164",
+          "id": "conn__166",
           "from": {
             "ref": "node",
-            "id": "node__047",
+            "id": "node__048",
             "port": 2
           },
           "to": {
@@ -11717,7 +11847,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__165",
+          "id": "conn__167",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-gunpowdermk2-c",
@@ -11725,16 +11855,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__048",
+            "id": "node__049",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__166",
+          "id": "conn__168",
           "from": {
             "ref": "node",
-            "id": "node__048",
+            "id": "node__049",
             "port": 0
           },
           "to": {
@@ -11745,10 +11875,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__167",
+          "id": "conn__169",
           "from": {
             "ref": "node",
-            "id": "node__048",
+            "id": "node__049",
             "port": 1
           },
           "to": {
@@ -11759,24 +11889,24 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__168",
+          "id": "conn__170",
           "from": {
             "ref": "node",
-            "id": "node__048",
+            "id": "node__049",
             "port": 2
           },
           "to": {
             "ref": "node",
-            "id": "node__049",
+            "id": "node__050",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__169",
+          "id": "conn__171",
           "from": {
             "ref": "node",
-            "id": "node__049",
+            "id": "node__050",
             "port": 0
           },
           "to": {
@@ -11787,10 +11917,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__170",
+          "id": "conn__172",
           "from": {
             "ref": "node",
-            "id": "node__049",
+            "id": "node__050",
             "port": 1
           },
           "to": {
@@ -11801,7 +11931,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__171",
+          "id": "conn__173",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-steelrod-c",
@@ -11809,16 +11939,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__050",
+            "id": "node__051",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__172",
+          "id": "conn__174",
           "from": {
             "ref": "node",
-            "id": "node__050",
+            "id": "node__051",
             "port": 0
           },
           "to": {
@@ -11829,10 +11959,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__173",
+          "id": "conn__175",
           "from": {
             "ref": "node",
-            "id": "node__050",
+            "id": "node__051",
             "port": 1
           },
           "to": {
@@ -11843,10 +11973,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__174",
+          "id": "conn__176",
           "from": {
             "ref": "node",
-            "id": "node__050",
+            "id": "node__051",
             "port": 2
           },
           "to": {
@@ -11857,7 +11987,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__175",
+          "id": "conn__177",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-steamedcoppersheet-c",
@@ -11865,16 +11995,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__051",
+            "id": "node__052",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__176",
+          "id": "conn__178",
           "from": {
             "ref": "node",
-            "id": "node__051",
+            "id": "node__052",
             "port": 0
           },
           "to": {
@@ -11885,10 +12015,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__177",
+          "id": "conn__179",
           "from": {
             "ref": "node",
-            "id": "node__051",
+            "id": "node__052",
             "port": 1
           },
           "to": {
@@ -11899,10 +12029,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__178",
+          "id": "conn__180",
           "from": {
             "ref": "node",
-            "id": "node__051",
+            "id": "node__052",
             "port": 2
           },
           "to": {
@@ -11913,7 +12043,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__179",
+          "id": "conn__181",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-purealuminumingot-c",
@@ -11921,16 +12051,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__052",
+            "id": "node__053",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__180",
+          "id": "conn__182",
           "from": {
             "ref": "node",
-            "id": "node__052",
+            "id": "node__053",
             "port": 0
           },
           "to": {
@@ -11941,10 +12071,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__181",
+          "id": "conn__183",
           "from": {
             "ref": "node",
-            "id": "node__052",
+            "id": "node__053",
             "port": 1
           },
           "to": {
@@ -11955,24 +12085,24 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__182",
+          "id": "conn__184",
           "from": {
             "ref": "node",
-            "id": "node__052",
+            "id": "node__053",
             "port": 2
           },
           "to": {
             "ref": "node",
-            "id": "node__053",
+            "id": "node__054",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__183",
+          "id": "conn__185",
           "from": {
             "ref": "node",
-            "id": "node__053",
+            "id": "node__054",
             "port": 0
           },
           "to": {
@@ -11983,10 +12113,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__184",
+          "id": "conn__186",
           "from": {
             "ref": "node",
-            "id": "node__053",
+            "id": "node__054",
             "port": 1
           },
           "to": {
@@ -11997,10 +12127,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__185",
+          "id": "conn__187",
           "from": {
             "ref": "node",
-            "id": "node__053",
+            "id": "node__054",
             "port": 2
           },
           "to": {
@@ -12011,7 +12141,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__186",
+          "id": "conn__188",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-screw-c",
@@ -12025,7 +12155,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__187",
+          "id": "conn__189",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-spikedrebar-c",
@@ -12033,16 +12163,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__054",
+            "id": "node__055",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__188",
+          "id": "conn__190",
           "from": {
             "ref": "node",
-            "id": "node__054",
+            "id": "node__055",
             "port": 0
           },
           "to": {
@@ -12053,10 +12183,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__189",
+          "id": "conn__191",
           "from": {
             "ref": "node",
-            "id": "node__054",
+            "id": "node__055",
             "port": 1
           },
           "to": {
@@ -12067,10 +12197,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__190",
+          "id": "conn__192",
           "from": {
             "ref": "node",
-            "id": "node__054",
+            "id": "node__055",
             "port": 2
           },
           "to": {
@@ -12081,7 +12211,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__191",
+          "id": "conn__193",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-purequartzcrystal-c",
@@ -12089,16 +12219,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__055",
+            "id": "node__056",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__192",
+          "id": "conn__194",
           "from": {
             "ref": "node",
-            "id": "node__055",
+            "id": "node__056",
             "port": 0
           },
           "to": {
@@ -12109,10 +12239,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__193",
+          "id": "conn__195",
           "from": {
             "ref": "node",
-            "id": "node__055",
+            "id": "node__056",
             "port": 1
           },
           "to": {
@@ -12123,10 +12253,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__194",
+          "id": "conn__196",
           "from": {
             "ref": "node",
-            "id": "node__055",
+            "id": "node__056",
             "port": 2
           },
           "to": {
@@ -12137,7 +12267,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__195",
+          "id": "conn__197",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-coatedironplate-c",
@@ -12145,16 +12275,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__056",
+            "id": "node__057",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__196",
+          "id": "conn__198",
           "from": {
             "ref": "node",
-            "id": "node__056",
+            "id": "node__057",
             "port": 0
           },
           "to": {
@@ -12165,10 +12295,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__197",
+          "id": "conn__199",
           "from": {
             "ref": "node",
-            "id": "node__056",
+            "id": "node__057",
             "port": 1
           },
           "to": {
@@ -12179,24 +12309,24 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__198",
+          "id": "conn__200",
           "from": {
             "ref": "node",
-            "id": "node__056",
+            "id": "node__057",
             "port": 2
           },
           "to": {
             "ref": "node",
-            "id": "node__057",
+            "id": "node__058",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__199",
+          "id": "conn__201",
           "from": {
             "ref": "node",
-            "id": "node__057",
+            "id": "node__058",
             "port": 0
           },
           "to": {
@@ -12207,10 +12337,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__200",
+          "id": "conn__202",
           "from": {
             "ref": "node",
-            "id": "node__057",
+            "id": "node__058",
             "port": 1
           },
           "to": {
@@ -12221,24 +12351,24 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__201",
+          "id": "conn__203",
           "from": {
             "ref": "node",
-            "id": "node__057",
+            "id": "node__058",
             "port": 2
           },
           "to": {
             "ref": "node",
-            "id": "node__058",
+            "id": "node__059",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__202",
+          "id": "conn__204",
           "from": {
             "ref": "node",
-            "id": "node__058",
+            "id": "node__059",
             "port": 0
           },
           "to": {
@@ -12249,10 +12379,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__203",
+          "id": "conn__205",
           "from": {
             "ref": "node",
-            "id": "node__058",
+            "id": "node__059",
             "port": 1
           },
           "to": {
@@ -12263,7 +12393,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__204",
+          "id": "conn__206",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-circuitboard-2-c",
@@ -12271,16 +12401,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__059",
+            "id": "node__060",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__205",
+          "id": "conn__207",
           "from": {
             "ref": "node",
-            "id": "node__059",
+            "id": "node__060",
             "port": 0
           },
           "to": {
@@ -12291,10 +12421,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__206",
+          "id": "conn__208",
           "from": {
             "ref": "node",
-            "id": "node__059",
+            "id": "node__060",
             "port": 1
           },
           "to": {
@@ -12305,10 +12435,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__207",
+          "id": "conn__209",
           "from": {
             "ref": "node",
-            "id": "node__059",
+            "id": "node__060",
             "port": 2
           },
           "to": {
@@ -12319,7 +12449,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__208",
+          "id": "conn__210",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-aluminumsheet-c",
@@ -12327,16 +12457,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__060",
+            "id": "node__061",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__209",
+          "id": "conn__211",
           "from": {
             "ref": "node",
-            "id": "node__060",
+            "id": "node__061",
             "port": 0
           },
           "to": {
@@ -12347,10 +12477,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__210",
+          "id": "conn__212",
           "from": {
             "ref": "node",
-            "id": "node__060",
+            "id": "node__061",
             "port": 1
           },
           "to": {
@@ -12361,7 +12491,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__211",
+          "id": "conn__213",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-alcladcasing-c",
@@ -12369,16 +12499,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__061",
+            "id": "node__062",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__212",
+          "id": "conn__214",
           "from": {
             "ref": "node",
-            "id": "node__061",
+            "id": "node__062",
             "port": 0
           },
           "to": {
@@ -12389,10 +12519,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__213",
+          "id": "conn__215",
           "from": {
             "ref": "node",
-            "id": "node__061",
+            "id": "node__062",
             "port": 1
           },
           "to": {
@@ -12403,24 +12533,24 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__214",
+          "id": "conn__216",
           "from": {
             "ref": "node",
-            "id": "node__061",
+            "id": "node__062",
             "port": 2
           },
           "to": {
             "ref": "node",
-            "id": "node__062",
+            "id": "node__063",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__215",
+          "id": "conn__217",
           "from": {
             "ref": "node",
-            "id": "node__062",
+            "id": "node__063",
             "port": 0
           },
           "to": {
@@ -12431,10 +12561,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__216",
+          "id": "conn__218",
           "from": {
             "ref": "node",
-            "id": "node__062",
+            "id": "node__063",
             "port": 1
           },
           "to": {
@@ -12445,21 +12575,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__217",
-          "from": {
-            "ref": "node",
-            "id": "node__062",
-            "port": 2
-          },
-          "to": {
-            "ref": "placement",
-            "id": "pl__recipe-alternate-instantplutoniumcell-c",
-            "port": 1
-          },
-          "transportId": "conv__mk6"
-        },
-        {
-          "id": "conn__218",
+          "id": "conn__219",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-ailimiter-plastic-c",
@@ -12467,16 +12583,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__063",
+            "id": "node__064",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__219",
+          "id": "conn__220",
           "from": {
             "ref": "node",
-            "id": "node__063",
+            "id": "node__064",
             "port": 0
           },
           "to": {
@@ -12487,10 +12603,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__220",
+          "id": "conn__221",
           "from": {
             "ref": "node",
-            "id": "node__063",
+            "id": "node__064",
             "port": 1
           },
           "to": {
@@ -12501,10 +12617,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__221",
+          "id": "conn__222",
           "from": {
             "ref": "node",
-            "id": "node__063",
+            "id": "node__064",
             "port": 2
           },
           "to": {
@@ -12515,7 +12631,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__222",
+          "id": "conn__223",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-ficsiteingot-al-c",
@@ -12529,7 +12645,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__223",
+          "id": "conn__224",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-polyesterfabric-c",
@@ -12543,7 +12659,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__224",
+          "id": "conn__225",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-copperrotor-c",
@@ -12551,16 +12667,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__064",
+            "id": "node__065",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__225",
+          "id": "conn__226",
           "from": {
             "ref": "node",
-            "id": "node__064",
+            "id": "node__065",
             "port": 0
           },
           "to": {
@@ -12571,10 +12687,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__226",
+          "id": "conn__227",
           "from": {
             "ref": "node",
-            "id": "node__064",
+            "id": "node__065",
             "port": 1
           },
           "to": {
@@ -12585,24 +12701,24 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__227",
+          "id": "conn__228",
           "from": {
             "ref": "node",
-            "id": "node__064",
+            "id": "node__065",
             "port": 2
           },
           "to": {
             "ref": "node",
-            "id": "node__065",
+            "id": "node__066",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__228",
+          "id": "conn__229",
           "from": {
             "ref": "node",
-            "id": "node__065",
+            "id": "node__066",
             "port": 0
           },
           "to": {
@@ -12613,10 +12729,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__229",
+          "id": "conn__230",
           "from": {
             "ref": "node",
-            "id": "node__065",
+            "id": "node__066",
             "port": 1
           },
           "to": {
@@ -12627,7 +12743,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__230",
+          "id": "conn__231",
           "from": {
             "ref": "placement",
             "id": "pl-ext__desc-nitrogengas-c",
@@ -12635,16 +12751,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__066",
+            "id": "node__067",
             "port": 0
           },
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__231",
+          "id": "conn__232",
           "from": {
             "ref": "node",
-            "id": "node__066",
+            "id": "node__067",
             "port": 0
           },
           "to": {
@@ -12655,10 +12771,10 @@
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__232",
+          "id": "conn__233",
           "from": {
             "ref": "node",
-            "id": "node__066",
+            "id": "node__067",
             "port": 1
           },
           "to": {
@@ -12669,10 +12785,10 @@
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__233",
+          "id": "conn__234",
           "from": {
             "ref": "node",
-            "id": "node__066",
+            "id": "node__067",
             "port": 2
           },
           "to": {
@@ -12683,7 +12799,7 @@
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__234",
+          "id": "conn__235",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-uraniumcell-1-c",
@@ -12691,16 +12807,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__067",
+            "id": "node__068",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__235",
+          "id": "conn__236",
           "from": {
             "ref": "node",
-            "id": "node__067",
+            "id": "node__068",
             "port": 0
           },
           "to": {
@@ -12711,10 +12827,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__236",
+          "id": "conn__237",
           "from": {
             "ref": "node",
-            "id": "node__067",
+            "id": "node__068",
             "port": 1
           },
           "to": {
@@ -12725,7 +12841,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__237",
+          "id": "conn__238",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-gastank-c",
@@ -12733,16 +12849,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__068",
+            "id": "node__069",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__238",
+          "id": "conn__239",
           "from": {
             "ref": "node",
-            "id": "node__068",
+            "id": "node__069",
             "port": 0
           },
           "to": {
@@ -12753,10 +12869,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__239",
+          "id": "conn__240",
           "from": {
             "ref": "node",
-            "id": "node__068",
+            "id": "node__069",
             "port": 1
           },
           "to": {
@@ -12767,24 +12883,24 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__240",
+          "id": "conn__241",
           "from": {
             "ref": "node",
-            "id": "node__068",
+            "id": "node__069",
             "port": 2
           },
           "to": {
             "ref": "node",
-            "id": "node__069",
+            "id": "node__070",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__241",
+          "id": "conn__242",
           "from": {
             "ref": "node",
-            "id": "node__069",
+            "id": "node__070",
             "port": 0
           },
           "to": {
@@ -12795,10 +12911,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__242",
+          "id": "conn__243",
           "from": {
             "ref": "node",
-            "id": "node__069",
+            "id": "node__070",
             "port": 1
           },
           "to": {
@@ -12809,7 +12925,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__243",
+          "id": "conn__244",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-cartridge-c",
@@ -12817,16 +12933,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__070",
+            "id": "node__071",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__244",
+          "id": "conn__245",
           "from": {
             "ref": "node",
-            "id": "node__070",
+            "id": "node__071",
             "port": 0
           },
           "to": {
@@ -12837,10 +12953,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__245",
+          "id": "conn__246",
           "from": {
             "ref": "node",
-            "id": "node__070",
+            "id": "node__071",
             "port": 1
           },
           "to": {
@@ -12851,7 +12967,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__246",
+          "id": "conn__247",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-turboblendfuel-c",
@@ -12859,16 +12975,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__071",
+            "id": "node__072",
             "port": 0
           },
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__247",
+          "id": "conn__248",
           "from": {
             "ref": "node",
-            "id": "node__071",
+            "id": "node__072",
             "port": 0
           },
           "to": {
@@ -12879,10 +12995,10 @@
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__248",
+          "id": "conn__249",
           "from": {
             "ref": "node",
-            "id": "node__071",
+            "id": "node__072",
             "port": 1
           },
           "to": {
@@ -12893,10 +13009,10 @@
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__249",
+          "id": "conn__250",
           "from": {
             "ref": "node",
-            "id": "node__071",
+            "id": "node__072",
             "port": 2
           },
           "to": {
@@ -12907,7 +13023,7 @@
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__250",
+          "id": "conn__251",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-heatsink-1-c",
@@ -12921,7 +13037,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__251",
+          "id": "conn__252",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-motor-c",
@@ -12929,16 +13045,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__072",
+            "id": "node__073",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__252",
+          "id": "conn__253",
           "from": {
             "ref": "node",
-            "id": "node__072",
+            "id": "node__073",
             "port": 0
           },
           "to": {
@@ -12949,10 +13065,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__253",
+          "id": "conn__254",
           "from": {
             "ref": "node",
-            "id": "node__072",
+            "id": "node__073",
             "port": 1
           },
           "to": {
@@ -12963,10 +13079,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__254",
+          "id": "conn__255",
           "from": {
             "ref": "node",
-            "id": "node__072",
+            "id": "node__073",
             "port": 2
           },
           "to": {
@@ -12977,7 +13093,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__255",
+          "id": "conn__256",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-nitricacid-c",
@@ -12985,16 +13101,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__073",
+            "id": "node__074",
             "port": 0
           },
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__256",
+          "id": "conn__257",
           "from": {
             "ref": "node",
-            "id": "node__073",
+            "id": "node__074",
             "port": 0
           },
           "to": {
@@ -13005,11 +13121,39 @@
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__257",
+          "id": "conn__258",
           "from": {
             "ref": "node",
-            "id": "node__073",
+            "id": "node__074",
             "port": 1
+          },
+          "to": {
+            "ref": "placement",
+            "id": "pl__recipe-nonfissileuranium-c",
+            "port": 2
+          },
+          "transportId": "pipe__mk2"
+        },
+        {
+          "id": "conn__259",
+          "from": {
+            "ref": "node",
+            "id": "node__074",
+            "port": 2
+          },
+          "to": {
+            "ref": "node",
+            "id": "node__075",
+            "port": 0
+          },
+          "transportId": "pipe__mk2"
+        },
+        {
+          "id": "conn__260",
+          "from": {
+            "ref": "node",
+            "id": "node__075",
+            "port": 0
           },
           "to": {
             "ref": "placement",
@@ -13019,25 +13163,11 @@
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__258",
+          "id": "conn__261",
           "from": {
             "ref": "node",
-            "id": "node__073",
-            "port": 2
-          },
-          "to": {
-            "ref": "node",
-            "id": "node__074",
-            "port": 0
-          },
-          "transportId": "pipe__mk2"
-        },
-        {
-          "id": "conn__259",
-          "from": {
-            "ref": "node",
-            "id": "node__074",
-            "port": 0
+            "id": "node__075",
+            "port": 1
           },
           "to": {
             "ref": "placement",
@@ -13047,24 +13177,10 @@
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__260",
+          "id": "conn__262",
           "from": {
             "ref": "node",
-            "id": "node__074",
-            "port": 1
-          },
-          "to": {
-            "ref": "placement",
-            "id": "pl__recipe-alternate-fertileuranium-c",
-            "port": 2
-          },
-          "transportId": "pipe__mk2"
-        },
-        {
-          "id": "conn__261",
-          "from": {
-            "ref": "node",
-            "id": "node__074",
+            "id": "node__075",
             "port": 2
           },
           "to": {
@@ -13075,7 +13191,7 @@
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__262",
+          "id": "conn__263",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-computer-1-c",
@@ -13083,16 +13199,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__075",
+            "id": "node__076",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__263",
+          "id": "conn__264",
           "from": {
             "ref": "node",
-            "id": "node__075",
+            "id": "node__076",
             "port": 0
           },
           "to": {
@@ -13103,10 +13219,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__264",
+          "id": "conn__265",
           "from": {
             "ref": "node",
-            "id": "node__075",
+            "id": "node__076",
             "port": 1
           },
           "to": {
@@ -13117,10 +13233,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__265",
+          "id": "conn__266",
           "from": {
             "ref": "node",
-            "id": "node__075",
+            "id": "node__076",
             "port": 2
           },
           "to": {
@@ -13131,7 +13247,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__266",
+          "id": "conn__267",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-electromagneticcontrolrod-c",
@@ -13139,16 +13255,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__076",
+            "id": "node__077",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__267",
+          "id": "conn__268",
           "from": {
             "ref": "node",
-            "id": "node__076",
+            "id": "node__077",
             "port": 0
           },
           "to": {
@@ -13159,10 +13275,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__268",
+          "id": "conn__269",
           "from": {
             "ref": "node",
-            "id": "node__076",
+            "id": "node__077",
             "port": 1
           },
           "to": {
@@ -13173,24 +13289,24 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__269",
+          "id": "conn__270",
           "from": {
             "ref": "node",
-            "id": "node__076",
+            "id": "node__077",
             "port": 2
           },
           "to": {
             "ref": "node",
-            "id": "node__077",
+            "id": "node__078",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__270",
+          "id": "conn__271",
           "from": {
             "ref": "node",
-            "id": "node__077",
+            "id": "node__078",
             "port": 0
           },
           "to": {
@@ -13201,10 +13317,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__271",
+          "id": "conn__272",
           "from": {
             "ref": "node",
-            "id": "node__077",
+            "id": "node__078",
             "port": 1
           },
           "to": {
@@ -13215,10 +13331,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__272",
+          "id": "conn__273",
           "from": {
             "ref": "node",
-            "id": "node__077",
+            "id": "node__078",
             "port": 2
           },
           "to": {
@@ -13229,7 +13345,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__273",
+          "id": "conn__274",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-classicbattery-c",
@@ -13243,7 +13359,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__274",
+          "id": "conn__275",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-crystaloscillator-c",
@@ -13251,16 +13367,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__078",
+            "id": "node__079",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__275",
+          "id": "conn__276",
           "from": {
             "ref": "node",
-            "id": "node__078",
+            "id": "node__079",
             "port": 0
           },
           "to": {
@@ -13271,10 +13387,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__276",
+          "id": "conn__277",
           "from": {
             "ref": "node",
-            "id": "node__078",
+            "id": "node__079",
             "port": 1
           },
           "to": {
@@ -13285,24 +13401,24 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__277",
+          "id": "conn__278",
           "from": {
             "ref": "node",
-            "id": "node__078",
+            "id": "node__079",
             "port": 2
           },
           "to": {
             "ref": "node",
-            "id": "node__079",
+            "id": "node__080",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__278",
+          "id": "conn__279",
           "from": {
             "ref": "node",
-            "id": "node__079",
+            "id": "node__080",
             "port": 0
           },
           "to": {
@@ -13313,10 +13429,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__279",
+          "id": "conn__280",
           "from": {
             "ref": "node",
-            "id": "node__079",
+            "id": "node__080",
             "port": 1
           },
           "to": {
@@ -13327,7 +13443,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__280",
+          "id": "conn__281",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-highspeedconnector-c",
@@ -13341,7 +13457,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__281",
+          "id": "conn__282",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-filtergasmask-c",
@@ -13355,7 +13471,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__282",
+          "id": "conn__283",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-reinforcedironplate-2-c",
@@ -13363,16 +13479,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__080",
+            "id": "node__081",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__283",
+          "id": "conn__284",
           "from": {
             "ref": "node",
-            "id": "node__080",
+            "id": "node__081",
             "port": 0
           },
           "to": {
@@ -13383,10 +13499,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__284",
+          "id": "conn__285",
           "from": {
             "ref": "node",
-            "id": "node__080",
+            "id": "node__081",
             "port": 1
           },
           "to": {
@@ -13397,7 +13513,91 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__285",
+          "id": "conn__286",
+          "from": {
+            "ref": "placement",
+            "id": "pl-gen__uranium",
+            "port": 0
+          },
+          "to": {
+            "ref": "node",
+            "id": "node__082",
+            "port": 0
+          },
+          "transportId": "conv__mk6"
+        },
+        {
+          "id": "conn__287",
+          "from": {
+            "ref": "node",
+            "id": "node__082",
+            "port": 0
+          },
+          "to": {
+            "ref": "placement",
+            "id": "pl__recipe-nonfissileuranium-c",
+            "port": 0
+          },
+          "transportId": "conv__mk6"
+        },
+        {
+          "id": "conn__288",
+          "from": {
+            "ref": "node",
+            "id": "node__082",
+            "port": 1
+          },
+          "to": {
+            "ref": "placement",
+            "id": "pl__recipe-plutonium-c",
+            "port": 1
+          },
+          "transportId": "conv__mk6"
+        },
+        {
+          "id": "conn__289",
+          "from": {
+            "ref": "placement",
+            "id": "pl__recipe-sulfuricacid-c",
+            "port": 0
+          },
+          "to": {
+            "ref": "node",
+            "id": "node__083",
+            "port": 0
+          },
+          "transportId": "pipe__mk2"
+        },
+        {
+          "id": "conn__290",
+          "from": {
+            "ref": "node",
+            "id": "node__083",
+            "port": 0
+          },
+          "to": {
+            "ref": "placement",
+            "id": "pl__recipe-nonfissileuranium-c",
+            "port": 3
+          },
+          "transportId": "pipe__mk2"
+        },
+        {
+          "id": "conn__291",
+          "from": {
+            "ref": "node",
+            "id": "node__083",
+            "port": 1
+          },
+          "to": {
+            "ref": "placement",
+            "id": "pl__recipe-packagedsulfuricacid-c",
+            "port": 0
+          },
+          "transportId": "pipe__mk2"
+        },
+        {
+          "id": "conn__292",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-coatedironcanister-c",
@@ -13405,16 +13605,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__081",
+            "id": "node__084",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__286",
+          "id": "conn__293",
           "from": {
             "ref": "node",
-            "id": "node__081",
+            "id": "node__084",
             "port": 0
           },
           "to": {
@@ -13425,10 +13625,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__287",
+          "id": "conn__294",
           "from": {
             "ref": "node",
-            "id": "node__081",
+            "id": "node__084",
             "port": 1
           },
           "to": {
@@ -13439,24 +13639,24 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__288",
+          "id": "conn__295",
           "from": {
             "ref": "node",
-            "id": "node__081",
+            "id": "node__084",
             "port": 2
           },
           "to": {
             "ref": "node",
-            "id": "node__082",
+            "id": "node__085",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__289",
+          "id": "conn__296",
           "from": {
             "ref": "node",
-            "id": "node__082",
+            "id": "node__085",
             "port": 0
           },
           "to": {
@@ -13467,10 +13667,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__290",
+          "id": "conn__297",
           "from": {
             "ref": "node",
-            "id": "node__082",
+            "id": "node__085",
             "port": 1
           },
           "to": {
@@ -13481,24 +13681,24 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__291",
+          "id": "conn__298",
           "from": {
             "ref": "node",
-            "id": "node__082",
+            "id": "node__085",
             "port": 2
           },
           "to": {
             "ref": "node",
-            "id": "node__083",
+            "id": "node__086",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__292",
+          "id": "conn__299",
           "from": {
             "ref": "node",
-            "id": "node__083",
+            "id": "node__086",
             "port": 0
           },
           "to": {
@@ -13509,10 +13709,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__293",
+          "id": "conn__300",
           "from": {
             "ref": "node",
-            "id": "node__083",
+            "id": "node__086",
             "port": 1
           },
           "to": {
@@ -13523,49 +13723,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__294",
-          "from": {
-            "ref": "placement",
-            "id": "pl__recipe-sulfuricacid-c",
-            "port": 0
-          },
-          "to": {
-            "ref": "node",
-            "id": "node__084",
-            "port": 0
-          },
-          "transportId": "pipe__mk2"
-        },
-        {
-          "id": "conn__295",
-          "from": {
-            "ref": "node",
-            "id": "node__084",
-            "port": 0
-          },
-          "to": {
-            "ref": "placement",
-            "id": "pl__recipe-packagedsulfuricacid-c",
-            "port": 0
-          },
-          "transportId": "pipe__mk2"
-        },
-        {
-          "id": "conn__296",
-          "from": {
-            "ref": "node",
-            "id": "node__084",
-            "port": 1
-          },
-          "to": {
-            "ref": "placement",
-            "id": "pl__recipe-alternate-fertileuranium-c",
-            "port": 3
-          },
-          "transportId": "pipe__mk2"
-        },
-        {
-          "id": "conn__297",
+          "id": "conn__301",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-packagedwater-c",
@@ -13579,7 +13737,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__298",
+          "id": "conn__302",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-modularframe-c",
@@ -13587,16 +13745,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__085",
+            "id": "node__087",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__299",
+          "id": "conn__303",
           "from": {
             "ref": "node",
-            "id": "node__085",
+            "id": "node__087",
             "port": 0
           },
           "to": {
@@ -13607,10 +13765,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__300",
+          "id": "conn__304",
           "from": {
             "ref": "node",
-            "id": "node__085",
+            "id": "node__087",
             "port": 1
           },
           "to": {
@@ -13621,7 +13779,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__301",
+          "id": "conn__305",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-steelbeam-c",
@@ -13635,7 +13793,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__302",
+          "id": "conn__306",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-encasedindustrialbeam-c",
@@ -13649,7 +13807,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__303",
+          "id": "conn__307",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-packagedturbofuel-c",
@@ -13663,7 +13821,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__304",
+          "id": "conn__308",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-radiocontrolunit-c",
@@ -13671,16 +13829,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__086",
+            "id": "node__088",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__305",
+          "id": "conn__309",
           "from": {
             "ref": "node",
-            "id": "node__086",
+            "id": "node__088",
             "port": 0
           },
           "to": {
@@ -13691,10 +13849,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__306",
+          "id": "conn__310",
           "from": {
             "ref": "node",
-            "id": "node__086",
+            "id": "node__088",
             "port": 1
           },
           "to": {
@@ -13705,7 +13863,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__307",
+          "id": "conn__311",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-spaceelevatorpart-1-c",
@@ -13719,7 +13877,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__308",
+          "id": "conn__312",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-rocketfuel-c",
@@ -13727,16 +13885,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__087",
+            "id": "node__089",
             "port": 0
           },
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__309",
+          "id": "conn__313",
           "from": {
             "ref": "node",
-            "id": "node__087",
+            "id": "node__089",
             "port": 0
           },
           "to": {
@@ -13747,10 +13905,10 @@
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__310",
+          "id": "conn__314",
           "from": {
             "ref": "node",
-            "id": "node__087",
+            "id": "node__089",
             "port": 1
           },
           "to": {
@@ -13761,7 +13919,21 @@
           "transportId": "pipe__mk2"
         },
         {
-          "id": "conn__311",
+          "id": "conn__315",
+          "from": {
+            "ref": "placement",
+            "id": "pl__recipe-nonfissileuranium-c",
+            "port": 0
+          },
+          "to": {
+            "ref": "placement",
+            "id": "pl__recipe-plutonium-c",
+            "port": 0
+          },
+          "transportId": "conv__mk6"
+        },
+        {
+          "id": "conn__316",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-spaceelevatorpart-3-c",
@@ -13775,7 +13947,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__312",
+          "id": "conn__317",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-modularframeheavy-c",
@@ -13783,16 +13955,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__088",
+            "id": "node__090",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__313",
+          "id": "conn__318",
           "from": {
             "ref": "node",
-            "id": "node__088",
+            "id": "node__090",
             "port": 0
           },
           "to": {
@@ -13803,10 +13975,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__314",
+          "id": "conn__319",
           "from": {
             "ref": "node",
-            "id": "node__088",
+            "id": "node__090",
             "port": 1
           },
           "to": {
@@ -13817,49 +13989,21 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__315",
+          "id": "conn__320",
           "from": {
-            "ref": "placement",
-            "id": "pl__gen-uraniumrod-c",
-            "port": 0
-          },
-          "to": {
-            "ref": "node",
-            "id": "node__089",
-            "port": 0
-          },
-          "transportId": "conv__mk6"
-        },
-        {
-          "id": "conn__316",
-          "from": {
-            "ref": "node",
-            "id": "node__089",
-            "port": 0
-          },
-          "to": {
-            "ref": "placement",
-            "id": "pl__recipe-alternate-fertileuranium-c",
-            "port": 1
-          },
-          "transportId": "conv__mk6"
-        },
-        {
-          "id": "conn__317",
-          "from": {
-            "ref": "node",
-            "id": "node__089",
-            "port": 1
-          },
-          "to": {
             "ref": "placement",
             "id": "pl__recipe-plutonium-c",
-            "port": 1
+            "port": 0
+          },
+          "to": {
+            "ref": "placement",
+            "id": "pl__recipe-plutoniumcell-c",
+            "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__318",
+          "id": "conn__321",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-flexibleframework-c",
@@ -13873,7 +14017,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__319",
+          "id": "conn__322",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-alternate-diamond-turbo-c",
@@ -13887,7 +14031,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__320",
+          "id": "conn__323",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-timecrystal-c",
@@ -13895,16 +14039,16 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__090",
+            "id": "node__091",
             "port": 0
           },
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__321",
+          "id": "conn__324",
           "from": {
             "ref": "node",
-            "id": "node__090",
+            "id": "node__091",
             "port": 0
           },
           "to": {
@@ -13915,10 +14059,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__322",
+          "id": "conn__325",
           "from": {
             "ref": "node",
-            "id": "node__090",
+            "id": "node__091",
             "port": 1
           },
           "to": {
@@ -13929,10 +14073,10 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__323",
+          "id": "conn__326",
           "from": {
             "ref": "node",
-            "id": "node__090",
+            "id": "node__091",
             "port": 2
           },
           "to": {
@@ -13943,7 +14087,7 @@
           "transportId": "conv__mk6"
         },
         {
-          "id": "conn__324",
+          "id": "conn__327",
           "from": {
             "ref": "placement",
             "id": "pl__recipe-darkenergy-c",
@@ -13951,52 +14095,10 @@
           },
           "to": {
             "ref": "node",
-            "id": "node__091",
-            "port": 0
-          },
-          "transportId": "pipe__mk2"
-        },
-        {
-          "id": "conn__325",
-          "from": {
-            "ref": "node",
-            "id": "node__091",
-            "port": 0
-          },
-          "to": {
-            "ref": "placement",
-            "id": "pl__recipe-alternate-darkmatter-trap-c",
-            "port": 1
-          },
-          "transportId": "pipe__mk2"
-        },
-        {
-          "id": "conn__326",
-          "from": {
-            "ref": "node",
-            "id": "node__091",
-            "port": 1
-          },
-          "to": {
-            "ref": "placement",
-            "id": "pl__recipe-ficsonium-c",
-            "port": 2
-          },
-          "transportId": "pipe__mk2"
-        },
-        {
-          "id": "conn__327",
-          "from": {
-            "ref": "placement",
-            "id": "pl__recipe-alternate-fertileuranium-c",
-            "port": 0
-          },
-          "to": {
-            "ref": "node",
             "id": "node__092",
             "port": 0
           },
-          "transportId": "conv__mk6"
+          "transportId": "pipe__mk2"
         },
         {
           "id": "conn__328",
@@ -14007,10 +14109,10 @@
           },
           "to": {
             "ref": "placement",
-            "id": "pl__recipe-alternate-instantplutoniumcell-c",
-            "port": 0
+            "id": "pl__recipe-alternate-darkmatter-trap-c",
+            "port": 1
           },
-          "transportId": "conv__mk6"
+          "transportId": "pipe__mk2"
         },
         {
           "id": "conn__329",
@@ -14021,10 +14123,10 @@
           },
           "to": {
             "ref": "placement",
-            "id": "pl__recipe-plutonium-c",
-            "port": 0
+            "id": "pl__recipe-ficsonium-c",
+            "port": 2
           },
-          "transportId": "conv__mk6"
+          "transportId": "pipe__mk2"
         },
         {
           "id": "conn__330",
@@ -14352,7 +14454,7 @@
           "id": "conn__353",
           "from": {
             "ref": "placement",
-            "id": "pl__recipe-alternate-instantplutoniumcell-c",
+            "id": "pl__recipe-plutoniumcell-c",
             "port": 0
           },
           "to": {
@@ -14730,7 +14832,7 @@
           "id": "conn__380",
           "from": {
             "ref": "placement",
-            "id": "pl__gen-plutoniumrod-c",
+            "id": "pl-gen__plutonium",
             "port": 0
           },
           "to": {
@@ -14772,12 +14874,12 @@
           "id": "conn__383",
           "from": {
             "ref": "placement",
-            "id": "pl__recipe-alternate-plutoniumfuelunit-c",
+            "id": "pl__recipe-alternate-nuclearfuelrod-1-c",
             "port": 0
           },
           "to": {
             "ref": "placement",
-            "id": "pl__gen-plutoniumrod-c",
+            "id": "pl-gen__uranium",
             "port": 0
           },
           "transportId": "conv__mk6"
@@ -14786,12 +14888,12 @@
           "id": "conn__384",
           "from": {
             "ref": "placement",
-            "id": "pl__recipe-alternate-nuclearfuelrod-1-c",
+            "id": "pl__recipe-alternate-plutoniumfuelunit-c",
             "port": 0
           },
           "to": {
             "ref": "placement",
-            "id": "pl__gen-uraniumrod-c",
+            "id": "pl-gen__plutonium",
             "port": 0
           },
           "transportId": "conv__mk6"

@@ -1,9 +1,14 @@
 import { createSelector } from '@reduxjs/toolkit'
 
 import type { RootState } from '@/app/store'
+import type { Generator } from '@/features/generators/types'
 import type { ItemPhase } from '@/features/materials'
 import { nodePortCounts } from '@/features/nodes/types'
-import { extractorRate, placementFactors } from '@/features/placements/calc'
+import {
+  extractorRate,
+  generatorClockFactor,
+  placementFactors,
+} from '@/features/placements/calc'
 import type { Placement } from '@/features/placements/types'
 
 import type { Connection, ConnectionEnd } from './types'
@@ -49,6 +54,7 @@ function outputPortsOf(
   recipesById: Map<string, { outputs: { refId: string; rate: number }[] }>,
   workbenchSloopSlots: (refId: string) => number,
   extractorOf: (refId: string) => { baseRate: number; outputs: number } | undefined,
+  generatorOf: (refId: string) => Generator | undefined,
 ): { refId: string; rate: number }[] {
   if (p.kind === 'extractor') {
     const item = p.materialId
@@ -58,6 +64,18 @@ function outputPortsOf(
     const count = Math.max(1, ex?.outputs ?? 1)
     const perPort = ex ? extractorRate(p, ex.baseRate) / count : 0
     return Array.from({ length: count }, () => ({ refId: item, rate: perPort }))
+  }
+  if (p.kind === 'generator') {
+    // The only item a generator emits is the picked fuel's waste byproduct
+    // (power is not an item and never rides a belt).
+    const fuel = generatorOf(p.refId)?.fuels.find((f) => f.refId === p.fuelId)
+    if (!fuel?.byproduct) return []
+    return [
+      {
+        refId: fuel.byproduct.refId,
+        rate: fuel.byproduct.rate * generatorClockFactor(p),
+      },
+    ]
   }
   if (p.kind === 'workbench' && p.recipeId) {
     const r = recipesById.get(p.recipeId)
@@ -74,10 +92,18 @@ function outputPortsOf(
 function inputRefsOf(
   p: Placement,
   recipesById: Map<string, { inputs: { refId: string }[] }>,
+  generatorOf: (refId: string) => Generator | undefined,
 ): string[] {
   if (p.kind === 'workbench' && p.recipeId) {
     const r = recipesById.get(p.recipeId)
     if (r) return r.inputs.filter((i) => i.refId).map((i) => i.refId)
+  }
+  if (p.kind === 'generator' && p.fuelId) {
+    // Port 0 feeds the picked fuel; port 1 the constant water intake (if any).
+    const g = generatorOf(p.refId)
+    const fuel = g?.fuels.find((f) => f.refId === p.fuelId)
+    if (!g || !fuel) return []
+    return g.water ? [fuel.refId, g.water.refId] : [fuel.refId]
   }
   return []
 }
@@ -99,6 +125,7 @@ export const selectConnectionViews = createSelector(
     (s: RootState) => s.recipes.items,
     (s: RootState) => s.workbenches.items,
     (s: RootState) => s.extractors.items,
+    (s: RootState) => s.generators.items,
     (s: RootState) => s.conveyors.items,
     (s: RootState) => s.pipelines.items,
     (s: RootState) => s.nodes.items,
@@ -112,6 +139,7 @@ export const selectConnectionViews = createSelector(
     recipes,
     workbenches,
     extractors,
+    generators,
     conveyors,
     pipelines,
     nodes,
@@ -126,6 +154,7 @@ export const selectConnectionViews = createSelector(
     const recipesById = new Map(recipes.map((r) => [r.id, r]))
     const wbSlots = new Map(workbenches.map((w) => [w.id, w.sloopSlots]))
     const exById = new Map(extractors.map((e) => [e.id, e]))
+    const genById = new Map(generators.map((g) => [g.id, g]))
     const convRate = new Map(conveyors.map((c) => [c.id, c.maxRate]))
     const pipeRate = new Map(pipelines.map((p) => [p.id, p.maxRate]))
     const nodesById = new Map(nodes.map((n) => [n.id, n]))
@@ -165,6 +194,7 @@ export const selectConnectionViews = createSelector(
         recipesById,
         (id) => wbSlots.get(id) ?? 1,
         (id) => exById.get(id),
+        (id) => genById.get(id),
       )[end.port]
       return out ? { rate: out.rate, item: out.refId, conflict: false } : NO_FLOW
     }
@@ -234,6 +264,7 @@ export const selectConnectionViews = createSelector(
           recipesById,
           (id) => wbSlots.get(id) ?? 1,
           (id) => exById.get(id),
+          (id) => genById.get(id),
         ).length
       )
     }
@@ -247,7 +278,7 @@ export const selectConnectionViews = createSelector(
       }
       const p = placements.get(end.id)
       if (!p) return null
-      return inputRefsOf(p, recipesById)[end.port] ?? null
+      return inputRefsOf(p, recipesById, (id) => genById.get(id))[end.port] ?? null
     }
 
     const views: ConnectionView[] = []

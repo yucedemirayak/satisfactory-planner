@@ -14,14 +14,25 @@ export {
   placementMaterialChanged,
   placementPurityChanged,
   placementTierChanged,
+  placementFuelChanged,
   placementConfigAdded,
   placementConfigChanged,
   placementConfigRemoved,
 } from './placementsSlice'
 export { selectPlacementsByFloor, selectOverlappingPlacementIds } from './selectors'
-export { placementFactors, extractorRate } from './calc'
+export {
+  placementFactors,
+  extractorRate,
+  placementPowerFactor,
+  extractorPowerUsage,
+  generatorClockFactor,
+  generatorPower,
+  POWER_CLOCK_EXPONENT,
+} from './calc'
 export { selectProductionBalance } from './balance'
 export type { ProductBalance } from './balance'
+export { selectPowerBalance } from './power'
+export type { PowerBalance, PowerGroupRow, FloorPowerRow } from './power'
 export { selectFactoryFootprint } from './footprint'
 export type { FactoryFootprint } from './footprint'
 export type { Placement, MachineConfig, Purity } from './types'

@@ -17,6 +17,7 @@
           "depth": 5,
           "height": 8.5,
           "sloopSlots": 1,
+          "powerUsage": 4,
           "inputs": 1,
           "outputs": 1,
           "color": "#fa9549"
@@ -28,6 +29,7 @@
           "depth": 9,
           "height": 9,
           "sloopSlots": 2,
+          "powerUsage": 16,
           "inputs": 2,
           "outputs": 1,
           "color": "#e85d4e"
@@ -39,6 +41,7 @@
           "depth": 7.9,
           "height": 8,
           "sloopSlots": 1,
+          "powerUsage": 4,
           "inputs": 1,
           "outputs": 1,
           "color": "#4ea8de"
@@ -50,6 +53,7 @@
           "depth": 9,
           "height": 11,
           "sloopSlots": 2,
+          "powerUsage": 15,
           "inputs": 2,
           "outputs": 1,
           "color": "#5e9cff"
@@ -61,6 +65,7 @@
           "depth": 18,
           "height": 12,
           "sloopSlots": 4,
+          "powerUsage": 55,
           "inputs": 4,
           "outputs": 1,
           "color": "#9b5de5"
@@ -72,6 +77,7 @@
           "depth": 10,
           "height": 30,
           "sloopSlots": 2,
+          "powerUsage": 30,
           "inputs": 2,
           "outputs": 2,
           "color": "#f4a261"
@@ -83,6 +89,7 @@
           "depth": 8,
           "height": 12,
           "sloopSlots": 2,
+          "powerUsage": 10,
           "inputs": 2,
           "outputs": 2,
           "color": "#2a9d8f"
@@ -94,6 +101,7 @@
           "depth": 16,
           "height": 15,
           "sloopSlots": 4,
+          "powerUsage": 75,
           "inputs": 4,
           "outputs": 2,
           "color": "#e76f51"
@@ -105,6 +113,7 @@
           "depth": 24,
           "height": 32,
           "sloopSlots": 4,
+          "powerUsage": 500,
           "inputs": 3,
           "outputs": 1,
           "color": "#c77dff"
@@ -116,6 +125,7 @@
           "depth": 16,
           "height": 18,
           "sloopSlots": 1,
+          "powerUsage": 250,
           "inputs": 2,
           "outputs": 2,
           "color": "#80ed99"
@@ -127,6 +137,7 @@
           "depth": 22,
           "height": 18,
           "sloopSlots": 4,
+          "powerUsage": 1000,
           "inputs": 4,
           "outputs": 2,
           "color": "#ffd6a5"
@@ -142,6 +153,11 @@
           "depth": 6,
           "height": 18,
           "baseRate": 60,
+          "powerUsage": {
+            "1": 5,
+            "2": 15,
+            "3": 45
+          },
           "outputs": 1,
           "color": "#8ecae6"
         },
@@ -152,6 +168,11 @@
           "depth": 19.5,
           "height": 26,
           "baseRate": 120,
+          "powerUsage": {
+            "1": 20,
+            "2": 20,
+            "3": 20
+          },
           "outputs": 1,
           "color": "#48cae4"
         },
@@ -162,6 +183,11 @@
           "depth": 8,
           "height": 20,
           "baseRate": 120,
+          "powerUsage": {
+            "1": 40,
+            "2": 40,
+            "3": 40
+          },
           "outputs": 1,
           "color": "#adb5bd"
         },
@@ -172,16 +198,183 @@
           "depth": 12,
           "height": 8,
           "baseRate": 60,
+          "powerUsage": {
+            "1": 150,
+            "2": 150,
+            "3": 150
+          },
           "outputs": 1,
           "color": "#95d5b2"
         }
       ]
     },
+    "generators": {
+      "items": [
+        {
+          "id": "gen__biomass-burner",
+          "name": "Biomass Burner",
+          "width": 8,
+          "depth": 8,
+          "height": 10,
+          "powerOutput": 30,
+          "water": null,
+          "fuels": [
+            {
+              "refId": "prod__desc-leaves-c",
+              "rate": 120,
+              "byproduct": null
+            },
+            {
+              "refId": "prod__desc-wood-c",
+              "rate": 18,
+              "byproduct": null
+            },
+            {
+              "refId": "prod__desc-genericbiomass-c",
+              "rate": 10,
+              "byproduct": null
+            },
+            {
+              "refId": "prod__desc-biofuel-c",
+              "rate": 4,
+              "byproduct": null
+            }
+          ],
+          "color": "#a7c957"
+        },
+        {
+          "id": "gen__coal-generator",
+          "name": "Coal Generator",
+          "width": 10,
+          "depth": 26,
+          "height": 36,
+          "powerOutput": 75,
+          "water": {
+            "refId": "mat__desc-water-c",
+            "rate": 45
+          },
+          "fuels": [
+            {
+              "refId": "mat__desc-coal-c",
+              "rate": 15,
+              "byproduct": null
+            },
+            {
+              "refId": "prod__desc-compactedcoal-c",
+              "rate": 7.142857142857143,
+              "byproduct": null
+            },
+            {
+              "refId": "prod__desc-petroleumcoke-c",
+              "rate": 25,
+              "byproduct": null
+            }
+          ],
+          "color": "#f4a261"
+        },
+        {
+          "id": "gen__fuel-generator",
+          "name": "Fuel Generator",
+          "width": 20,
+          "depth": 20,
+          "height": 27,
+          "powerOutput": 250,
+          "water": null,
+          "fuels": [
+            {
+              "refId": "prod__desc-liquidfuel-c",
+              "rate": 20,
+              "byproduct": null
+            },
+            {
+              "refId": "prod__desc-liquidbiofuel-c",
+              "rate": 20,
+              "byproduct": null
+            },
+            {
+              "refId": "prod__desc-liquidturbofuel-c",
+              "rate": 7.5,
+              "byproduct": null
+            },
+            {
+              "refId": "prod__desc-rocketfuel-c",
+              "rate": 4.166666666666667,
+              "byproduct": null
+            },
+            {
+              "refId": "prod__desc-ionizedfuel-c",
+              "rate": 3,
+              "byproduct": null
+            }
+          ],
+          "color": "#e63946"
+        },
+        {
+          "id": "gen__geothermal-generator",
+          "name": "Geothermal Generator",
+          "width": 19,
+          "depth": 20,
+          "height": 34,
+          "powerOutput": 200,
+          "water": null,
+          "fuels": [],
+          "color": "#00b4d8"
+        },
+        {
+          "id": "gen__nuclear-plant",
+          "name": "Nuclear Power Plant",
+          "width": 36,
+          "depth": 43,
+          "height": 39,
+          "powerOutput": 2500,
+          "water": {
+            "refId": "mat__desc-water-c",
+            "rate": 240
+          },
+          "fuels": [
+            {
+              "refId": "prod__desc-nuclearfuelrod-c",
+              "rate": 0.2,
+              "byproduct": {
+                "refId": "prod__desc-nuclearwaste-c",
+                "rate": 10
+              }
+            },
+            {
+              "refId": "prod__desc-plutoniumfuelrod-c",
+              "rate": 0.1,
+              "byproduct": {
+                "refId": "prod__desc-plutoniumwaste-c",
+                "rate": 1
+              }
+            },
+            {
+              "refId": "prod__desc-ficsoniumfuelrod-c",
+              "rate": 1,
+              "byproduct": null
+            }
+          ],
+          "color": "#90be6d"
+        }
+      ]
+    },
     "spacers": {
       "items": [
-        { "id": "spacer__1m", "name": "1m Gap", "width": 1 },
-        { "id": "spacer__2m", "name": "2m Gap", "width": 2 },
-        { "id": "spacer__4m", "name": "4m Gap", "width": 4 }
+        {
+          "id": "spacer__1m",
+          "name": "1m Gap",
+          "width": 1
+        },
+        {
+          "id": "spacer__2m",
+          "name": "2m Gap",
+          "width": 2
+        },
+        {
+          "id": "spacer__4m",
+          "name": "4m Gap",
+          "width": 4
+        }
       ]
     },
     "conveyors": {
@@ -698,10 +891,6 @@
         {
           "id": "prod__bp-itemdescriptorportableminer-c",
           "name": "Portable Miner"
-        },
-        {
-          "id": "prod__power",
-          "name": "Power"
         },
         {
           "id": "prod__desc-crystalshard-c",
@@ -1466,7 +1655,8 @@
               "refId": "prod__desc-diamond-c",
               "rate": 20
             }
-          ]
+          ],
+          "power": 500
         },
         {
           "id": "rec__recipe-alternate-coatedcable-c",
@@ -1697,7 +1887,8 @@
               "refId": "prod__desc-darkmatter-c",
               "rate": 20
             }
-          ]
+          ],
+          "power": 1000
         },
         {
           "id": "rec__recipe-alternate-darkmatter-trap-c",
@@ -1718,7 +1909,8 @@
               "refId": "prod__desc-darkmatter-c",
               "rate": 60
             }
-          ]
+          ],
+          "power": 1000
         },
         {
           "id": "rec__recipe-alternate-ionizedfuel-dark-c",
@@ -2253,7 +2445,8 @@
               "refId": "prod__desc-plutoniumcell-c",
               "rate": 10
             }
-          ]
+          ],
+          "power": 500
         },
         {
           "id": "rec__recipe-alternate-instantscrap-c",
@@ -2559,7 +2752,8 @@
               "refId": "prod__desc-diamond-c",
               "rate": 40
             }
-          ]
+          ],
+          "power": 500
         },
         {
           "id": "rec__recipe-alternate-diamond-petroleum-c",
@@ -2576,7 +2770,8 @@
               "refId": "prod__desc-diamond-c",
               "rate": 30
             }
-          ]
+          ],
+          "power": 500
         },
         {
           "id": "rec__recipe-alternate-diamond-pink-c",
@@ -3381,7 +3576,8 @@
               "refId": "prod__desc-diamond-c",
               "rate": 60
             }
-          ]
+          ],
+          "power": 500
         },
         {
           "id": "rec__recipe-alternate-turbomotor-1-c",
@@ -4048,7 +4244,8 @@
               "refId": "prod__desc-darkmatter-c",
               "rate": 30
             }
-          ]
+          ],
+          "power": 1000
         },
         {
           "id": "rec__recipe-darkenergy-c",
@@ -4082,7 +4279,8 @@
               "refId": "prod__desc-diamond-c",
               "rate": 30
             }
-          ]
+          ],
+          "power": 500
         },
         {
           "id": "rec__recipe-electromagneticcontrolrod-c",
@@ -4371,7 +4569,8 @@
               "refId": "prod__desc-ficsonium-c",
               "rate": 10
             }
-          ]
+          ],
+          "power": 1000
         },
         {
           "id": "rec__recipe-ficsoniumfuelrod-c",
@@ -4982,7 +5181,8 @@
               "refId": "prod__desc-spaceelevatorpart-9-c",
               "rate": 0.5
             }
-          ]
+          ],
+          "power": 1000
         },
         {
           "id": "rec__recipe-nobelisknuke-c",
@@ -5351,7 +5551,8 @@
               "refId": "prod__desc-plutoniumpellet-c",
               "rate": 30
             }
-          ]
+          ],
+          "power": 500
         },
         {
           "id": "rec__recipe-powercrystalshard-1-c",

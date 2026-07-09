@@ -16,11 +16,21 @@ export function DragPreview({ kind, refId }: DragPreviewProps) {
   const extractor = useAppSelector((s) =>
     s.extractors.items.find((e) => e.id === refId),
   )
+  const generator = useAppSelector((s) =>
+    s.generators.items.find((g) => g.id === refId),
+  )
   const spacer = useAppSelector((s) => s.spacers.items.find((sp) => sp.id === refId))
   const pxPerMeter = useAppSelector(selectPxPerMeter)
 
-  // Coloured box for workbenches & extractors.
-  const box = kind === 'extractor' ? extractor : kind === 'workbench' ? workbench : undefined
+  // Coloured box for workbenches, extractors & generators.
+  const box =
+    kind === 'extractor'
+      ? extractor
+      : kind === 'generator'
+        ? generator
+        : kind === 'workbench'
+          ? workbench
+          : undefined
   if (box) {
     return (
       <div

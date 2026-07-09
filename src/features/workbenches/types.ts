@@ -16,6 +16,11 @@ export interface Workbench {
   height: number
   /** Max somersloop slots per machine (production amplification). */
   sloopSlots: number
+  /**
+   * MW drawn per machine at 100% clock. Overclock scales power by
+   * clock^1.321928; recipes may override this (variable-power machines).
+   */
+  powerUsage: number
   /** Number of input ports (recipes assigned here may use at most this many). */
   inputs: number
   /** Number of output ports. */
