@@ -527,6 +527,22 @@ export function getDefaultProject(): PersistedState | undefined {
   }
 }
 
+/**
+ * The bundled example mega-factory (a full plan: floors, placements, wiring,
+ * generators). Dynamically imported so the sizeable JSON stays out of the
+ * main bundle until the user actually asks for it. Returns undefined on
+ * failure.
+ */
+export async function getExampleProject(): Promise<PersistedState | undefined> {
+  try {
+    const module = await import('@/data/exampleProject.json')
+    return coerceProject(structuredClone(module.default as unknown))
+  } catch (error) {
+    if (import.meta.env.DEV) console.warn('Failed to load example project', error)
+    return undefined
+  }
+}
+
 export function saveState(state: RootState): void {
   if (typeof localStorage === 'undefined') return
   try {

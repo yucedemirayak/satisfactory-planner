@@ -17,7 +17,7 @@ export function summarizeProject(data: PersistedState): ProjectSummaryItem[] {
     { label: 'Placements', count: placements },
     { label: 'Workbenches', count: data.workbenches.items.length },
     { label: 'Extractors', count: data.extractors.items.length },
-    { label: 'Spacers', count: data.spacers.items.length },
+    { label: 'Generators', count: data.generators.items.length },
     { label: 'Materials', count: data.materials.items.length },
     { label: 'Products', count: data.products.items.length },
     { label: 'Recipes', count: data.recipes.items.length },

@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector, useAppStore } from '@/app/hooks'
 import { appStateImported } from '@/app/appActions'
 import {
   getDefaultProject,
+  getExampleProject,
   parseProjectFile,
   serializeProject,
   type PersistedState,
@@ -95,6 +96,22 @@ export function ProjectManager() {
     setPending(null)
   }
 
+  // The bundled example runs through the same preview + confirm flow as a
+  // picked file — it replaces the whole project just the same.
+  const handleLoadExample = async () => {
+    const data = await getExampleProject()
+    if (!data) {
+      setNotice({ type: 'error', message: 'Example project is unavailable.' })
+      return
+    }
+    setPending({
+      fileName: 'Example mega-factory',
+      data,
+      summary: summarizeProject(data),
+    })
+    setNotice(null)
+  }
+
   const confirmReset = () => {
     const data = getDefaultProject()
     setResetArmed(false)
@@ -151,7 +168,8 @@ export function ProjectManager() {
           <div>
             <h2 className="font-semibold text-gray-100">Import</h2>
             <p className="text-sm text-gray-500">
-              Load a project file. This replaces your current project entirely.
+              Load a project file — or the bundled example mega-factory.
+              Either replaces your current project entirely.
             </p>
           </div>
 
@@ -194,13 +212,22 @@ export function ProjectManager() {
               </div>
             </div>
           ) : (
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="mt-auto rounded-md border border-edge bg-surface-2 px-3 py-2 text-sm font-semibold text-gray-200 transition hover:border-ficsit/50 hover:text-gray-100"
-            >
-              Choose file…
-            </button>
+            <div className="mt-auto flex gap-2">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="flex-1 rounded-md border border-edge bg-surface-2 px-3 py-2 text-sm font-semibold text-gray-200 transition hover:border-ficsit/50 hover:text-gray-100"
+              >
+                Choose file…
+              </button>
+              <button
+                type="button"
+                onClick={handleLoadExample}
+                className="flex-1 rounded-md border border-ficsit/50 px-3 py-2 text-sm font-semibold text-ficsit transition hover:bg-ficsit/10"
+              >
+                Load example
+              </button>
+            </div>
           )}
         </div>
       </div>
