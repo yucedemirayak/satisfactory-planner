@@ -32,7 +32,6 @@ import productionReducer from '@/features/production/productionSlice'
 import productsReducer from '@/features/products/productsSlice'
 import recipesReducer from '@/features/recipes/recipesSlice'
 import selectionReducer from '@/features/selection/selectionSlice'
-import spacersReducer from '@/features/spacers/spacersSlice'
 import workbenchesReducer from '@/features/workbenches/workbenchesSlice'
 
 import { appStateImported } from './appActions'
@@ -43,7 +42,6 @@ const combinedReducer = combineReducers({
   workbenches: workbenchesReducer,
   extractors: extractorsReducer,
   generators: generatorsReducer,
-  spacers: spacersReducer,
   conveyors: conveyorsReducer,
   pipelines: pipelinesReducer,
   connections: connectionsReducer,

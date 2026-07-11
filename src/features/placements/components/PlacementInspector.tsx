@@ -205,11 +205,6 @@ export function PlacementInspector() {
       ? s.generators.items.find((g) => g.id === placement.refId)
       : undefined,
   )
-  const spacer = useAppSelector((s) =>
-    placement?.kind === 'spacer'
-      ? s.spacers.items.find((sp) => sp.id === placement.refId)
-      : undefined,
-  )
   const recipes = useAppSelector(selectRecipes)
   const products = useAppSelector(selectProducts)
   const materials = useAppSelector(selectMaterials)
@@ -222,7 +217,7 @@ export function PlacementInspector() {
     )
 
   const box = workbench ?? extractor ?? generator
-  const title = box?.name || spacer?.name || 'Placed item'
+  const title = box?.name || 'Placed item'
   const setQuantity = (quantity: number) =>
     dispatch(placementQuantityChanged({ id: placement.id, quantity }))
 
@@ -626,11 +621,6 @@ export function PlacementInspector() {
         </>
       )}
 
-      {placement.kind === 'spacer' && (
-        <p className="text-xs text-gray-500">
-          Spacer — {spacer?.width ?? 0} m gap.
-        </p>
-      )}
     </aside>
   )
 }

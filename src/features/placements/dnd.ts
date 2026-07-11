@@ -10,7 +10,7 @@ import type { PlacementKind } from './types'
 export interface PaletteDragData {
   type: 'palette'
   kind: PlacementKind
-  /** Workbench/Spacer definition id. */
+  /** Workbench / Extractor / Generator definition id. */
   refId: string
 }
 

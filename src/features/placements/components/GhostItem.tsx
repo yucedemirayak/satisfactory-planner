@@ -28,50 +28,36 @@ export function GhostItem({ kind, refId, x }: GhostItemProps) {
   const generator = useAppSelector((s) =>
     s.generators.items.find((g) => g.id === refId),
   )
-  const spacer = useAppSelector((s) => s.spacers.items.find((sp) => sp.id === refId))
 
   const box =
     kind === 'extractor'
       ? extractor
       : kind === 'generator'
         ? generator
-        : kind === 'workbench'
-          ? workbench
-          : undefined
-  const def = kind === 'spacer' ? spacer : box
-  if (!def) return null
+        : workbench
+  if (!box) return null
 
   const base: CSSProperties = {
     position: 'absolute',
     left: x * pxPerMeter,
-    width: Math.max(MIN_BLOCK_PX, def.width * pxPerMeter),
-  }
-
-  if (box) {
-    return (
-      <div
-        aria-hidden
-        style={{
-          ...base,
-          bottom: 0,
-          height: Math.max(MIN_BLOCK_PX, box.height * pxPerMeter),
-          borderColor: box.color,
-          backgroundColor: `${box.color}1f`,
-        }}
-        className="pointer-events-none overflow-hidden rounded-sm border-2 border-dashed opacity-60"
-      >
-        <span className="m-1 block truncate text-[10px] font-medium text-gray-300">
-          {box.name}
-        </span>
-      </div>
-    )
+    width: Math.max(MIN_BLOCK_PX, box.width * pxPerMeter),
   }
 
   return (
     <div
       aria-hidden
-      style={{ ...base, top: 0, bottom: 0 }}
-      className="pointer-events-none rounded-sm border-2 border-dashed border-gray-500 bg-gray-500/10 opacity-60"
-    />
+      style={{
+        ...base,
+        bottom: 0,
+        height: Math.max(MIN_BLOCK_PX, box.height * pxPerMeter),
+        borderColor: box.color,
+        backgroundColor: `${box.color}1f`,
+      }}
+      className="pointer-events-none overflow-hidden rounded-sm border-2 border-dashed opacity-60"
+    >
+      <span className="m-1 block truncate text-[10px] font-medium text-gray-300">
+        {box.name}
+      </span>
+    </div>
   )
 }

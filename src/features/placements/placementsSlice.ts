@@ -5,7 +5,6 @@ import { generatorRemoved } from '@/features/generators/generatorsSlice'
 import { materialRemoved } from '@/features/materials/materialsSlice'
 import { productRemoved } from '@/features/products/productsSlice'
 import { recipeRemoved } from '@/features/recipes/recipesSlice'
-import { spacerRemoved } from '@/features/spacers/spacersSlice'
 import { workbenchRemoved } from '@/features/workbenches/workbenchesSlice'
 
 import {
@@ -258,7 +257,7 @@ const placementsSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // Clean up placements when a floor, workbench, or spacer is deleted.
+    // Clean up placements when a floor or a building definition is deleted.
     builder.addCase(floorRemoved, (state, action) => {
       delete state.byFloor[action.payload]
     })
@@ -266,13 +265,6 @@ const placementsSlice = createSlice({
       for (const floorId of Object.keys(state.byFloor)) {
         state.byFloor[floorId] = state.byFloor[floorId].filter(
           (p) => !(p.kind === 'workbench' && p.refId === action.payload),
-        )
-      }
-    })
-    builder.addCase(spacerRemoved, (state, action) => {
-      for (const floorId of Object.keys(state.byFloor)) {
-        state.byFloor[floorId] = state.byFloor[floorId].filter(
-          (p) => !(p.kind === 'spacer' && p.refId === action.payload),
         )
       }
     })

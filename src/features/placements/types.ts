@@ -1,5 +1,5 @@
-/** What a placement points at: a workbench, extractor, generator, or spacer. */
-export type PlacementKind = 'workbench' | 'spacer' | 'extractor' | 'generator'
+/** What a placement points at: a workbench, an extractor, or a generator. */
+export type PlacementKind = 'workbench' | 'extractor' | 'generator'
 
 /** Resource node purity (extractor-only). */
 export type Purity = 'impure' | 'normal' | 'pure'
@@ -20,15 +20,14 @@ export interface MachineConfig {
 }
 
 /**
- * An item placed on a floor — either a workbench instance or a spacer. Floors
- * hold an ordered list of these (left→right sequence). `refId` references the
- * matching catalogue (workbenches or spacers) by `kind`.
+ * A machine placed on a floor. `refId` references the matching catalogue
+ * (workbenches / extractors / generators) by `kind`.
  */
 export interface Placement {
   /** Stable unique instance id (also the dnd-kit sortable item id). */
   id: string
   kind: PlacementKind
-  /** Ref to a Workbench or Spacer definition, per `kind`. */
+  /** Ref to a Workbench / Extractor / Generator definition, per `kind`. */
   refId: string
   /** Left-edge position along the floor, in metres (snapped to the grid). */
   x: number

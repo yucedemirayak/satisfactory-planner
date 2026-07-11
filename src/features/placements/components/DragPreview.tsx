@@ -19,44 +19,28 @@ export function DragPreview({ kind, refId }: DragPreviewProps) {
   const generator = useAppSelector((s) =>
     s.generators.items.find((g) => g.id === refId),
   )
-  const spacer = useAppSelector((s) => s.spacers.items.find((sp) => sp.id === refId))
   const pxPerMeter = useAppSelector(selectPxPerMeter)
 
-  // Coloured box for workbenches, extractors & generators.
   const box =
     kind === 'extractor'
       ? extractor
       : kind === 'generator'
         ? generator
-        : kind === 'workbench'
-          ? workbench
-          : undefined
-  if (box) {
-    return (
-      <div
-        style={{
-          width: Math.max(24, box.width * pxPerMeter),
-          height: Math.max(24, box.height * pxPerMeter),
-          borderColor: box.color,
-          backgroundColor: `${box.color}55`,
-        }}
-        className="scale-105 cursor-grabbing overflow-hidden rounded-sm border-2 shadow-2xl shadow-black/50 ring-2 ring-ficsit/50"
-      >
-        <span className="pointer-events-none m-1 block truncate text-[10px] font-medium text-gray-100">
-          {box.name}
-        </span>
-      </div>
-    )
-  }
+        : workbench
+  if (!box) return null
 
-  if (!spacer) return null
   return (
     <div
-      style={{ width: Math.max(24, spacer.width * pxPerMeter), height: 48 }}
-      className="flex scale-105 cursor-grabbing items-center justify-center rounded-sm border-2 border-dashed border-gray-400 bg-gray-700/70 shadow-2xl shadow-black/50 ring-2 ring-ficsit/40"
+      style={{
+        width: Math.max(24, box.width * pxPerMeter),
+        height: Math.max(24, box.height * pxPerMeter),
+        borderColor: box.color,
+        backgroundColor: `${box.color}55`,
+      }}
+      className="scale-105 cursor-grabbing overflow-hidden rounded-sm border-2 shadow-2xl shadow-black/50 ring-2 ring-ficsit/50"
     >
-      <span className="pointer-events-none truncate px-1 text-[10px] font-medium text-gray-300">
-        {spacer.width}m
+      <span className="pointer-events-none m-1 block truncate text-[10px] font-medium text-gray-100">
+        {box.name}
       </span>
     </div>
   )

@@ -32,7 +32,6 @@ export type PersistedState = Pick<
   | 'workbenches'
   | 'extractors'
   | 'generators'
-  | 'spacers'
   | 'conveyors'
   | 'pipelines'
   | 'products'
@@ -53,7 +52,6 @@ const PERSISTED_KEYS: ReadonlyArray<keyof PersistedState> = [
   'workbenches',
   'extractors',
   'generators',
-  'spacers',
   'conveyors',
   'pipelines',
   'products',
@@ -83,7 +81,6 @@ function pickPersisted(state: RootState): PersistedState {
     workbenches: state.workbenches,
     extractors: state.extractors,
     generators: state.generators,
-    spacers: state.spacers,
     conveyors: state.conveyors,
     pipelines: state.pipelines,
     products: state.products,
@@ -104,7 +101,9 @@ function pickPersisted(state: RootState): PersistedState {
  * - Old placements were `{ id, workbenchId }`; now `{ id, kind, refId }`.
  * - Placements gained `quantity` (default 1), `recipeId` (null), `configs` ([]).
  * - Workbenches gained `sloopSlots` (default 1).
- * - Spacers/recipes slices didn't exist (fall back to initial).
+ * - The spacers feature was retired entirely (gaps live in grid x positions);
+ *   older saves' spacer placements are dropped with their gaps preserved and
+ *   the stale slice is deleted.
  * - Conveyors slice added later — seed older saves with the default belts.
  */
 function migrate(raw: Record<string, unknown>): void {
@@ -438,6 +437,14 @@ function migrate(raw: Record<string, unknown>): void {
   const placements = raw.placements as
     | { byFloor?: Record<string, Array<Record<string, unknown>>> }
     | undefined
+  // The spacers feature is retired (gaps live in grid x positions now). Keep
+  // the old widths for the sequence→grid conversion below, then drop the
+  // stale slice so it stops hitting the store/persistence.
+  const legacySpacerItems = (
+    raw.spacers as { items?: Array<Record<string, unknown>> } | undefined
+  )?.items
+  delete raw.spacers
+
   const byFloor = placements?.byFloor
   if (!byFloor) return
 
@@ -454,9 +461,7 @@ function migrate(raw: Record<string, unknown>): void {
     (raw.generators as { items?: Array<Record<string, unknown>> } | undefined)
       ?.items,
   )
-  const spWidth = widthMap(
-    (raw.spacers as { items?: Array<Record<string, unknown>> } | undefined)?.items,
-  )
+  const spWidth = widthMap(legacySpacerItems)
   const widthOf = (p: Record<string, unknown>): number => {
     const refId = p.refId as string
     if (p.kind === 'workbench') return wbWidth.get(refId) ?? 0

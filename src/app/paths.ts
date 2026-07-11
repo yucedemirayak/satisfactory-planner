@@ -8,7 +8,6 @@ export const PATHS = {
   workbenches: '/settings/workbenches',
   extractors: '/settings/extractors',
   generators: '/settings/generators',
-  spacers: '/settings/spacers',
   conveyors: '/settings/conveyors',
   pipelines: '/settings/pipelines',
   routing: '/settings/routing',

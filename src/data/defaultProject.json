@@ -358,25 +358,6 @@
         }
       ]
     },
-    "spacers": {
-      "items": [
-        {
-          "id": "spacer__1m",
-          "name": "1m Gap",
-          "width": 1
-        },
-        {
-          "id": "spacer__2m",
-          "name": "2m Gap",
-          "width": 2
-        },
-        {
-          "id": "spacer__4m",
-          "name": "4m Gap",
-          "width": 4
-        }
-      ]
-    },
     "conveyors": {
       "items": [
         {

@@ -33,8 +33,8 @@ interface PlacedItemProps {
 export const MIN_BLOCK_PX = 20
 
 /**
- * An item sitting on a floor — a workbench / extractor (coloured block) or a
- * spacer (dashed full-height gap). Draggable to reorder / move; click to select.
+ * A machine sitting on a floor — a workbench / extractor / generator drawn as
+ * a coloured block. Draggable to move; click to select.
  */
 export function PlacedItem({ placement, floorId }: PlacedItemProps) {
   const dispatch = useAppDispatch()
@@ -46,9 +46,6 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
   )
   const generator = useAppSelector((s) =>
     s.generators.items.find((g) => g.id === placement.refId),
-  )
-  const spacer = useAppSelector((s) =>
-    s.spacers.items.find((sp) => sp.id === placement.refId),
   )
   const recipe = useAppSelector((s) =>
     placement.recipeId
@@ -92,14 +89,10 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
 
   const isExtractor = placement.kind === 'extractor'
   const isGenerator = placement.kind === 'generator'
-  const isSpacer = placement.kind === 'spacer'
-  // Workbenches, extractors and generators are coloured boxes; spacers are
-  // dashed gaps.
   const box = isExtractor ? extractor : isGenerator ? generator : workbench
-  const def = isSpacer ? spacer : box
-  if (!def) return null
+  if (!box) return null
 
-  const width = Math.max(MIN_BLOCK_PX, def.width * pxPerMeter)
+  const width = Math.max(MIN_BLOCK_PX, box.width * pxPerMeter)
   // Secondary line: recipe (workbench), material (extractor) or fuel (generator).
   const subLabel = isExtractor
     ? material?.name || (placement.materialId ? 'Material' : null)
@@ -242,47 +235,29 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
         e.stopPropagation()
         dispatch(itemSelected({ kind: 'placement', id: placement.id }))
       }}
-      style={
-        box
-          ? {
-              ...baseStyle,
-              bottom: 0,
-              width,
-              height: Math.max(MIN_BLOCK_PX, box.height * pxPerMeter),
-              borderColor: box.color,
-              backgroundColor: `${box.color}33`,
-            }
-          : { ...baseStyle, top: 0, bottom: 0, width }
-      }
-      className={
-        box
-          ? `${sharedClass} rounded-sm border-2${ring}`
-          : `${sharedClass} rounded-sm border-2 border-dashed border-gray-600 bg-gray-500/10${ring}`
-      }
-      title={
-        box
-          ? `${box.name || (isExtractor ? 'Extractor' : isGenerator ? 'Generator' : 'Workbench')} — ${box.width}×${box.height} m ·×${placement.quantity}${subLabel ? ` · ${subLabel}` : ''}`
-          : `${spacer?.name || 'Spacer'} — ${def.width} m gap`
-      }
+      style={{
+        ...baseStyle,
+        bottom: 0,
+        width,
+        height: Math.max(MIN_BLOCK_PX, box.height * pxPerMeter),
+        borderColor: box.color,
+        backgroundColor: `${box.color}33`,
+      }}
+      className={`${sharedClass} rounded-sm border-2${ring}`}
+      title={`${box.name || (isExtractor ? 'Extractor' : isGenerator ? 'Generator' : 'Workbench')} — ${box.width}×${box.height} m ·×${placement.quantity}${subLabel ? ` · ${subLabel}` : ''}`}
       {...attributes}
       {...listeners}
     >
-      {box ? (
-        <div className="pointer-events-none absolute inset-x-1 top-0.5 flex flex-col leading-tight">
-          <span className="truncate text-[10px] font-medium text-gray-100">
-            {box.name}
-          </span>
-          {subLabel && (
-            <span className="truncate text-[9px] font-medium text-ficsit">
-              {isExtractor ? `${subLabel} · Mk${placement.tier}` : subLabel}
-            </span>
-          )}
-        </div>
-      ) : (
-        <span className="pointer-events-none flex h-full items-center justify-center px-1 text-[10px] font-medium text-gray-400">
-          {`${def.width}m`}
+      <div className="pointer-events-none absolute inset-x-1 top-0.5 flex flex-col leading-tight">
+        <span className="truncate text-[10px] font-medium text-gray-100">
+          {box.name}
         </span>
-      )}
+        {subLabel && (
+          <span className="truncate text-[9px] font-medium text-ficsit">
+            {isExtractor ? `${subLabel} · Mk${placement.tier}` : subLabel}
+          </span>
+        )}
+      </div>
       {showPorts &&
         portDescs.map((p) => {
           const wrap: CSSProperties = {
@@ -345,11 +320,9 @@ export function PlacedItem({ placement, floorId }: PlacedItemProps) {
             </span>
           )
         })}
-      {box && (
-        <span className="pointer-events-none absolute bottom-0.5 left-1 font-mono text-[10px] font-semibold text-ficsit">
-          ×{placement.quantity}
-        </span>
-      )}
+      <span className="pointer-events-none absolute bottom-0.5 left-1 font-mono text-[10px] font-semibold text-ficsit">
+        ×{placement.quantity}
+      </span>
     </div>
   )
 }
